@@ -1,0 +1,38 @@
+{
+  "modern_navigation_basic": {
+    "code": "import streamlit as st\nfrom pages_lib import home, data, settings\n\npages = {\n    'Home': st.Page(home.show, title='Home', icon='🏠'),\n    'Data': st.Page(data.show, title='Data Analysis', icon='📊'),\n    'Settings': st.Page(settings.show, title='Settings', icon='⚙️')\n}\n\npg = st.navigation(pages)\npg.run()",
+    "description": "Basic multi-page app with st.navigation()",
+    "category": "navigation",
+    "use_case": "Multi-page apps"
+  },
+  "conditional_navigation": {
+    "code": "# Define page functions\ndef dashboard():\n    st.title('Dashboard')\n\ndef profile():\n    st.title('Profile')\n\ndef admin():\n    st.title('Admin')\n\ndef login():\n    st.title('Login')\n\nif st.session_state.get('logged_in'):\n    pages = {\n        'Dashboard': st.Page(dashboard),\n        'Profile': st.Page(profile),\n        'Admin': st.Page(admin)\n    }\nelse:\n    pages = {\n        'Login': st.Page(login)\n    }\n\npg = st.navigation(pages)\npg.run()",
+    "description": "Conditional navigation based on authentication",
+    "category": "navigation",
+    "use_case": "Auth-based navigation"
+  },
+  "grouped_navigation": {
+    "code": "# Define page functions\ndef home():\n    st.title('🏠 Welcome')\n\ndef upload():\n    st.title('📤 Upload')\n\ndef analyze():\n    st.title('📊 Analyze')\n\ndef export():\n    st.title('📥 Export')\n\ndef profile():\n    st.title('👤 Profile')\n\ndef preferences():\n    st.title('⚙️ Preferences')\n\n# Group pages by section\npages = {\n    'Home': [\n        st.Page(home, title='Welcome', icon='🏠')\n    ],\n    'Data': [\n        st.Page(upload, title='Upload', icon='📤'),\n        st.Page(analyze, title='Analyze', icon='📊'),\n        st.Page(export, title='Export', icon='📥')\n    ],\n    'Settings': [\n        st.Page(profile, title='Profile', icon='👤'),\n        st.Page(preferences, title='Preferences', icon='⚙️')\n    ]\n}\n\npg = st.navigation(pages)\npg.run()",
+    "description": "Grouped navigation with sections (using functions, no pages/ folder)",
+    "category": "navigation",
+    "use_case": "Organized multi-page apps"
+  },
+  "programmatic_page_switch": {
+    "code": "# Note: st.switch_page works with file paths OR page objects\n# With file paths (if using separate files):\nif condition:\n    st.switch_page('other_page.py')  # No pages/ folder needed\n\n# Or with button\nif st.button('Go to Dashboard'):\n    st.switch_page('dashboard.py')\n\n# Alternative: Use st.Page objects and rerun\nif st.button('Navigate'):\n    st.session_state.current_page = 'dashboard'\n    st.rerun()",
+    "description": "Programmatically switch pages",
+    "category": "navigation",
+    "use_case": "Dynamic navigation"
+  },
+  "page_with_function": {
+    "code": "# In pages_lib/my_page.py\ndef show():\n    st.title('My Page')\n    st.write('Page content here')\n    \n    if st.button('Next'):\n        st.switch_page('next.py')  # No pages/ folder needed\n\n# In main app (app.py)\nimport streamlit as st\nfrom pages_lib import my_page\n\npages = {\n    'My Page': st.Page(my_page.show, title='My Page')\n}\n\npg = st.navigation(pages)\npg.run()",
+    "description": "Define page as a function from imported module",
+    "category": "navigation",
+    "use_case": "Modular page structure"
+  },
+  "navigation_with_state": {
+    "code": "# Initialize current page in session state\nif 'current_page' not in st.session_state:\n    st.session_state.current_page = 'home'\n\n# Define page functions\ndef home():\n    st.title('Home')\n    st.session_state.current_page = 'home'\n\ndef data():\n    st.title('Data')\n    st.session_state.current_page = 'data'\n\n# Define pages\npages = {\n    'Home': st.Page(home),\n    'Data': st.Page(data),\n}\n\npg = st.navigation(pages, position='sidebar')\npg.run()",
+    "description": "Navigation with session state tracking (no pages/ folder)",
+    "category": "navigation",
+    "use_case": "Page state management"
+  }
+}

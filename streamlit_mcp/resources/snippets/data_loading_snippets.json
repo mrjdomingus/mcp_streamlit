@@ -1,0 +1,56 @@
+{
+  "load_csv": {
+    "code": "@st.cache_data\ndef load_csv(file_path: str):\n    return pd.read_csv(file_path)\n\ndata = load_csv('data.csv')",
+    "description": "Load CSV file with caching",
+    "category": "file_loading",
+    "use_case": "CSV files"
+  },
+  "load_excel": {
+    "code": "@st.cache_data\ndef load_excel(file_path: str, sheet_name: str = 'Sheet1'):\n    return pd.read_excel(file_path, sheet_name=sheet_name)\n\ndata = load_excel('data.xlsx', 'Sales')",
+    "description": "Load Excel file with caching",
+    "category": "file_loading",
+    "use_case": "Excel files"
+  },
+  "file_uploader": {
+    "code": "uploaded_file = st.file_uploader('Upload CSV', type=['csv'])\nif uploaded_file:\n    df = pd.read_csv(uploaded_file)\n    st.dataframe(df)",
+    "description": "File uploader for CSV",
+    "category": "file_loading",
+    "use_case": "User file upload"
+  },
+  "api_call": {
+    "code": "@st.cache_data(ttl=3600)\ndef fetch_data_from_api(endpoint: str):\n    response = requests.get(f'https://api.example.com/{endpoint}')\n    response.raise_for_status()\n    return response.json()\n\ndata = fetch_data_from_api('data')",
+    "description": "API call with caching and TTL",
+    "category": "api",
+    "use_case": "REST APIs"
+  },
+  "sql_query": {
+    "code": "@st.cache_resource\ndef get_database():\n    return SQLAlchemy.create_engine('postgresql://user:pass@localhost/db')\n\n@st.cache_data(ttl=1800)\ndef query_data(_engine, query: str):\n    return pd.read_sql(query, _engine)\n\nengine = get_database()\ndata = query_data(engine, 'SELECT * FROM sales WHERE date > \\'2024-01-01\\'')",
+    "description": "SQL query with connection pooling",
+    "category": "database",
+    "use_case": "SQL databases"
+  },
+  "streamlit_connection": {
+    "code": "# In secrets.toml:\n# [connections.mydb]\n# url = \"postgresql://user:pass@localhost/db\"\n\nconn = st.connection('mydb', type='sql')\ndata = conn.query('SELECT * FROM sales')\nst.dataframe(data)",
+    "description": "Use st.connection() for databases",
+    "category": "database",
+    "use_case": "Streamlit connections"
+  },
+  "generate_sample_data": {
+    "code": "@st.cache_data\ndef generate_sample_data():\n    import numpy as np\n    return pd.DataFrame({\n        'date': pd.date_range('2024-01-01', periods=100),\n        'value': np.random.randn(100).cumsum(),\n        'category': np.random.choice(['A', 'B', 'C'], 100)\n    })\n\ndata = generate_sample_data()",
+    "description": "Generate sample data for demos",
+    "category": "sample_data",
+    "use_case": "Testing and demos"
+  },
+  "parquet_loading": {
+    "code": "@st.cache_data\ndef load_parquet(file_path: str):\n    return pd.read_parquet(file_path)\n\ndata = load_parquet('data.parquet')",
+    "description": "Load Parquet file (efficient for large data)",
+    "category": "file_loading",
+    "use_case": "Large datasets"
+  },
+  "json_api": {
+    "code": "@st.cache_data(ttl=600)\ndef fetch_json_api(url: str, params: dict = None):\n    response = requests.get(url, params=params)\n    return pd.DataFrame(response.json())\n\ndata = fetch_json_api('https://api.example.com/data', {'limit': 100})",
+    "description": "Fetch JSON API and convert to DataFrame",
+    "category": "api",
+    "use_case": "JSON APIs"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "initialize_state": {
+    "code": "if 'count' not in st.session_state:\n    st.session_state.count = 0",
+    "description": "Initialize session state variable",
+    "category": "session_state",
+    "use_case": "State initialization"
+  },
+  "counter_pattern": {
+    "code": "if 'counter' not in st.session_state:\n    st.session_state.counter = 0\n\nif st.button('Increment'):\n    st.session_state.counter += 1\n\nst.write(f'Count: {st.session_state.counter}')",
+    "description": "Counter with session state",
+    "category": "session_state",
+    "use_case": "Persistent counter"
+  },
+  "form_state": {
+    "code": "if 'form_data' not in st.session_state:\n    st.session_state.form_data = {}\n\nif 'step' not in st.session_state:\n    st.session_state.step = 1\n\nif st.session_state.step == 1:\n    name = st.text_input('Name')\n    if st.button('Next'):\n        st.session_state.form_data['name'] = name\n        st.session_state.step = 2\n        st.rerun()",
+    "description": "Multi-step form with session state",
+    "category": "session_state",
+    "use_case": "Multi-step forms"
+  },
+  "chat_history": {
+    "code": "if 'messages' not in st.session_state:\n    st.session_state.messages = []\n\nfor message in st.session_state.messages:\n    with st.chat_message(message['role']):\n        st.markdown(message['content'])\n\nif prompt := st.chat_input('Message'):\n    st.session_state.messages.append({'role': 'user', 'content': prompt})\n    # Add response\n    st.session_state.messages.append({'role': 'assistant', 'content': response})\n    st.rerun()",
+    "description": "Chat history with session state",
+    "category": "session_state",
+    "use_case": "Chat interfaces"
+  },
+  "uploaded_file_state": {
+    "code": "if 'uploaded_data' not in st.session_state:\n    st.session_state.uploaded_data = None\n\nuploaded_file = st.file_uploader('Upload CSV')\nif uploaded_file:\n    st.session_state.uploaded_data = pd.read_csv(uploaded_file)\n\nif st.session_state.uploaded_data is not None:\n    st.dataframe(st.session_state.uploaded_data)",
+    "description": "Persist uploaded file data",
+    "category": "session_state",
+    "use_case": "File uploads"
+  },
+  "widget_key_with_state": {
+    "code": "# Automatically sync widget to session state using key\nst.slider('Value', 0, 100, key='my_slider')\n\n# Access via session state\nst.write(f'Slider value: {st.session_state.my_slider}')\n\n# Programmatically set value\nif st.button('Reset'):\n    st.session_state.my_slider = 50\n    st.rerun()",
+    "description": "Widget keys auto-sync to session state",
+    "category": "session_state",
+    "use_case": "Widget state management"
+  },
+  "authentication_state": {
+    "code": "if 'logged_in' not in st.session_state:\n    st.session_state.logged_in = False\n    st.session_state.username = None\n\nif not st.session_state.logged_in:\n    username = st.text_input('Username')\n    password = st.text_input('Password', type='password')\n    if st.button('Login'):\n        if authenticate(username, password):\n            st.session_state.logged_in = True\n            st.session_state.username = username\n            st.rerun()\nelse:\n    st.write(f'Welcome, {st.session_state.username}!')\n    if st.button('Logout'):\n        st.session_state.logged_in = False\n        st.session_state.username = None\n        st.rerun()",
+    "description": "Authentication state management",
+    "category": "session_state",
+    "use_case": "User authentication"
+  }
+}

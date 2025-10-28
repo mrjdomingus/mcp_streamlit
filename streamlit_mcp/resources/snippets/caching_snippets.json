@@ -1,0 +1,74 @@
+{
+  "cache_csv_loading": {
+    "code": "@st.cache_data\ndef load_data():\n    return pd.read_csv('data.csv')",
+    "description": "Cache CSV file loading",
+    "category": "cache_data",
+    "use_case": "File loading"
+  },
+  "cache_api_with_ttl": {
+    "code": "@st.cache_data(ttl=3600)\ndef fetch_api_data():\n    response = requests.get('https://api.example.com/data')\n    return response.json()",
+    "description": "Cache API calls with 1-hour TTL",
+    "category": "cache_data",
+    "use_case": "API integration"
+  },
+  "cache_database_query": {
+    "code": "@st.cache_data(ttl=1800)\ndef query_database(_connection, query: str):\n    return pd.read_sql(query, _connection)",
+    "description": "Cache database query results with 30-min TTL",
+    "category": "cache_data",
+    "use_case": "Database queries"
+  },
+  "cache_ml_model": {
+    "code": "@st.cache_resource\ndef load_model():\n    return transformers.pipeline('sentiment-analysis')",
+    "description": "Cache ML model loading",
+    "category": "cache_resource",
+    "use_case": "ML models"
+  },
+  "cache_db_connection": {
+    "code": "@st.cache_resource\ndef get_database_connection():\n    return SQLAlchemy.create_engine('postgresql://user:pass@localhost/db')",
+    "description": "Cache database connection",
+    "category": "cache_resource",
+    "use_case": "Database connections"
+  },
+  "cache_tokenizer": {
+    "code": "@st.cache_resource\ndef load_tokenizer():\n    import tiktoken\n    return tiktoken.encoding_for_model('gpt-4')",
+    "description": "Cache tokenizer loading",
+    "category": "cache_resource",
+    "use_case": "Tokenizers"
+  },
+  "cache_with_max_entries": {
+    "code": "@st.cache_data(max_entries=1000)\ndef process_query(query: str):\n    return expensive_computation(query)",
+    "description": "Cache with memory limit (max 1000 entries)",
+    "category": "cache_data",
+    "use_case": "User queries"
+  },
+  "cache_with_custom_hash": {
+    "code": "@st.cache_data(hash_funcs={MyClass: lambda x: x.id})\ndef process_object(obj: MyClass):\n    return obj.compute()",
+    "description": "Custom hashing for unhashable objects",
+    "category": "cache_data",
+    "use_case": "Custom classes"
+  },
+  "cache_large_dataset": {
+    "code": "@st.cache_resource\ndef load_huge_data():\n    return pd.read_parquet('huge_file.parquet')",
+    "description": "Cache very large datasets (>100M rows) without serialization overhead",
+    "category": "cache_resource",
+    "use_case": "Large datasets"
+  },
+  "cache_with_custom_spinner": {
+    "code": "@st.cache_data(show_spinner=\"Loading data from API...\")\ndef fetch_data():\n    return requests.get(url).json()",
+    "description": "Cache with custom loading message",
+    "category": "cache_data",
+    "use_case": "Better UX"
+  },
+  "cache_transformation": {
+    "code": "@st.cache_data\ndef transform_data(df: pd.DataFrame):\n    df = df.dropna()\n    df = df.drop_duplicates()\n    return df.groupby('category').sum()",
+    "description": "Cache data transformations",
+    "category": "cache_data",
+    "use_case": "Data processing"
+  },
+  "combined_pattern": {
+    "code": "@st.cache_resource\ndef get_db():\n    return SQLAlchemy.create_engine('postgresql://...')\n\n@st.cache_data(ttl=3600)\ndef query_data(_db, query: str):\n    return pd.read_sql(query, _db)\n\ndb = get_db()\ndata = query_data(db, 'SELECT * FROM sales')",
+    "description": "Combine cache_resource (connection) and cache_data (query)",
+    "category": "combined",
+    "use_case": "Database apps"
+  }
+}

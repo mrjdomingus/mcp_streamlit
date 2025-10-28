@@ -1,0 +1,142 @@
+{
+  "basic_test_from_file": {
+    "description": "Basic test loading app from file",
+    "code": "import streamlit as st\nfrom streamlit.testing.v1 import AppTest\n\ndef test_app():\n    \"\"\"Test the app runs without errors.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    assert not at.exception",
+    "category": "basic",
+    "use_case": "Quick smoke test to verify app runs",
+    "framework": "pytest"
+  },
+  "basic_test_from_string": {
+    "description": "Test app from code string",
+    "code": "from streamlit.testing.v1 import AppTest\n\ndef test_simple_app():\n    \"\"\"Test app defined as string.\"\"\"\n    code = \"\"\"\nimport streamlit as st\nst.title(\"Hello World\")\n\"\"\"\n    at = AppTest.from_string(code)\n    at.run()\n    assert not at.exception\n    assert at.title[0].value == \"Hello World\"",
+    "category": "basic",
+    "use_case": "Test small code snippets or generated code",
+    "framework": "pytest"
+  },
+  "basic_test_from_function": {
+    "description": "Test app from function",
+    "code": "from streamlit.testing.v1 import AppTest\nimport streamlit as st\n\ndef my_app():\n    st.title(\"My App\")\n    name = st.text_input(\"Name\")\n    if name:\n        st.write(f\"Hello, {name}!\")\n\ndef test_my_app():\n    \"\"\"Test app defined as function.\"\"\"\n    at = AppTest.from_function(my_app)\n    at.run()\n    assert not at.exception\n    assert at.title[0].value == \"My App\"",
+    "category": "basic",
+    "use_case": "Test apps organized as functions",
+    "framework": "pytest"
+  },
+  "test_button_click": {
+    "description": "Test button interaction",
+    "code": "from streamlit.testing.v1 import AppTest\n\ndef test_button_interaction():\n    \"\"\"Test button click and state change.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    \n    # Initial state\n    assert \"Button clicked\" not in at.markdown[0].value\n    \n    # Click button\n    at.button[0].click().run()\n    \n    # Verify state changed\n    assert \"Button clicked\" in at.markdown[0].value",
+    "category": "widgets",
+    "use_case": "Test button click events and side effects",
+    "framework": "pytest"
+  },
+  "test_text_input": {
+    "description": "Test text input widget",
+    "code": "from streamlit.testing.v1 import AppTest\n\ndef test_text_input_widget():\n    \"\"\"Test text input and response.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    \n    # Enter text\n    at.text_input[0].input(\"Alice\").run()\n    \n    # Verify output\n    assert \"Hello, Alice!\" in at.markdown[0].value\n    \n    # Change text\n    at.text_input[0].input(\"Bob\").run()\n    assert \"Hello, Bob!\" in at.markdown[0].value",
+    "category": "widgets",
+    "use_case": "Test text input and dynamic content",
+    "framework": "pytest"
+  },
+  "test_checkbox": {
+    "description": "Test checkbox widget",
+    "code": "from streamlit.testing.v1 import AppTest\n\ndef test_checkbox_toggle():\n    \"\"\"Test checkbox state changes.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    \n    # Check initial state\n    assert not at.checkbox[0].value\n    \n    # Toggle checkbox\n    at.checkbox[0].check().run()\n    assert at.checkbox[0].value\n    \n    # Uncheck\n    at.checkbox[0].uncheck().run()\n    assert not at.checkbox[0].value",
+    "category": "widgets",
+    "use_case": "Test checkbox interactions and conditional logic",
+    "framework": "pytest"
+  },
+  "test_selectbox": {
+    "description": "Test selectbox widget",
+    "code": "from streamlit.testing.v1 import AppTest\n\ndef test_selectbox_selection():\n    \"\"\"Test selectbox option selection.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    \n    # Select by value\n    at.selectbox[0].select(\"Option 2\").run()\n    assert at.selectbox[0].value == \"Option 2\"\n    \n    # Select by index\n    at.selectbox[0].select_index(0).run()\n    assert at.selectbox[0].value == \"Option 1\"",
+    "category": "widgets",
+    "use_case": "Test dropdown selection logic",
+    "framework": "pytest"
+  },
+  "test_slider": {
+    "description": "Test slider widget",
+    "code": "from streamlit.testing.v1 import AppTest\n\ndef test_slider_values():\n    \"\"\"Test slider value changes.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    \n    # Set slider value\n    at.slider[0].set_value(50).run()\n    assert at.slider[0].value == 50\n    \n    # Verify computed output\n    assert \"Value: 50\" in at.text[0].value",
+    "category": "widgets",
+    "use_case": "Test numeric input and calculations",
+    "framework": "pytest"
+  },
+  "test_file_uploader": {
+    "description": "Test file uploader widget",
+    "code": "from streamlit.testing.v1 import AppTest\nimport io\n\ndef test_file_upload():\n    \"\"\"Test file upload functionality.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    \n    # Create mock CSV file\n    csv_content = b\"name,age\\nAlice,30\\nBob,25\"\n    file = io.BytesIO(csv_content)\n    file.name = \"test.csv\"\n    \n    # Upload file\n    at.file_uploader[0].upload(file).run()\n    \n    # Verify processing\n    assert \"2 rows\" in at.text[0].value",
+    "category": "widgets",
+    "use_case": "Test file upload and processing",
+    "framework": "pytest"
+  },
+  "test_session_state": {
+    "description": "Test session state manipulation",
+    "code": "from streamlit.testing.v1 import AppTest\n\ndef test_session_state_management():\n    \"\"\"Test session state read and write.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    \n    # Set session state before running\n    at.session_state[\"counter\"] = 5\n    at.run()\n    \n    # Verify state used in app\n    assert at.markdown[0].value == \"Count: 5\"\n    \n    # Click increment button\n    at.button[0].click().run()\n    \n    # Verify state updated\n    assert at.session_state[\"counter\"] == 6",
+    "category": "session_state",
+    "use_case": "Test state persistence and updates",
+    "framework": "pytest"
+  },
+  "test_secrets": {
+    "description": "Test secrets configuration",
+    "code": "from streamlit.testing.v1 import AppTest\n\ndef test_with_secrets():\n    \"\"\"Test app with secrets.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    \n    # Set secrets before running\n    at.secrets[\"api_key\"] = \"test-key-123\"\n    at.secrets[\"db_password\"] = \"secret-pass\"\n    at.run()\n    \n    # Verify app uses secrets correctly\n    assert not at.exception\n    assert \"Connected\" in at.success[0].value",
+    "category": "session_state",
+    "use_case": "Test apps requiring secrets",
+    "framework": "pytest"
+  },
+  "test_form_submission": {
+    "description": "Test form submission",
+    "code": "from streamlit.testing.v1 import AppTest\n\ndef test_form_complete_flow():\n    \"\"\"Test form input and submission.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    \n    # Fill form fields\n    at.text_input[0].input(\"John Doe\").run()\n    at.number_input[0].set_value(30).run()\n    at.selectbox[0].select(\"Engineer\").run()\n    \n    # Submit form\n    at.button[0].click().run()\n    \n    # Verify submission processed\n    assert \"Form submitted\" in at.success[0].value\n    assert \"John Doe\" in at.markdown[0].value",
+    "category": "forms",
+    "use_case": "Test multi-field form workflows",
+    "framework": "pytest"
+  },
+  "test_with_fixture": {
+    "description": "Use pytest fixture for test setup",
+    "code": "import pytest\nfrom streamlit.testing.v1 import AppTest\n\n@pytest.fixture\ndef app_test():\n    \"\"\"Fixture to create AppTest instance.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    return at\n\ndef test_initial_state(app_test):\n    \"\"\"Test initial app state.\"\"\"\n    assert not app_test.exception\n    assert app_test.title[0].value == \"My App\"\n\ndef test_user_interaction(app_test):\n    \"\"\"Test user interaction.\"\"\"\n    app_test.button[0].click().run()\n    assert \"Clicked\" in app_test.text[0].value",
+    "category": "fixtures",
+    "use_case": "Reuse setup code across multiple tests",
+    "framework": "pytest"
+  },
+  "test_parametrized": {
+    "description": "Parametrized test for multiple inputs",
+    "code": "import pytest\nfrom streamlit.testing.v1 import AppTest\n\n@pytest.mark.parametrize(\"input_value,expected\", [\n    (\"Alice\", \"Hello, Alice!\"),\n    (\"Bob\", \"Hello, Bob!\"),\n    (\"\", \"Please enter a name\"),\n])\ndef test_greeting_variations(input_value, expected):\n    \"\"\"Test app with different inputs.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    \n    if input_value:\n        at.text_input[0].input(input_value).run()\n    \n    assert expected in at.markdown[0].value",
+    "category": "parametrized",
+    "use_case": "Test multiple scenarios efficiently",
+    "framework": "pytest"
+  },
+  "test_error_handling": {
+    "description": "Test error conditions and exceptions",
+    "code": "from streamlit.testing.v1 import AppTest\nimport pytest\n\ndef test_invalid_input_handling():\n    \"\"\"Test app handles invalid input gracefully.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    \n    # Enter invalid input\n    at.number_input[0].set_value(-1).run()\n    \n    # Verify error shown\n    assert at.error\n    assert \"must be positive\" in at.error[0].value\n\ndef test_app_with_expected_error():\n    \"\"\"Test app that should raise exception.\"\"\"\n    code = \"\"\"\nimport streamlit as st\nraise ValueError(\"Expected error\")\n\"\"\"\n    at = AppTest.from_string(code)\n    \n    with pytest.raises(Exception):\n        at.run()",
+    "category": "error_handling",
+    "use_case": "Test error messages and exception handling",
+    "framework": "pytest"
+  },
+  "test_multipage_navigation": {
+    "description": "Test multi-page app navigation",
+    "code": "from streamlit.testing.v1 import AppTest\n\ndef test_page_navigation():\n    \"\"\"Test navigation between pages.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    \n    # Verify initial page\n    assert \"Home Page\" in at.title[0].value\n    \n    # Navigate to different page\n    # Note: Use button/selectbox that triggers navigation\n    at.button[1].click().run()\n    \n    # Verify page changed\n    assert \"Analysis Page\" in at.title[0].value",
+    "category": "multipage",
+    "use_case": "Test page routing and state across pages",
+    "framework": "pytest"
+  },
+  "test_data_visualization": {
+    "description": "Test chart rendering",
+    "code": "from streamlit.testing.v1 import AppTest\nimport pandas as pd\n\ndef test_chart_creation():\n    \"\"\"Test that charts are created correctly.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    \n    # Verify chart exists\n    assert len(at.line_chart) > 0\n    \n    # Verify chart data\n    chart_data = at.line_chart[0].data\n    assert isinstance(chart_data, pd.DataFrame)\n    assert len(chart_data) > 0",
+    "category": "visualization",
+    "use_case": "Test data visualization components",
+    "framework": "pytest"
+  },
+  "test_with_mock": {
+    "description": "Test with mocked external dependencies",
+    "code": "from streamlit.testing.v1 import AppTest\nfrom unittest.mock import patch, MagicMock\n\n@patch('app.fetch_data_from_api')\ndef test_with_mocked_api(mock_fetch):\n    \"\"\"Test app with mocked API call.\"\"\"\n    # Setup mock\n    mock_fetch.return_value = pd.DataFrame({\n        'name': ['Alice', 'Bob'],\n        'value': [10, 20]\n    })\n    \n    at = AppTest.from_file(\"app.py\")\n    at.run()\n    \n    # Verify mock was called\n    mock_fetch.assert_called_once()\n    \n    # Verify app processed mocked data\n    assert \"Alice\" in at.dataframe[0].value.to_string()\n    assert \"Bob\" in at.dataframe[0].value.to_string()",
+    "category": "mocking",
+    "use_case": "Test apps with external dependencies",
+    "framework": "pytest"
+  },
+  "test_cached_function": {
+    "description": "Test cached data loading",
+    "code": "from streamlit.testing.v1 import AppTest\nimport streamlit as st\n\ndef test_caching_behavior():\n    \"\"\"Test that caching works correctly.\"\"\"\n    at = AppTest.from_file(\"app.py\")\n    \n    # First run - data loaded\n    at.run()\n    assert not at.exception\n    initial_data = at.dataframe[0].value\n    \n    # Second run - should use cache\n    at.run()\n    assert not at.exception\n    cached_data = at.dataframe[0].value\n    \n    # Verify data is identical (from cache)\n    assert initial_data.equals(cached_data)",
+    "category": "caching",
+    "use_case": "Test st.cache_data and st.cache_resource",
+    "framework": "pytest"
+  },
+  "test_suite_template": {
+    "description": "Complete test suite template",
+    "code": "\"\"\"Test suite for Streamlit app.\"\"\"\nimport pytest\nfrom streamlit.testing.v1 import AppTest\nfrom pathlib import Path\n\n# Path to app\nAPP_PATH = Path(__file__).parent / \"app.py\"\n\n@pytest.fixture\ndef app():\n    \"\"\"Create AppTest instance.\"\"\"\n    at = AppTest.from_file(str(APP_PATH))\n    at.run()\n    return at\n\nclass TestBasicFunctionality:\n    \"\"\"Test basic app functionality.\"\"\"\n    \n    def test_app_loads(self, app):\n        \"\"\"Test app loads without errors.\"\"\"\n        assert not app.exception\n    \n    def test_title_present(self, app):\n        \"\"\"Test title is displayed.\"\"\"\n        assert len(app.title) > 0\n\nclass TestUserInteractions:\n    \"\"\"Test user interactions.\"\"\"\n    \n    def test_button_click(self, app):\n        \"\"\"Test button functionality.\"\"\"\n        app.button[0].click().run()\n        assert not app.exception\n    \n    def test_input_processing(self, app):\n        \"\"\"Test input processing.\"\"\"\n        app.text_input[0].input(\"test\").run()\n        assert \"test\" in app.markdown[0].value\n\nif __name__ == \"__main__\":\n    pytest.main([__file__, \"-v\"])",
+    "category": "template",
+    "use_case": "Starting point for comprehensive test suite",
+    "framework": "pytest"
+  }
+}
