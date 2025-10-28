@@ -25,17 +25,22 @@ More comprehensive dashboard (already exists in this directory)
 ### Configuration
 
 #### `claude_code_config.json`
-Example Claude Code MCP configuration file.
+Example Claude Code MCP configuration file (configured for UV).
 
 **To use:**
 1. Copy contents to your Claude Code config file
-2. Restart Claude Code
-3. Verify connection with: "List MCP servers"
+2. If not using UV, change `"command": "uv"` to `"command": "python"` and remove `"run"` from args
+3. Restart Claude Code
+4. Verify connection with: "List MCP servers"
 
 **Config file locations:**
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Linux: `~/.config/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+**UV vs Python:**
+- **With UV** (recommended): `"command": "uv", "args": ["run", "python", "-m", "streamlit_mcp.server"]`
+- **With Python**: `"command": "python", "args": ["-m", "streamlit_mcp.server"]`
 
 ## Usage Examples
 

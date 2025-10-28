@@ -3,10 +3,11 @@
 ## ✅ Completed Tasks
 
 ### Critical Tasks
-- [x] Install all dependencies (`pip install -e ".[dev]"`)
+- [x] Install all dependencies (`uv sync --all-extras` or `pip install -e ".[dev]"`)
 - [x] Verify server imports successfully
 - [x] Fix all test warnings (return → assert pattern)
 - [x] Run and pass all tests (17/17 passing)
+- [x] Migrate to UV package management
 
 ### Documentation
 - [x] Add LICENSE file (MIT)
@@ -95,10 +96,32 @@ mcp_streamlit/
 
 ### Minimum Requirements to Start
 1. Python 3.10+
-2. Dependencies installed: `pip install -e ".[dev]"`
-3. Claude Code configured (or other MCP client)
+2. UV installed (recommended) or pip
+3. Dependencies installed: `uv sync --all-extras` or `pip install -e ".[dev]"`
+4. Claude Code configured (or other MCP client)
 
 ### Quick Start
+
+**With UV (Recommended):**
+```bash
+# 1. Install UV
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 2. Install dependencies
+uv sync --all-extras
+
+# 3. Verify
+uv run python -c "from streamlit_mcp.server import run; print('✅ Ready!')"
+
+# 4. Configure Claude Code (see QUICKSTART.md)
+
+# 5. Restart Claude Code
+
+# 6. Try it
+# Ask Claude: "Use streamlit MCP to create a dashboard"
+```
+
+**With pip (Traditional):**
 ```bash
 # 1. Install
 pip install -e ".[dev]"
@@ -117,6 +140,20 @@ python -c "from streamlit_mcp.server import run; print('✅ Ready!')"
 ### Configuration for Claude Code
 Location: `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 
+**With UV (Recommended):**
+```json
+{
+  "mcpServers": {
+    "streamlit": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "streamlit_mcp.server"],
+      "env": {}
+    }
+  }
+}
+```
+
+**With Python:**
 ```json
 {
   "mcpServers": {
@@ -165,6 +202,31 @@ Location: `~/Library/Application Support/Claude/claude_desktop_config.json` (mac
 
 Run these commands to verify everything:
 
+**With UV:**
+```bash
+# 1. Check UV installation
+uv --version
+
+# 2. Check Python version
+python --version  # Should be 3.10+
+
+# 3. Import check
+uv run python -c "import streamlit_mcp; print('✅ Package OK')"
+
+# 4. Server check
+uv run python -c "from streamlit_mcp.server import run; print('✅ Server OK')"
+
+# 5. Run tests
+uv run pytest tests/ -v  # Should show 17 passed
+
+# 6. Check formatting
+uv run black streamlit_mcp/ tests/ --check
+
+# 7. Check linting
+uv run ruff check streamlit_mcp/ tests/
+```
+
+**With pip:**
 ```bash
 # 1. Check Python version
 python --version  # Should be 3.10+

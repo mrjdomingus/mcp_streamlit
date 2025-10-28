@@ -1,13 +1,16 @@
 {
   "mcpServers": {
     "streamlit": {
-      "command": "python",
+      "command": "uv",
       "args": [
+        "run",
+        "python",
         "-m",
         "streamlit_mcp.server"
       ],
       "env": {},
-      "disabled": false
+      "disabled": false,
+      "_comment": "For non-UV installations, change 'command' to 'python' and remove 'run' from args"
     }
   }
 }

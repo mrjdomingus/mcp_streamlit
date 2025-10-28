@@ -10,7 +10,29 @@ Get up and running with the Streamlit MCP Server in under 5 minutes!
 
 ## Installation
 
-### 1. Install the Package
+### 1. Install UV (Recommended)
+
+UV is a modern, fast Python package manager. Install it first:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### 2. Install the Package
+
+**Option A: Using UV (Fast & Recommended)**
+
+```bash
+cd mcp_streamlit
+
+# Automated setup (installs UV if needed, runs tests)
+./setup.sh
+
+# Or manual installation
+uv sync --all-extras
+```
+
+**Option B: Using pip (Traditional)**
 
 ```bash
 cd mcp_streamlit
@@ -21,8 +43,18 @@ This will install:
 - The MCP server and all dependencies
 - Development tools (pytest, black, ruff, mypy)
 
-### 2. Verify Installation
+### 3. Verify Installation
 
+**With UV:**
+```bash
+# Test that the server can be imported
+uv run python -c "from streamlit_mcp.server import run; print('✅ Server ready!')"
+
+# Run tests to ensure everything works
+uv run pytest tests/ -v
+```
+
+**With pip:**
 ```bash
 # Test that the server can be imported
 python -c "from streamlit_mcp.server import run; print('✅ Server ready!')"
@@ -33,11 +65,39 @@ pytest tests/ -v
 
 You should see all tests passing.
 
+### Why UV?
+
+- ⚡ **10-100x faster** than pip
+- 🔒 **Reliable** lockfile-based resolution
+- 💾 **Efficient** global caching
+- 🎯 **Better** dependency resolution
+
 ## Configuration
 
 ### For Claude Code
 
 1. Add to your Claude Code MCP settings file (usually `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+
+**Using UV (Recommended):**
+
+```json
+{
+  "mcpServers": {
+    "streamlit": {
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-m",
+        "streamlit_mcp.server"
+      ],
+      "env": {}
+    }
+  }
+}
+```
+
+**Using Python directly:**
 
 ```json
 {
@@ -64,6 +124,12 @@ You should see all tests passing.
 
 The server uses stdio for communication. Configure your client to run:
 
+**With UV:**
+```bash
+uv run python -m streamlit_mcp.server
+```
+
+**With Python:**
 ```bash
 python -m streamlit_mcp.server
 ```
@@ -220,8 +286,12 @@ streamlit run app.py
 ### Server won't start
 
 - Check Python version: `python --version` (need 3.10+)
-- Verify dependencies: `pip list | grep mcp`
-- Try reinstalling: `pip install -e ".[dev]" --force-reinstall`
+- **With UV**:
+  - Verify dependencies: `uv pip list | grep mcp`
+  - Try reinstalling: `uv sync --all-extras`
+- **With pip**:
+  - Verify dependencies: `pip list | grep mcp`
+  - Try reinstalling: `pip install -e ".[dev]" --force-reinstall`
 
 ### Claude Code doesn't see the server
 

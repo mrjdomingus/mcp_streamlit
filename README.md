@@ -69,25 +69,61 @@ Comprehensive code validation:
 
 ### Install from Source
 
+**Using UV (Recommended - Fast & Modern):**
+
+```bash
+# Clone the repository
+cd mcp_streamlit
+
+# Install UV if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install the package with all dependencies
+uv sync --all-extras
+
+# Or use the automated setup script
+./setup.sh
+```
+
+**Using pip (Traditional):**
+
 ```bash
 # Clone the repository
 cd mcp_streamlit
 
 # Install the package
-pip install -e .
+pip install -e ".[dev]"
 ```
 
-### Install Dependencies
+### Why UV?
 
-```bash
-pip install mcp streamlit pandas numpy plotly altair matplotlib
-```
+UV is a modern Python package manager that's:
+- ⚡ **10-100x faster** than pip
+- 🔒 **More reliable** with lockfile-based resolution
+- 💾 **Disk efficient** with global caching
+- 🎯 **Better at resolving** complex dependencies
+
+Learn more: [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv)
 
 ## Configuration
 
 ### For Claude Code
 
-Add to your Claude Code MCP settings:
+**Using UV (Recommended):**
+
+```json
+{
+  "mcpServers": {
+    "streamlit": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "streamlit_mcp.server"],
+      "env": {}
+    }
+  }
+}
+```
+
+**Using Python directly (if not using UV):**
 
 ```json
 {
@@ -103,8 +139,14 @@ Add to your Claude Code MCP settings:
 
 ### For Other MCP Clients
 
-The server uses stdio for communication. Configure your client to run:
+The server uses stdio for communication.
 
+**With UV:**
+```bash
+uv run python -m streamlit_mcp.server
+```
+
+**With Python directly:**
 ```bash
 python -m streamlit_mcp.server
 ```
@@ -504,7 +546,16 @@ python tests/test_drawing_tool.py
 
 **Problem**: `ModuleNotFoundError: No module named 'mcp'`
 
-**Solution**:
+**Solution (with UV):**
+```bash
+# Install dependencies
+uv sync --all-extras
+
+# Verify installation
+uv run python -c "from streamlit_mcp.server import run; print('✅ Server ready!')"
+```
+
+**Solution (with pip):**
 ```bash
 # Install dependencies
 pip install -e ".[dev]"
@@ -517,7 +568,8 @@ python -c "from streamlit_mcp.server import run; print('✅ Server ready!')"
 
 **Solution**:
 - Check Python version: `python --version` (need 3.10+)
-- Try reinstalling: `pip install -e ".[dev]" --force-reinstall`
+- With UV: `uv sync --all-extras`
+- With pip: Try reinstalling: `pip install -e ".[dev]" --force-reinstall`
 - Check for conflicting packages in your environment
 
 ### Claude Code Integration Issues
@@ -532,7 +584,22 @@ python -c "from streamlit_mcp.server import run; print('✅ Server ready!')"
 
 2. Verify JSON syntax (use a JSON validator)
 
-3. Ensure the Python path in config is correct:
+3. Ensure the command path in config is correct:
+
+   **With UV:**
+   ```json
+   {
+     "mcpServers": {
+       "streamlit": {
+         "command": "uv",
+         "args": ["run", "python", "-m", "streamlit_mcp.server"],
+         "env": {}
+       }
+     }
+   }
+   ```
+
+   **With Python:**
    ```json
    {
      "mcpServers": {
@@ -568,8 +635,8 @@ python -c "from streamlit_mcp.server import run; print('✅ Server ready!')"
 **Problem**: Streamlit raises deprecation warnings
 
 **Solution**:
-- Check your Streamlit version: `pip show streamlit`
-- Update if needed: `pip install --upgrade streamlit`
+- Check your Streamlit version: `uv run pip show streamlit` or `pip show streamlit`
+- Update if needed (UV): `uv sync --upgrade` or (pip): `pip install --upgrade streamlit`
 - Some features require Streamlit ≥1.40.0
 
 **Problem**: Code runs but doesn't match expectations
@@ -610,7 +677,7 @@ python -c "from streamlit_mcp.server import run; print('✅ Server ready!')"
 **Solution**:
 - Ensure you're in the project directory
 - Check that `streamlit_mcp/resources/` and `streamlit_mcp/templates/` exist
-- Reinstall the package: `pip install -e .`
+- Reinstall the package: `uv sync` or `pip install -e .`
 
 **Error**: Test failures
 
@@ -631,7 +698,8 @@ python -c "import streamlit_mcp"
 **Solution**:
 - Check file permissions
 - On Unix/Mac: `chmod +x script.sh`
-- Try using `pip install --user -e ".[dev]"`
+- With UV: Try `uv sync --user` (if supported)
+- With pip: Try `pip install --user -e ".[dev]"`
 
 ### Performance Issues
 
@@ -667,6 +735,28 @@ If problems persist:
 
 Run this diagnostic script:
 
+**With UV:**
+```bash
+# Check UV installation
+uv --version
+
+# Check Python version
+python --version
+
+# Check package installation
+uv run python -c "import streamlit_mcp; print('✅ Package imported')"
+
+# Check MCP installation
+uv run python -c "import mcp; print('✅ MCP installed')"
+
+# Run server import test
+uv run python -c "from streamlit_mcp.server import run; print('✅ Server can run')"
+
+# Run basic tests
+uv run pytest tests/test_server.py::test_imports -v
+```
+
+**With pip:**
 ```bash
 # Check Python version
 python --version
