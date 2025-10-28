@@ -7,7 +7,6 @@ This module provides tools for controlling app execution:
 - Form submission
 """
 
-from typing import Any, Dict, List, Optional
 
 from ...utils.codegen import format_kwargs
 
@@ -27,7 +26,7 @@ def add_fragment(run_every: float | None = None) -> str:
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'''# Fragment decorator for partial reruns
+        return f"""# Fragment decorator for partial reruns
 @st.fragment({kwargs_str})
 def my_fragment():
     # This function reruns independently
@@ -35,8 +34,8 @@ def my_fragment():
     if st.button("Rerun Fragment"):
         st.rerun(scope="fragment")
 
-my_fragment()'''
-    return '''# Fragment decorator for partial reruns
+my_fragment()"""
+    return """# Fragment decorator for partial reruns
 @st.fragment
 def my_fragment():
     # This function reruns independently
@@ -44,7 +43,7 @@ def my_fragment():
     if st.button("Rerun Fragment"):
         st.rerun(scope="fragment")
 
-my_fragment()'''
+my_fragment()"""
 
 
 def add_rerun(scope: str = "app") -> str:
@@ -57,11 +56,11 @@ def add_rerun(scope: str = "app") -> str:
         str: Generated Streamlit code
     """
     if scope == "fragment":
-        return '''# Rerun only the current fragment
-st.rerun(scope="fragment")'''
+        return """# Rerun only the current fragment
+st.rerun(scope="fragment")"""
     else:
-        return '''# Rerun the entire app
-st.rerun()'''
+        return """# Rerun the entire app
+st.rerun()"""
 
 
 def add_stop() -> str:
@@ -70,15 +69,19 @@ def add_stop() -> str:
     Returns:
         str: Generated Streamlit code
     """
-    return '''# Stop execution here
+    return """# Stop execution here
 # Nothing below this will run
-st.stop()'''
+st.stop()"""
 
 
-def add_form_submit_button(label: str = "Submit", help: str | None = None,
-                           disabled: bool = False, type: str = "secondary",
-                           use_container_width: bool = False,
-                           on_click: str | None = None) -> str:
+def add_form_submit_button(
+    label: str = "Submit",
+    help: str | None = None,
+    disabled: bool = False,
+    type: str = "secondary",
+    use_container_width: bool = False,
+    on_click: str | None = None,
+) -> str:
     """Generate code for st.form_submit_button() - form submission button.
 
     Args:
@@ -106,14 +109,14 @@ def add_form_submit_button(label: str = "Submit", help: str | None = None,
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'''# Form submit button (must be inside st.form)
+        return f"""# Form submit button (must be inside st.form)
 submitted = st.form_submit_button("{label}", {kwargs_str})
 if submitted:
-    st.write("Form submitted!")'''
-    return f'''# Form submit button (must be inside st.form)
+    st.write("Form submitted!")"""
+    return f"""# Form submit button (must be inside st.form)
 submitted = st.form_submit_button("{label}")
 if submitted:
-    st.write("Form submitted!")'''
+    st.write("Form submitted!")"""
 
 
 def control_execution_flow(pattern: str = "conditional_stop") -> str:
@@ -126,16 +129,16 @@ def control_execution_flow(pattern: str = "conditional_stop") -> str:
         str: Generated Streamlit code with pattern
     """
     if pattern == "conditional_stop":
-        return '''# Conditional stop - halt execution based on condition
+        return """# Conditional stop - halt execution based on condition
 if not st.session_state.get("is_authenticated", False):
     st.error("Please log in to continue")
     st.stop()
 
 # Continue with authenticated content
-st.write("Welcome! You are logged in.")'''
+st.write("Welcome! You are logged in.")"""
 
     elif pattern == "early_return":
-        return '''# Early return pattern - stop if data not ready
+        return """# Early return pattern - stop if data not ready
 uploaded_file = st.file_uploader("Upload CSV")
 if not uploaded_file:
     st.info("Please upload a file to continue")
@@ -144,10 +147,10 @@ if not uploaded_file:
 # Process file
 import pandas as pd
 data = pd.read_csv(uploaded_file)
-st.dataframe(data)'''
+st.dataframe(data)"""
 
     elif pattern == "progressive_render":
-        return '''# Progressive rendering with fragments
+        return """# Progressive rendering with fragments
 @st.fragment
 def render_section_1():
     st.header("Section 1")
@@ -165,10 +168,10 @@ render_section_1()
 render_live_data()
 
 st.header("Section 2")
-st.write("This doesn't rerun when fragments update")'''
+st.write("This doesn't rerun when fragments update")"""
 
     elif pattern == "form_flow":
-        return '''# Multi-step form flow
+        return """# Multi-step form flow
 if "step" not in st.session_state:
     st.session_state.step = 1
 
@@ -203,12 +206,12 @@ else:
     st.success("Form completed!")
     st.write(f"Name: {st.session_state.name}")
     st.write(f"Email: {st.session_state.email}")
-    st.write(f"Preference: {st.session_state.preference}")'''
+    st.write(f"Preference: {st.session_state.preference}")"""
 
     else:
-        return '''# Custom execution flow
+        return """# Custom execution flow
 # Your custom logic here
-pass'''
+pass"""
 
 
 # MCP tool definitions
@@ -221,10 +224,10 @@ TOOLS = [
             "properties": {
                 "run_every": {
                     "type": "number",
-                    "description": "Auto-rerun interval in seconds (e.g., 5 for updates every 5 seconds)"
+                    "description": "Auto-rerun interval in seconds (e.g., 5 for updates every 5 seconds)",
                 }
-            }
-        }
+            },
+        },
     },
     {
         "name": "add_rerun",
@@ -236,18 +239,15 @@ TOOLS = [
                     "type": "string",
                     "description": "Rerun scope - 'app' for full rerun, 'fragment' for current fragment only",
                     "enum": ["app", "fragment"],
-                    "default": "app"
+                    "default": "app",
                 }
-            }
-        }
+            },
+        },
     },
     {
         "name": "add_stop",
         "description": "Add a stop command (st.stop). Halts execution immediately. Use for conditional rendering, authentication checks, early returns.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {}
-        }
+        "inputSchema": {"type": "object", "properties": {}},
     },
     {
         "name": "add_form_submit_button",
@@ -255,37 +255,30 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "label": {
-                    "type": "string",
-                    "description": "Button text",
-                    "default": "Submit"
-                },
-                "help": {
-                    "type": "string",
-                    "description": "Tooltip text shown on hover"
-                },
+                "label": {"type": "string", "description": "Button text", "default": "Submit"},
+                "help": {"type": "string", "description": "Tooltip text shown on hover"},
                 "disabled": {
                     "type": "boolean",
                     "description": "Whether button is disabled",
-                    "default": False
+                    "default": False,
                 },
                 "type": {
                     "type": "string",
                     "description": "Button visual style",
                     "enum": ["primary", "secondary"],
-                    "default": "secondary"
+                    "default": "secondary",
                 },
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Whether to expand button to container width",
-                    "default": False
+                    "default": False,
                 },
                 "on_click": {
                     "type": "string",
-                    "description": "Callback function name to call when clicked"
-                }
-            }
-        }
+                    "description": "Callback function name to call when clicked",
+                },
+            },
+        },
     },
     {
         "name": "control_execution_flow",
@@ -297,9 +290,9 @@ TOOLS = [
                     "type": "string",
                     "description": "Execution pattern to generate",
                     "enum": ["conditional_stop", "early_return", "progressive_render", "form_flow"],
-                    "default": "conditional_stop"
+                    "default": "conditional_stop",
                 }
-            }
-        }
-    }
+            },
+        },
+    },
 ]

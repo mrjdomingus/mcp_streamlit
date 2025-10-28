@@ -17,10 +17,7 @@ from pages_lib import home, data_analysis, visualizations, settings
 # ============================================================================
 
 st.set_page_config(
-    page_title="Multi-Page App",
-    page_icon="🏠",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_title="Multi-Page App", page_icon="🏠", layout="wide", initial_sidebar_state="expanded"
 )
 
 # ============================================================================
@@ -32,11 +29,13 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
     st.session_state.username = None
 
+
 def login(username: str, password: str) -> bool:
     """Simple auth - replace with real authentication."""
     # For demo: any username/password works
     # In production, use st.login() or your own auth system
     return username and password
+
 
 def logout():
     """Clear authentication state."""
@@ -44,9 +43,11 @@ def logout():
     st.session_state.username = None
     st.rerun()
 
+
 # ============================================================================
 # LOGIN PAGE (shown when not authenticated)
 # ============================================================================
+
 
 def show_login():
     st.title("🔐 Login")
@@ -66,6 +67,7 @@ def show_login():
             else:
                 st.error("Invalid credentials")
 
+
 # ============================================================================
 # NAVIGATION SETUP
 # ============================================================================
@@ -78,16 +80,12 @@ else:
 
     # Define pages using st.Page() with functions from page modules
     pages = {
-        "Home": [
-            st.Page(home.show, title="Welcome", icon="🏠", default=True)
-        ],
+        "Home": [st.Page(home.show, title="Welcome", icon="🏠", default=True)],
         "Data": [
             st.Page(data_analysis.show, title="Data Analysis", icon="📊"),
-            st.Page(visualizations.show, title="Visualizations", icon="📈")
+            st.Page(visualizations.show, title="Visualizations", icon="📈"),
         ],
-        "Settings": [
-            st.Page(settings.show, title="Preferences", icon="⚙️")
-        ]
+        "Settings": [st.Page(settings.show, title="Preferences", icon="⚙️")],
     }
 
     # Create navigation

@@ -2,14 +2,17 @@
 
 import streamlit as st
 
+
 def show():
     """Display the settings page."""
     st.title("⚙️ Settings")
 
-    st.markdown("""
+    st.markdown(
+        """
     Configure your preferences. Settings are stored in session state
     and persist across page navigation.
-    """)
+    """
+    )
 
     # ========================================================================
     # INITIALIZE SETTINGS IN SESSION STATE
@@ -22,7 +25,7 @@ def show():
             "rows_per_page": 50,
             "show_advanced": False,
             "auto_refresh": False,
-            "notifications": True
+            "notifications": True,
         }
 
     # ========================================================================
@@ -35,14 +38,13 @@ def show():
     theme = st.selectbox(
         "Theme",
         ["Light", "Dark", "Auto"],
-        index=["Light", "Dark", "Auto"].index(st.session_state.settings["theme"])
+        index=["Light", "Dark", "Auto"].index(st.session_state.settings["theme"]),
     )
     st.session_state.settings["theme"] = theme
 
     # Chart color
     chart_color = st.color_picker(
-        "Default Chart Color",
-        value=st.session_state.settings["chart_color"]
+        "Default Chart Color", value=st.session_state.settings["chart_color"]
     )
     st.session_state.settings["chart_color"] = chart_color
 
@@ -52,7 +54,7 @@ def show():
         min_value=10,
         max_value=200,
         value=st.session_state.settings["rows_per_page"],
-        step=10
+        step=10,
     )
     st.session_state.settings["rows_per_page"] = rows_per_page
 
@@ -65,20 +67,17 @@ def show():
     st.subheader("Advanced Options")
 
     show_advanced = st.checkbox(
-        "Show advanced features",
-        value=st.session_state.settings["show_advanced"]
+        "Show advanced features", value=st.session_state.settings["show_advanced"]
     )
     st.session_state.settings["show_advanced"] = show_advanced
 
     auto_refresh = st.checkbox(
-        "Auto-refresh data (every 5 minutes)",
-        value=st.session_state.settings["auto_refresh"]
+        "Auto-refresh data (every 5 minutes)", value=st.session_state.settings["auto_refresh"]
     )
     st.session_state.settings["auto_refresh"] = auto_refresh
 
     notifications = st.checkbox(
-        "Enable notifications",
-        value=st.session_state.settings["notifications"]
+        "Enable notifications", value=st.session_state.settings["notifications"]
     )
     st.session_state.settings["notifications"] = notifications
 
@@ -93,17 +92,13 @@ def show():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.text_input(
-            "Username",
-            value=st.session_state.get("username", "Guest"),
-            disabled=True
-        )
+        st.text_input("Username", value=st.session_state.get("username", "Guest"), disabled=True)
 
     with col2:
         st.text_input(
             "Login Status",
             value="Logged In" if st.session_state.get("logged_in") else "Guest",
-            disabled=True
+            disabled=True,
         )
 
     st.divider()
@@ -128,7 +123,7 @@ def show():
                 "rows_per_page": 50,
                 "show_advanced": False,
                 "auto_refresh": False,
-                "notifications": True
+                "notifications": True,
             }
             st.success("✅ Settings reset to defaults!")
             st.rerun()
@@ -165,7 +160,8 @@ def show():
 
     st.divider()
 
-    st.markdown("""
+    st.markdown(
+        """
     ### 💡 Tips
 
     **Settings Persistence:**
@@ -182,4 +178,5 @@ def show():
     1. Change some settings here
     2. Navigate to another page
     3. Come back - settings are preserved!
-    """)
+    """
+    )

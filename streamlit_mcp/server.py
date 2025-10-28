@@ -40,7 +40,6 @@ TOOL_HANDLERS = {
     "add_divider": text.add_divider,
     "add_html": text.add_html,
     "add_badge": text.add_badge,
-    
     # Widget tools
     "add_button": widgets.add_button,
     "add_checkbox": widgets.add_checkbox,
@@ -52,7 +51,6 @@ TOOL_HANDLERS = {
     "add_text_input": widgets.add_text_input,
     "add_number_input": widgets.add_number_input,
     "add_file_uploader": widgets.add_file_uploader,
-
     # Data display tools
     "add_dataframe": data.add_dataframe,
     "add_data_editor": data.add_data_editor,
@@ -60,7 +58,6 @@ TOOL_HANDLERS = {
     "add_metric": data.add_metric,
     "add_json": data.add_json,
     "add_column_config": data.add_column_config,
-
     # Chart tools
     "add_line_chart": charts.add_line_chart,
     "add_bar_chart": charts.add_bar_chart,
@@ -74,7 +71,6 @@ TOOL_HANDLERS = {
     "add_pydeck_chart": charts.add_pydeck_chart,
     "add_graphviz_chart": charts.add_graphviz_chart,
     "add_pyplot": charts.add_pyplot,
-
     # Layout tools
     "add_columns": layout.add_columns,
     "add_tabs": layout.add_tabs,
@@ -85,7 +81,6 @@ TOOL_HANDLERS = {
     "add_dialog": layout.add_dialog,
     "add_empty": layout.add_empty,
     "add_form": layout.add_form,
-
     # Status element tools
     "add_progress": status.add_progress,
     "add_spinner": status.add_spinner,
@@ -97,62 +92,52 @@ TOOL_HANDLERS = {
     "add_info": status.add_info,
     "add_balloons": status.add_balloons,
     "add_snow": status.add_snow,
-
     # Media element tools
     "add_image": media.add_image,
     "add_audio": media.add_audio,
     "add_video": media.add_video,
     "add_logo": media.add_logo,
     "add_link_button": media.add_link_button,
-
     # Chat element tools
     "add_chat_message": chat.add_chat_message,
     "add_chat_input": chat.add_chat_input,
     "add_write_stream": chat.add_write_stream,
-
     # Navigation tools
     "add_navigation": navigation.add_navigation,
     "add_page_link": navigation.add_page_link,
     "switch_page": navigation.switch_page,
     "get_query_params": navigation.get_query_params,
     "set_query_params": navigation.set_query_params,
-
     # State management tools
     "init_session_state": state.init_session_state,
     "get_session_state": state.get_session_state,
     "set_session_state": state.set_session_state,
     "clear_session_state": state.clear_session_state,
     "manage_state_pattern": state.manage_state_pattern,
-
     # Execution flow tools
     "add_fragment": execution.add_fragment,
     "add_rerun": execution.add_rerun,
     "add_stop": execution.add_stop,
     "add_form_submit_button": execution.add_form_submit_button,
     "control_execution_flow": execution.control_execution_flow,
-
     # Authentication tools
     "add_login": auth.add_login,
     "add_logout": auth.add_logout,
     "check_user_status": auth.check_user_status,
     "generate_auth_pattern": auth.generate_auth_pattern,
     "generate_secrets_config": auth.generate_secrets_config,
-
     # Data connection tools
     "add_sql_connection": connections.add_sql_connection,
     "add_snowflake_connection": connections.add_snowflake_connection,
     "add_custom_connection": connections.add_custom_connection,
     "generate_connection_config": connections.generate_connection_config,
     "generate_connection_pattern": connections.generate_connection_pattern,
-
     # App planning tools
     "create_app_plan": app_planner.create_app_plan,
     "create_page_plan": app_planner.create_page_plan,
-
     # Orchestration and validation tools
     "orchestrate_app_from_drawing": orchestrator.orchestrate_app_from_drawing,
     "validate_implementation": validator.validate_implementation,
-
     # Resource management tools
     "get_caching_guide": resources.get_caching_guide,
     "get_architecture_guide": resources.get_architecture_guide,
@@ -170,37 +155,34 @@ TOOL_HANDLERS = {
 
 def create_tool_handler(tool_func):
     """Create an async tool handler from a sync function."""
+
     async def handler(**kwargs):
         try:
             result = tool_func(**kwargs)
             if isinstance(result, dict):
                 # For complex results like the planner or JSON responses
-                return [TextContent(
-                    type="text",
-                    text=json.dumps(result, indent=2)
-                )]
+                return [TextContent(type="text", text=json.dumps(result, indent=2))]
             else:
                 # For simple code generation and text responses
-                return [TextContent(
-                    type="text",
-                    text=str(result)
-                )]
+                return [TextContent(type="text", text=str(result))]
         except Exception as e:
-            return [TextContent(
-                type="text",
-                text=f"Error executing {tool_func.__name__}: {str(e)}"
-            )]
+            return [
+                TextContent(type="text", text=f"Error executing {tool_func.__name__}: {str(e)}")
+            ]
+
     return handler
 
 
 def register_tools_from_module(tool_list: List[Tool], module_tools: List[Dict]) -> None:
     """Helper function to register tools from a module's TOOLS list."""
     for tool_def in module_tools:
-        tool_list.append(Tool(
-            name=tool_def["name"],
-            description=tool_def["description"],
-            inputSchema=tool_def["inputSchema"]
-        ))
+        tool_list.append(
+            Tool(
+                name=tool_def["name"],
+                description=tool_def["description"],
+                inputSchema=tool_def["inputSchema"],
+            )
+        )
 
 
 @app.list_tools()
@@ -251,32 +233,40 @@ async def list_tools() -> List[Tool]:
     register_tools_from_module(tools, app_planner.TOOLS)
 
     # Register page planner tool
-    tools.append(Tool(
-        name=planner.TOOL["name"],
-        description=planner.TOOL["description"],
-        inputSchema=planner.TOOL["inputSchema"]
-    ))
+    tools.append(
+        Tool(
+            name=planner.TOOL["name"],
+            description=planner.TOOL["description"],
+            inputSchema=planner.TOOL["inputSchema"],
+        )
+    )
 
     # Register drawing interpreter tool
-    tools.append(Tool(
-        name=drawing_interpreter.TOOL["name"],
-        description=drawing_interpreter.TOOL["description"],
-        inputSchema=drawing_interpreter.TOOL["inputSchema"]
-    ))
+    tools.append(
+        Tool(
+            name=drawing_interpreter.TOOL["name"],
+            description=drawing_interpreter.TOOL["description"],
+            inputSchema=drawing_interpreter.TOOL["inputSchema"],
+        )
+    )
 
     # Register orchestrator tool
-    tools.append(Tool(
-        name=orchestrator.TOOL["name"],
-        description=orchestrator.TOOL["description"],
-        inputSchema=orchestrator.TOOL["inputSchema"]
-    ))
+    tools.append(
+        Tool(
+            name=orchestrator.TOOL["name"],
+            description=orchestrator.TOOL["description"],
+            inputSchema=orchestrator.TOOL["inputSchema"],
+        )
+    )
 
     # Register validator tool
-    tools.append(Tool(
-        name=validator.TOOL["name"],
-        description=validator.TOOL["description"],
-        inputSchema=validator.TOOL["inputSchema"]
-    ))
+    tools.append(
+        Tool(
+            name=validator.TOOL["name"],
+            description=validator.TOOL["description"],
+            inputSchema=validator.TOOL["inputSchema"],
+        )
+    )
 
     # Register resource management tools
     register_tools_from_module(tools, resources.TOOLS)
@@ -295,10 +285,7 @@ async def call_tool(name: str, arguments: Any) -> List[TextContent]:
             formatted_output = format_planner_output(result)
             return [TextContent(type="text", text=formatted_output)]
         except Exception as e:
-            return [TextContent(
-                type="text",
-                text=f"Error in page planner: {str(e)}"
-            )]
+            return [TextContent(type="text", text=f"Error in page planner: {str(e)}")]
 
     # Handle drawing interpreter tool specially (returns formatted output)
     if name == "interpret_page_drawing":
@@ -307,10 +294,7 @@ async def call_tool(name: str, arguments: Any) -> List[TextContent]:
             formatted_output = drawing_interpreter.format_interpretation_output(result)
             return [TextContent(type="text", text=formatted_output)]
         except Exception as e:
-            return [TextContent(
-                type="text",
-                text=f"Error in drawing interpreter: {str(e)}"
-            )]
+            return [TextContent(type="text", text=f"Error in drawing interpreter: {str(e)}")]
 
     # Handle orchestrator tool specially (returns formatted output)
     if name == "orchestrate_app_from_drawing":
@@ -319,10 +303,7 @@ async def call_tool(name: str, arguments: Any) -> List[TextContent]:
             formatted_output = _format_orchestrator_output(result)
             return [TextContent(type="text", text=formatted_output)]
         except Exception as e:
-            return [TextContent(
-                type="text",
-                text=f"Error in orchestrator: {str(e)}"
-            )]
+            return [TextContent(type="text", text=f"Error in orchestrator: {str(e)}")]
 
     # Handle validator tool specially (returns formatted output)
     if name == "validate_implementation":
@@ -331,10 +312,7 @@ async def call_tool(name: str, arguments: Any) -> List[TextContent]:
             formatted_output = _format_validator_output(result)
             return [TextContent(type="text", text=formatted_output)]
         except Exception as e:
-            return [TextContent(
-                type="text",
-                text=f"Error in validator: {str(e)}"
-            )]
+            return [TextContent(type="text", text=f"Error in validator: {str(e)}")]
 
     # Handle all other tools using the mapping
     if name in TOOL_HANDLERS:
@@ -342,16 +320,15 @@ async def call_tool(name: str, arguments: Any) -> List[TextContent]:
         try:
             return await handler(**arguments)
         except TypeError as e:
-            return [TextContent(
-                type="text",
-                text=f"Invalid arguments for tool '{name}': {str(e)}"
-            )]
+            return [TextContent(type="text", text=f"Invalid arguments for tool '{name}': {str(e)}")]
 
     # Unknown tool
-    return [TextContent(
-        type="text",
-        text=f"Unknown tool: {name}. Available tools: {', '.join(TOOL_HANDLERS.keys())}"
-    )]
+    return [
+        TextContent(
+            type="text",
+            text=f"Unknown tool: {name}. Available tools: {', '.join(TOOL_HANDLERS.keys())}",
+        )
+    ]
 
 
 def format_planner_output(result: Dict) -> str:
@@ -400,7 +377,9 @@ def _format_orchestrator_output(result: Dict) -> str:
     output.append("")
     output.append(f"**Workflow Type**: {workflow_summary.get('workflow_type', 'unknown')}")
     output.append(f"**Total Pages**: {workflow_summary.get('total_pages', 0)}")
-    output.append(f"**Code Generated**: {'Yes' if workflow_summary.get('code_generated') else 'No'}")
+    output.append(
+        f"**Code Generated**: {'Yes' if workflow_summary.get('code_generated') else 'No'}"
+    )
     output.append("")
 
     # Workflow steps
@@ -464,12 +443,7 @@ def _format_validator_output(result: Dict) -> str:
     status = result.get("status", "unknown")
     score = result.get("score", 0)
 
-    status_emoji = {
-        "passed": "✅",
-        "warnings": "⚠️",
-        "failed": "❌",
-        "unknown": "❓"
-    }
+    status_emoji = {"passed": "✅", "warnings": "⚠️", "failed": "❌", "unknown": "❓"}
 
     output.append(f"# {status_emoji.get(status, '❓')} Validation Results")
     output.append("")
@@ -540,83 +514,83 @@ RESOURCE_DEFINITIONS = {
     "guides": [
         {
             "uri": "guide://caching/overview",
-            "name": "Caching Deep Dive", 
+            "name": "Caching Deep Dive",
             "description": "Complete guide to st.cache_data vs st.cache_resource with decision matrix",
-            "mimeType": "text/markdown"
+            "mimeType": "text/markdown",
         },
         {
             "uri": "guide://caching/cache_data",
             "name": "st.cache_data Guide",
-            "description": "Deep dive into @st.cache_data with examples and best practices", 
-            "mimeType": "text/markdown"
+            "description": "Deep dive into @st.cache_data with examples and best practices",
+            "mimeType": "text/markdown",
         },
         {
             "uri": "guide://caching/cache_resource",
             "name": "st.cache_resource Guide",
             "description": "Deep dive into @st.cache_resource for ML models and connections",
-            "mimeType": "text/markdown"
+            "mimeType": "text/markdown",
         },
         {
             "uri": "guide://architecture/execution",
             "name": "Execution Model Guide",
             "description": "How Streamlit runs: reruns, session state, fragments, and performance",
-            "mimeType": "text/markdown"
-        }
+            "mimeType": "text/markdown",
+        },
     ],
     "documentation": [
         {
             "uri": "docs://overview",
             "name": "Streamlit Documentation Index",
             "description": "Comprehensive index of Streamlit API reference, concepts, and tutorials",
-            "mimeType": "text/markdown"
+            "mimeType": "text/markdown",
         },
         {
             "uri": "docs://quick-ref",
             "name": "Quick API Reference",
             "description": "Quick lookup for common Streamlit APIs with signatures and examples",
-            "mimeType": "text/markdown"
-        }
+            "mimeType": "text/markdown",
+        },
     ],
     "snippets": [
         {
             "uri": "snippets://caching",
             "name": "Caching Code Snippets",
             "description": "12 caching patterns for CSV, API, DB, ML models, and more",
-            "mimeType": "application/json"
+            "mimeType": "application/json",
         },
         {
-            "uri": "snippets://navigation", 
+            "uri": "snippets://navigation",
             "name": "Navigation Code Snippets",
             "description": "6 modern st.navigation() patterns including auth and grouped pages",
-            "mimeType": "application/json"
+            "mimeType": "application/json",
         },
         {
             "uri": "snippets://session_state",
-            "name": "Session State Code Snippets", 
+            "name": "Session State Code Snippets",
             "description": "7 state management patterns for forms, chat, auth, and more",
-            "mimeType": "application/json"
+            "mimeType": "application/json",
         },
         {
             "uri": "snippets://data_loading",
             "name": "Data Loading Code Snippets",
             "description": "9 data loading patterns for CSV, API, SQL, Parquet, and sample data",
-            "mimeType": "application/json" 
-        }
+            "mimeType": "application/json",
+        },
     ],
     "templates": [
         {
             "uri": "template://dashboard_cached",
             "name": "Dashboard Template (Cached)",
             "description": "Professional dashboard with @st.cache_data, metrics, charts, and filters",
-            "mimeType": "text/x-python"
+            "mimeType": "text/x-python",
         },
         {
             "uri": "template://multipage_modern",
-            "name": "Multi-Page App Template (Modern)", 
+            "name": "Multi-Page App Template (Modern)",
             "description": "Modern multi-page app using st.navigation() with auth and state sharing",
-            "mimeType": "text/x-python"
-        }
-    ]
+            "mimeType": "text/x-python",
+        },
+    ],
 }
 
 
@@ -624,17 +598,19 @@ RESOURCE_DEFINITIONS = {
 async def list_resources() -> List[Resource]:
     """List available resources (templates, guides, snippets)."""
     resource_list = []
-    
+
     # Add all resources from definitions
     for category_resources in RESOURCE_DEFINITIONS.values():
         for resource_def in category_resources:
-            resource_list.append(Resource(
-                uri=resource_def["uri"],
-                name=resource_def["name"],
-                description=resource_def["description"],
-                mimeType=resource_def["mimeType"]
-            ))
-    
+            resource_list.append(
+                Resource(
+                    uri=resource_def["uri"],
+                    name=resource_def["name"],
+                    description=resource_def["description"],
+                    mimeType=resource_def["mimeType"],
+                )
+            )
+
     return resource_list
 
 
@@ -644,7 +620,7 @@ RESOURCE_HANDLERS = {
     "docs://quick-ref": lambda: _get_quick_reference_guide(),
     "guide://caching/overview": lambda: resources.get_caching_guide("overview"),
     "guide://caching/cache_data": lambda: resources.get_caching_guide("cache_data"),
-    "guide://caching/cache_resource": lambda: resources.get_caching_guide("cache_resource"), 
+    "guide://caching/cache_resource": lambda: resources.get_caching_guide("cache_resource"),
     "guide://architecture/execution": lambda: resources.get_architecture_guide("execution"),
 }
 
@@ -661,23 +637,31 @@ def _read_docs_overview() -> str:
 def _get_quick_reference_guide() -> str:
     """Generate a quick reference guide with common APIs."""
     common_apis = [
-        "cache_data", "cache_resource", "session_state", "button", "selectbox", 
-        "text_input", "dataframe", "plotly_chart", "columns", "sidebar"
+        "cache_data",
+        "cache_resource",
+        "session_state",
+        "button",
+        "selectbox",
+        "text_input",
+        "dataframe",
+        "plotly_chart",
+        "columns",
+        "sidebar",
     ]
-    
+
     guide = "# Streamlit Quick API Reference\n\n"
     guide += "Quick lookup for the most commonly used Streamlit APIs.\n\n"
-    
+
     for api in common_apis:
         try:
             api_ref = resources.get_api_quick_ref(api)
             guide += f"{api_ref}\n\n---\n\n"
         except Exception:
             guide += f"## {api}\n*Reference not available*\n\n---\n\n"
-    
+
     guide += "**Note**: Use `get_api_quick_ref(api_name)` tool for individual API lookups.\n"
     guide += "**Search**: Use `search_develop_docs(query, mode='quick')` for broader searches."
-    
+
     return guide
 
 
@@ -688,21 +672,21 @@ async def read_resource(uri: str) -> str:
         # Handle specific URI patterns
         if uri in RESOURCE_HANDLERS:
             return RESOURCE_HANDLERS[uri]()
-            
+
         elif uri.startswith("snippets://"):
             # Code snippets
             snippet_type = uri.split("://")[1]
             snippets = resources.get_code_snippets(snippet_type)
             return json.dumps(snippets, indent=2)
-            
+
         elif uri.startswith("template://"):
             # Templates
             template_name = uri.split("://")[1]
             return resources.load_template(template_name)
-            
+
         else:
             return f"Unknown resource URI: {uri}"
-            
+
     except Exception as e:
         return f"Error reading resource {uri}: {str(e)}"
 
@@ -710,16 +694,12 @@ async def read_resource(uri: str) -> str:
 async def main():
     """Run the MCP server with stdio communication."""
     async with stdio_server() as (read_stream, write_stream):
-        await app.run(
-            read_stream,
-            write_stream,
-            app.create_initialization_options()
-        )
+        await app.run(read_stream, write_stream, app.create_initialization_options())
 
 
 def run():
     """Entry point for the server.
-    
+
     This function is used by the console script defined in pyproject.toml.
     It starts the async event loop and runs the MCP server.
     """

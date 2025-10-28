@@ -6,7 +6,6 @@ This module provides tools for building chat interfaces:
 - Streaming text output
 """
 
-from typing import Any, Dict, List, Optional
 
 from ...utils.codegen import format_kwargs
 
@@ -27,15 +26,19 @@ def add_chat_message(role: str = "user", avatar: str | None = None) -> str:
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'''with st.chat_message("{role}", {kwargs_str}):
-    st.write("Your message here")'''
-    return f'''with st.chat_message("{role}"):
-    st.write("Your message here")'''
+        return f"""with st.chat_message("{role}", {kwargs_str}):
+    st.write("Your message here")"""
+    return f"""with st.chat_message("{role}"):
+    st.write("Your message here")"""
 
 
-def add_chat_input(placeholder: str = "Your message", key: str | None = None,
-                   max_chars: int | None = None, disabled: bool = False,
-                   on_submit: str | None = None) -> str:
+def add_chat_input(
+    placeholder: str = "Your message",
+    key: str | None = None,
+    max_chars: int | None = None,
+    disabled: bool = False,
+    on_submit: str | None = None,
+) -> str:
     """Generate code for st.chat_input() - chat input widget at bottom of app.
 
     Args:
@@ -60,14 +63,14 @@ def add_chat_input(placeholder: str = "Your message", key: str | None = None,
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'''prompt = st.chat_input("{placeholder}", {kwargs_str})
+        return f"""prompt = st.chat_input("{placeholder}", {kwargs_str})
 if prompt:
     # Handle user input
-    st.write(f"User said: {{prompt}}")'''
-    return f'''prompt = st.chat_input("{placeholder}")
+    st.write(f"User said: {{prompt}}")"""
+    return f"""prompt = st.chat_input("{placeholder}")
 if prompt:
     # Handle user input
-    st.write(f"User said: {{prompt}}")'''
+    st.write(f"User said: {{prompt}}")"""
 
 
 def add_write_stream(stream_source: str = "response_generator") -> str:
@@ -79,14 +82,14 @@ def add_write_stream(stream_source: str = "response_generator") -> str:
     Returns:
         str: Generated Streamlit code
     """
-    return f'''# Stream text with typewriter effect
+    return f"""# Stream text with typewriter effect
 st.write_stream({stream_source})
 
 # Example generator:
 # def response_generator():
 #     for word in "Hello world! This is a streaming response.".split():
 #         yield word + " "
-#         time.sleep(0.1)'''
+#         time.sleep(0.1)"""
 
 
 # MCP tool definitions
@@ -101,14 +104,14 @@ TOOLS = [
                     "type": "string",
                     "description": "Message role - 'user' for human messages, 'assistant' or 'ai' for bot messages",
                     "enum": ["user", "assistant", "ai"],
-                    "default": "user"
+                    "default": "user",
                 },
                 "avatar": {
                     "type": "string",
-                    "description": "Optional avatar - emoji (e.g., '👤', '🤖'), image path, or URL"
-                }
-            }
-        }
+                    "description": "Optional avatar - emoji (e.g., '👤', '🤖'), image path, or URL",
+                },
+            },
+        },
     },
     {
         "name": "add_chat_input",
@@ -119,27 +122,27 @@ TOOLS = [
                 "placeholder": {
                     "type": "string",
                     "description": "Placeholder text shown when input is empty",
-                    "default": "Your message"
+                    "default": "Your message",
                 },
                 "key": {
                     "type": "string",
-                    "description": "Widget key for accessing value in session state"
+                    "description": "Widget key for accessing value in session state",
                 },
                 "max_chars": {
                     "type": "integer",
-                    "description": "Maximum number of characters allowed"
+                    "description": "Maximum number of characters allowed",
                 },
                 "disabled": {
                     "type": "boolean",
                     "description": "Whether the input is disabled",
-                    "default": False
+                    "default": False,
                 },
                 "on_submit": {
                     "type": "string",
-                    "description": "Callback function name to call when user submits"
-                }
-            }
-        }
+                    "description": "Callback function name to call when user submits",
+                },
+            },
+        },
     },
     {
         "name": "add_write_stream",
@@ -150,9 +153,9 @@ TOOLS = [
                 "stream_source": {
                     "type": "string",
                     "description": "Generator or iterable variable name that yields text chunks",
-                    "default": "response_generator"
+                    "default": "response_generator",
                 }
-            }
-        }
-    }
+            },
+        },
+    },
 ]

@@ -2,7 +2,6 @@
 
 import ast
 import re
-import json
 import subprocess
 import tempfile
 from pathlib import Path
@@ -91,7 +90,7 @@ def run_app_test(test_code: str, app_code: Optional[str] = None) -> Dict[str, An
                 cwd=str(tmppath),
                 capture_output=True,
                 text=True,
-                timeout=30
+                timeout=30,
             )
 
             # Parse pytest output
@@ -104,7 +103,7 @@ def run_app_test(test_code: str, app_code: Optional[str] = None) -> Dict[str, An
                 "failed": failed,
                 "errors": errors,
                 "output": output,
-                "exit_code": result.returncode
+                "exit_code": result.returncode,
             }
 
         except subprocess.TimeoutExpired:
@@ -114,7 +113,7 @@ def run_app_test(test_code: str, app_code: Optional[str] = None) -> Dict[str, An
                 "failed": 0,
                 "errors": ["Test execution timeout after 30 seconds"],
                 "output": "Timeout",
-                "exit_code": -1
+                "exit_code": -1,
             }
         except Exception as e:
             return {
@@ -123,7 +122,7 @@ def run_app_test(test_code: str, app_code: Optional[str] = None) -> Dict[str, An
                 "failed": 0,
                 "errors": [str(e)],
                 "output": "",
-                "exit_code": -1
+                "exit_code": -1,
             }
 
 
@@ -151,17 +150,8 @@ def validate_app_code(app_code: str) -> Dict[str, Any]:
     try:
         tree = ast.parse(app_code)
     except SyntaxError as e:
-        issues.append({
-            "type": "syntax_error",
-            "message": str(e),
-            "line": e.lineno
-        })
-        return {
-            "valid": False,
-            "issues": issues,
-            "warnings": warnings,
-            "suggestions": suggestions
-        }
+        issues.append({"type": "syntax_error", "message": str(e), "line": e.lineno})
+        return {"valid": False, "issues": issues, "warnings": warnings, "suggestions": suggestions}
 
     # Analyze AST
     analysis = _analyze_app_code(app_code)
@@ -170,11 +160,13 @@ def validate_app_code(app_code: str) -> Dict[str, Any]:
 
     # 1. Missing streamlit import
     if not analysis["has_streamlit_import"]:
-        issues.append({
-            "type": "missing_import",
-            "message": "Missing 'import streamlit as st'",
-            "severity": "error"
-        })
+        issues.append(
+            {
+                "type": "missing_import",
+                "message": "Missing 'import streamlit as st'",
+                "severity": "error",
+            }
+        )
 
     # 2. Check for widget usage without key
     if analysis["widgets_without_keys"]:
@@ -204,9 +196,7 @@ def validate_app_code(app_code: str) -> Dict[str, Any]:
 
     # 6. Check for proper error handling
     if analysis["has_file_operations"] and not analysis["has_error_handling"]:
-        suggestions.append(
-            "Add try-except blocks for file operations to handle errors gracefully"
-        )
+        suggestions.append("Add try-except blocks for file operations to handle errors gracefully")
 
     return {
         "valid": len(issues) == 0,
@@ -217,8 +207,8 @@ def validate_app_code(app_code: str) -> Dict[str, Any]:
             "widget_count": len(analysis["widgets"]),
             "uses_caching": analysis["uses_caching"],
             "uses_session_state": analysis["uses_session_state"],
-            "uses_forms": analysis["uses_forms"]
-        }
+            "uses_forms": analysis["uses_forms"],
+        },
     }
 
 
@@ -238,92 +228,116 @@ def suggest_test_cases(app_code: str) -> Dict[str, List[Dict[str, str]]]:
         "widget_interactions": [],
         "edge_cases": [],
         "state_management": [],
-        "data_validation": []
+        "data_validation": [],
     }
 
     # Basic tests
-    suggestions["basic"].append({
-        "name": "test_app_loads",
-        "description": "Verify app loads without errors",
-        "priority": "high"
-    })
+    suggestions["basic"].append(
+        {
+            "name": "test_app_loads",
+            "description": "Verify app loads without errors",
+            "priority": "high",
+        }
+    )
 
     if analysis["has_title"]:
-        suggestions["basic"].append({
-            "name": "test_title_present",
-            "description": "Verify title is displayed correctly",
-            "priority": "medium"
-        })
+        suggestions["basic"].append(
+            {
+                "name": "test_title_present",
+                "description": "Verify title is displayed correctly",
+                "priority": "medium",
+            }
+        )
 
     # Widget interaction tests
     for widget in analysis["widgets"]:
         widget_type = widget["type"]
 
         if widget_type == "button":
-            suggestions["widget_interactions"].append({
-                "name": f"test_{widget.get('key', 'button')}_click",
-                "description": f"Test button click and resulting behavior",
-                "priority": "high"
-            })
+            suggestions["widget_interactions"].append(
+                {
+                    "name": f"test_{widget.get('key', 'button')}_click",
+                    "description": "Test button click and resulting behavior",
+                    "priority": "high",
+                }
+            )
 
         elif widget_type in ["text_input", "number_input"]:
-            suggestions["widget_interactions"].append({
-                "name": f"test_{widget.get('key', widget_type)}_input",
-                "description": f"Test {widget_type} with valid input",
-                "priority": "high"
-            })
-            suggestions["edge_cases"].append({
-                "name": f"test_{widget.get('key', widget_type)}_empty",
-                "description": f"Test {widget_type} with empty input",
-                "priority": "medium"
-            })
+            suggestions["widget_interactions"].append(
+                {
+                    "name": f"test_{widget.get('key', widget_type)}_input",
+                    "description": f"Test {widget_type} with valid input",
+                    "priority": "high",
+                }
+            )
+            suggestions["edge_cases"].append(
+                {
+                    "name": f"test_{widget.get('key', widget_type)}_empty",
+                    "description": f"Test {widget_type} with empty input",
+                    "priority": "medium",
+                }
+            )
 
         elif widget_type == "file_uploader":
-            suggestions["widget_interactions"].append({
-                "name": "test_file_upload",
-                "description": "Test file upload with valid file",
-                "priority": "high"
-            })
-            suggestions["edge_cases"].append({
-                "name": "test_invalid_file_upload",
-                "description": "Test file upload with invalid file type",
-                "priority": "medium"
-            })
+            suggestions["widget_interactions"].append(
+                {
+                    "name": "test_file_upload",
+                    "description": "Test file upload with valid file",
+                    "priority": "high",
+                }
+            )
+            suggestions["edge_cases"].append(
+                {
+                    "name": "test_invalid_file_upload",
+                    "description": "Test file upload with invalid file type",
+                    "priority": "medium",
+                }
+            )
 
         elif widget_type in ["selectbox", "radio"]:
-            suggestions["widget_interactions"].append({
-                "name": f"test_{widget.get('key', widget_type)}_selection",
-                "description": f"Test selecting different options",
-                "priority": "medium"
-            })
+            suggestions["widget_interactions"].append(
+                {
+                    "name": f"test_{widget.get('key', widget_type)}_selection",
+                    "description": "Test selecting different options",
+                    "priority": "medium",
+                }
+            )
 
     # Session state tests
     if analysis["uses_session_state"]:
-        suggestions["state_management"].append({
-            "name": "test_session_state_initialization",
-            "description": "Verify session state is properly initialized",
-            "priority": "high"
-        })
-        suggestions["state_management"].append({
-            "name": "test_session_state_persistence",
-            "description": "Verify state persists across reruns",
-            "priority": "high"
-        })
+        suggestions["state_management"].append(
+            {
+                "name": "test_session_state_initialization",
+                "description": "Verify session state is properly initialized",
+                "priority": "high",
+            }
+        )
+        suggestions["state_management"].append(
+            {
+                "name": "test_session_state_persistence",
+                "description": "Verify state persists across reruns",
+                "priority": "high",
+            }
+        )
 
     # Data validation tests
     if analysis["has_data_loading"]:
-        suggestions["data_validation"].append({
-            "name": "test_data_loading",
-            "description": "Verify data loads correctly",
-            "priority": "high"
-        })
+        suggestions["data_validation"].append(
+            {
+                "name": "test_data_loading",
+                "description": "Verify data loads correctly",
+                "priority": "high",
+            }
+        )
 
         if analysis["uses_caching"]:
-            suggestions["data_validation"].append({
-                "name": "test_caching_behavior",
-                "description": "Verify caching works correctly",
-                "priority": "medium"
-            })
+            suggestions["data_validation"].append(
+                {
+                    "name": "test_caching_behavior",
+                    "description": "Verify caching works correctly",
+                    "priority": "medium",
+                }
+            )
 
     return suggestions
 
@@ -351,7 +365,6 @@ def {fixture_name}():
     at = AppTest.from_file("app.py")
     at.run()
     return at''',
-
         "app_with_state": f'''@pytest.fixture
 def {fixture_name}():
     """Create AppTest instance with session state."""
@@ -361,7 +374,6 @@ def {fixture_name}():
     at.session_state["authenticated"] = True
     at.run()
     return at''',
-
         "app_with_secrets": f'''@pytest.fixture
 def {fixture_name}():
     """Create AppTest instance with secrets."""
@@ -371,7 +383,6 @@ def {fixture_name}():
     at.secrets["db_password"] = "test-password"
     at.run()
     return at''',
-
         "mock_data": f'''@pytest.fixture
 def {fixture_name}():
     """Create mock DataFrame for testing."""
@@ -381,7 +392,6 @@ def {fixture_name}():
         "age": [30, 25, 35],
         "score": [85.5, 92.0, 78.5]
     }})''',
-
         "mock_api": f'''@pytest.fixture
 def {fixture_name}():
     """Create mock API response."""
@@ -392,7 +402,7 @@ def {fixture_name}():
         "status": "success",
         "data": [{{"id": 1, "value": "test"}}]
     }}
-    return mock_response'''
+    return mock_response''',
     }
 
     fixture_code = fixtures.get(fixture_type)
@@ -404,6 +414,7 @@ def {fixture_name}():
 
 
 # Helper functions
+
 
 def _analyze_app_code(code: str) -> Dict[str, Any]:
     """Analyze Streamlit app code structure."""
@@ -419,7 +430,7 @@ def _analyze_app_code(code: str) -> Dict[str, Any]:
         "has_data_loading": False,
         "has_file_operations": False,
         "has_error_handling": False,
-        "functions": []
+        "functions": [],
     }
 
     try:
@@ -431,11 +442,11 @@ def _analyze_app_code(code: str) -> Dict[str, Any]:
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if 'streamlit' in alias.name:
+                if "streamlit" in alias.name:
                     analysis["has_streamlit_import"] = True
 
         elif isinstance(node, ast.ImportFrom):
-            if node.module and 'streamlit' in node.module:
+            if node.module and "streamlit" in node.module:
                 analysis["has_streamlit_import"] = True
 
     # Analyze code content
@@ -443,61 +454,59 @@ def _analyze_app_code(code: str) -> Dict[str, Any]:
 
     # Check for widgets
     widget_patterns = [
-        (r'st\.button\([^)]*\)', 'button'),
-        (r'st\.text_input\([^)]*\)', 'text_input'),
-        (r'st\.number_input\([^)]*\)', 'number_input'),
-        (r'st\.checkbox\([^)]*\)', 'checkbox'),
-        (r'st\.radio\([^)]*\)', 'radio'),
-        (r'st\.selectbox\([^)]*\)', 'selectbox'),
-        (r'st\.multiselect\([^)]*\)', 'multiselect'),
-        (r'st\.slider\([^)]*\)', 'slider'),
-        (r'st\.file_uploader\([^)]*\)', 'file_uploader'),
+        (r"st\.button\([^)]*\)", "button"),
+        (r"st\.text_input\([^)]*\)", "text_input"),
+        (r"st\.number_input\([^)]*\)", "number_input"),
+        (r"st\.checkbox\([^)]*\)", "checkbox"),
+        (r"st\.radio\([^)]*\)", "radio"),
+        (r"st\.selectbox\([^)]*\)", "selectbox"),
+        (r"st\.multiselect\([^)]*\)", "multiselect"),
+        (r"st\.slider\([^)]*\)", "slider"),
+        (r"st\.file_uploader\([^)]*\)", "file_uploader"),
     ]
 
     for pattern, widget_type in widget_patterns:
         matches = re.finditer(pattern, code)
         for match in matches:
             widget_code = match.group(0)
-            has_key = 'key=' in widget_code
-            analysis["widgets"].append({
-                "type": widget_type,
-                "code": widget_code,
-                "has_key": has_key
-            })
+            has_key = "key=" in widget_code
+            analysis["widgets"].append(
+                {"type": widget_type, "code": widget_code, "has_key": has_key}
+            )
             if not has_key:
                 analysis["widgets_without_keys"].append(widget_type)
 
     # Check for title
-    if 'st.title(' in code:
+    if "st.title(" in code:
         analysis["has_title"] = True
 
     # Check for session state
-    if 'st.session_state' in code or 'session_state' in code_lower:
+    if "st.session_state" in code or "session_state" in code_lower:
         analysis["uses_session_state"] = True
 
     # Check for state initialization
-    if 'if ' in code and 'session_state' in code:
+    if "if " in code and "session_state" in code:
         analysis["has_state_initialization"] = True
 
     # Check for forms
-    if 'st.form(' in code or 'with st.form' in code:
+    if "st.form(" in code or "with st.form" in code:
         analysis["uses_forms"] = True
 
     # Check for caching
-    if '@st.cache_data' in code or '@st.cache_resource' in code:
+    if "@st.cache_data" in code or "@st.cache_resource" in code:
         analysis["uses_caching"] = True
 
     # Check for data loading
-    data_loading_keywords = ['read_csv', 'read_excel', 'read_json', 'read_sql', 'DataFrame']
+    data_loading_keywords = ["read_csv", "read_excel", "read_json", "read_sql", "DataFrame"]
     if any(keyword in code for keyword in data_loading_keywords):
         analysis["has_data_loading"] = True
 
     # Check for file operations
-    if 'open(' in code or 'Path(' in code or 'file' in code_lower:
+    if "open(" in code or "Path(" in code or "file" in code_lower:
         analysis["has_file_operations"] = True
 
     # Check for error handling
-    if 'try:' in code and 'except' in code:
+    if "try:" in code and "except" in code:
         analysis["has_error_handling"] = True
 
     return analysis
@@ -514,35 +523,43 @@ from pathlib import Path'''
 
 def _generate_test_fixtures(app_code: str) -> str:
     """Generate test fixtures."""
-    return '''
+    return (
+        '''
 @pytest.fixture
 def app():
     """Create AppTest instance."""
     at = AppTest.from_string("""
-''' + app_code + '''
+'''
+        + app_code
+        + '''
 """)
     at.run()
     return at'''
+    )
 
 
 def _generate_basic_tests(analysis: Dict[str, Any]) -> str:
     """Generate basic smoke tests."""
     tests = []
 
-    tests.append('''
+    tests.append(
+        '''
 class TestBasicFunctionality:
     """Test basic app functionality."""
 
     def test_app_loads(self, app):
         """Test app loads without errors."""
-        assert not app.exception''')
+        assert not app.exception'''
+    )
 
     if analysis["has_title"]:
-        tests.append('''
+        tests.append(
+            '''
 
     def test_title_present(self, app):
         """Test title is displayed."""
-        assert len(app.title) > 0''')
+        assert len(app.title) > 0'''
+        )
 
     return "\n".join(tests)
 
@@ -552,10 +569,12 @@ def _generate_widget_tests(analysis: Dict[str, Any]) -> str:
     if not analysis["widgets"]:
         return ""
 
-    tests = ['''
+    tests = [
+        '''
 
 class TestWidgetInteractions:
-    """Test widget interactions."""''']
+    """Test widget interactions."""'''
+    ]
 
     widget_types_seen = set()
 
@@ -566,28 +585,34 @@ class TestWidgetInteractions:
         widget_types_seen.add(widget_type)
 
         if widget_type == "button":
-            tests.append('''
+            tests.append(
+                '''
 
     def test_button_click(self, app):
         """Test button click."""
         app.button[0].click().run()
-        assert not app.exception''')
+        assert not app.exception'''
+            )
 
         elif widget_type == "text_input":
-            tests.append('''
+            tests.append(
+                '''
 
     def test_text_input(self, app):
         """Test text input."""
         app.text_input[0].input("test").run()
-        assert not app.exception''')
+        assert not app.exception'''
+            )
 
         elif widget_type == "checkbox":
-            tests.append('''
+            tests.append(
+                '''
 
     def test_checkbox(self, app):
         """Test checkbox."""
         app.checkbox[0].check().run()
-        assert app.checkbox[0].value''')
+        assert app.checkbox[0].value'''
+            )
 
     return "\n".join(tests)
 
@@ -631,16 +656,16 @@ def _parse_pytest_output(output: str) -> tuple:
     errors = []
 
     # Count passed/failed tests
-    passed_match = re.search(r'(\d+) passed', output)
+    passed_match = re.search(r"(\d+) passed", output)
     if passed_match:
         passed = int(passed_match.group(1))
 
-    failed_match = re.search(r'(\d+) failed', output)
+    failed_match = re.search(r"(\d+) failed", output)
     if failed_match:
         failed = int(failed_match.group(1))
 
     # Extract error messages
-    error_pattern = r'FAILED.*?::(.*?) - (.*?)(?:\n|$)'
+    error_pattern = r"FAILED.*?::(.*?) - (.*?)(?:\n|$)"
     for match in re.finditer(error_pattern, output):
         test_name = match.group(1)
         error_msg = match.group(2)
@@ -659,17 +684,17 @@ TOOLS = [
             "properties": {
                 "app_code": {
                     "type": "string",
-                    "description": "The Streamlit app code to generate tests for"
+                    "description": "The Streamlit app code to generate tests for",
                 },
                 "test_focus": {
                     "type": "string",
                     "enum": ["comprehensive", "smoke", "widgets", "state", "data"],
                     "description": "Type of tests: comprehensive (all), smoke (basic), widgets, state, or data",
-                    "default": "comprehensive"
-                }
+                    "default": "comprehensive",
+                },
             },
-            "required": ["app_code"]
-        }
+            "required": ["app_code"],
+        },
     },
     {
         "name": "run_app_test",
@@ -677,17 +702,14 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "test_code": {
-                    "type": "string",
-                    "description": "The pytest test code to execute"
-                },
+                "test_code": {"type": "string", "description": "The pytest test code to execute"},
                 "app_code": {
                     "type": "string",
-                    "description": "Optional: The app code if not loading from file"
-                }
+                    "description": "Optional: The app code if not loading from file",
+                },
             },
-            "required": ["test_code"]
-        }
+            "required": ["test_code"],
+        },
     },
     {
         "name": "validate_app_code",
@@ -695,13 +717,10 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "app_code": {
-                    "type": "string",
-                    "description": "The Streamlit app code to validate"
-                }
+                "app_code": {"type": "string", "description": "The Streamlit app code to validate"}
             },
-            "required": ["app_code"]
-        }
+            "required": ["app_code"],
+        },
     },
     {
         "name": "suggest_test_cases",
@@ -709,13 +728,10 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "app_code": {
-                    "type": "string",
-                    "description": "The Streamlit app code to analyze"
-                }
+                "app_code": {"type": "string", "description": "The Streamlit app code to analyze"}
             },
-            "required": ["app_code"]
-        }
+            "required": ["app_code"],
+        },
     },
     {
         "name": "create_test_fixture",
@@ -725,16 +741,22 @@ TOOLS = [
             "properties": {
                 "fixture_type": {
                     "type": "string",
-                    "enum": ["basic_app", "app_with_state", "app_with_secrets", "mock_data", "mock_api"],
-                    "description": "Type of fixture to create"
+                    "enum": [
+                        "basic_app",
+                        "app_with_state",
+                        "app_with_secrets",
+                        "mock_data",
+                        "mock_api",
+                    ],
+                    "description": "Type of fixture to create",
                 },
                 "fixture_name": {
                     "type": "string",
                     "description": "Name for the fixture (default: 'app')",
-                    "default": "app"
-                }
+                    "default": "app",
+                },
             },
-            "required": ["fixture_type"]
-        }
-    }
+            "required": ["fixture_type"],
+        },
+    },
 ]

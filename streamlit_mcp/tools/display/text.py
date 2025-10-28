@@ -1,7 +1,6 @@
 """Text element tools for Streamlit MCP server."""
 
-from typing import Any, Dict
-from ...utils.codegen import generate_text_element, StreamlitCodeGenerator
+from ...utils.codegen import generate_text_element
 
 
 def add_title(content: str, anchor: str | None = None, help_text: str | None = None) -> str:
@@ -14,7 +13,12 @@ def add_title(content: str, anchor: str | None = None, help_text: str | None = N
     return generate_text_element("title", content, kwargs)
 
 
-def add_header(content: str, anchor: str | None = None, help_text: str | None = None, divider: bool | str = False) -> str:
+def add_header(
+    content: str,
+    anchor: str | None = None,
+    help_text: str | None = None,
+    divider: bool | str = False,
+) -> str:
     """Generate code for st.header()."""
     kwargs = {}
     if anchor:
@@ -26,7 +30,12 @@ def add_header(content: str, anchor: str | None = None, help_text: str | None = 
     return generate_text_element("header", content, kwargs)
 
 
-def add_subheader(content: str, anchor: str | None = None, help_text: str | None = None, divider: bool | str = False) -> str:
+def add_subheader(
+    content: str,
+    anchor: str | None = None,
+    help_text: str | None = None,
+    divider: bool | str = False,
+) -> str:
     """Generate code for st.subheader()."""
     kwargs = {}
     if anchor:
@@ -38,7 +47,9 @@ def add_subheader(content: str, anchor: str | None = None, help_text: str | None
     return generate_text_element("subheader", content, kwargs)
 
 
-def add_markdown(content: str, unsafe_allow_html: bool = False, help_text: str | None = None) -> str:
+def add_markdown(
+    content: str, unsafe_allow_html: bool = False, help_text: str | None = None
+) -> str:
     """Generate code for st.markdown()."""
     kwargs = {}
     if unsafe_allow_html:
@@ -76,9 +87,9 @@ def add_code(code: str, language: str | None = None, line_numbers: bool = False)
 
     # Use repr() for safe escaping instead of manual string replacement
     if kwargs:
-        kwargs_items = [f'{k}={repr(v)}' for k, v in kwargs.items()]
+        kwargs_items = [f"{k}={repr(v)}" for k, v in kwargs.items()]
         return f'st.code({repr(code)}, {", ".join(kwargs_items)})'
-    return f'st.code({repr(code)})'
+    return f"st.code({repr(code)})"
 
 
 def add_latex(content: str, help_text: str | None = None) -> str:
@@ -88,9 +99,9 @@ def add_latex(content: str, help_text: str | None = None) -> str:
         kwargs["help"] = help_text
     # Use repr() for safe escaping - it handles backslashes correctly
     if kwargs:
-        kwargs_items = [f'{k}={repr(v)}' for k, v in kwargs.items()]
+        kwargs_items = [f"{k}={repr(v)}" for k, v in kwargs.items()]
         return f'st.latex({repr(content)}, {", ".join(kwargs_items)})'
-    return f'st.latex({repr(content)})'
+    return f"st.latex({repr(content)})"
 
 
 def add_divider() -> str:
@@ -105,9 +116,9 @@ def add_html(html: str, help_text: str | None = None) -> str:
         kwargs["help"] = help_text
     # Use repr() for safe escaping instead of manual string replacement
     if kwargs:
-        kwargs_items = [f'{k}={repr(v)}' for k, v in kwargs.items()]
+        kwargs_items = [f"{k}={repr(v)}" for k, v in kwargs.items()]
         return f'st.html({repr(html)}, {", ".join(kwargs_items)})'
-    return f'st.html({repr(html)})'
+    return f"st.html({repr(html)})"
 
 
 def add_badge(label: str, icon: str | None = None) -> str:
@@ -125,21 +136,15 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "content": {
-                    "type": "string",
-                    "description": "The title text to display"
-                },
+                "content": {"type": "string", "description": "The title text to display"},
                 "anchor": {
                     "type": "string",
-                    "description": "Optional anchor for linking to this title"
+                    "description": "Optional anchor for linking to this title",
                 },
-                "help": {
-                    "type": "string",
-                    "description": "Optional tooltip text"
-                }
+                "help": {"type": "string", "description": "Optional tooltip text"},
             },
-            "required": ["content"]
-        }
+            "required": ["content"],
+        },
     },
     {
         "name": "add_header",
@@ -147,25 +152,19 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "content": {
-                    "type": "string",
-                    "description": "The header text to display"
-                },
+                "content": {"type": "string", "description": "The header text to display"},
                 "anchor": {
                     "type": "string",
-                    "description": "Optional anchor for linking to this header"
+                    "description": "Optional anchor for linking to this header",
                 },
-                "help": {
-                    "type": "string",
-                    "description": "Optional tooltip text"
-                },
+                "help": {"type": "string", "description": "Optional tooltip text"},
                 "divider": {
                     "type": ["boolean", "string"],
-                    "description": "Show divider below header. Can be True, False, or a color name"
-                }
+                    "description": "Show divider below header. Can be True, False, or a color name",
+                },
             },
-            "required": ["content"]
-        }
+            "required": ["content"],
+        },
     },
     {
         "name": "add_subheader",
@@ -173,25 +172,16 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "content": {
-                    "type": "string",
-                    "description": "The subheader text to display"
-                },
-                "anchor": {
-                    "type": "string",
-                    "description": "Optional anchor"
-                },
-                "help": {
-                    "type": "string",
-                    "description": "Optional tooltip text"
-                },
+                "content": {"type": "string", "description": "The subheader text to display"},
+                "anchor": {"type": "string", "description": "Optional anchor"},
+                "help": {"type": "string", "description": "Optional tooltip text"},
                 "divider": {
                     "type": ["boolean", "string"],
-                    "description": "Show divider below subheader"
-                }
+                    "description": "Show divider below subheader",
+                },
             },
-            "required": ["content"]
-        }
+            "required": ["content"],
+        },
     },
     {
         "name": "add_markdown",
@@ -199,21 +189,12 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "content": {
-                    "type": "string",
-                    "description": "The markdown content to display"
-                },
-                "unsafe_allow_html": {
-                    "type": "boolean",
-                    "description": "Allow HTML in markdown"
-                },
-                "help": {
-                    "type": "string",
-                    "description": "Optional tooltip text"
-                }
+                "content": {"type": "string", "description": "The markdown content to display"},
+                "unsafe_allow_html": {"type": "boolean", "description": "Allow HTML in markdown"},
+                "help": {"type": "string", "description": "Optional tooltip text"},
             },
-            "required": ["content"]
-        }
+            "required": ["content"],
+        },
     },
     {
         "name": "add_text",
@@ -221,17 +202,11 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "content": {
-                    "type": "string",
-                    "description": "The text to display"
-                },
-                "help": {
-                    "type": "string",
-                    "description": "Optional tooltip text"
-                }
+                "content": {"type": "string", "description": "The text to display"},
+                "help": {"type": "string", "description": "Optional tooltip text"},
             },
-            "required": ["content"]
-        }
+            "required": ["content"],
+        },
     },
     {
         "name": "add_caption",
@@ -239,21 +214,12 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "content": {
-                    "type": "string",
-                    "description": "The caption text to display"
-                },
-                "unsafe_allow_html": {
-                    "type": "boolean",
-                    "description": "Allow HTML in caption"
-                },
-                "help": {
-                    "type": "string",
-                    "description": "Optional tooltip text"
-                }
+                "content": {"type": "string", "description": "The caption text to display"},
+                "unsafe_allow_html": {"type": "boolean", "description": "Allow HTML in caption"},
+                "help": {"type": "string", "description": "Optional tooltip text"},
             },
-            "required": ["content"]
-        }
+            "required": ["content"],
+        },
     },
     {
         "name": "add_code",
@@ -261,21 +227,15 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "string",
-                    "description": "The code to display"
-                },
+                "code": {"type": "string", "description": "The code to display"},
                 "language": {
                     "type": "string",
-                    "description": "Programming language for syntax highlighting (e.g., 'python', 'javascript')"
+                    "description": "Programming language for syntax highlighting (e.g., 'python', 'javascript')",
                 },
-                "line_numbers": {
-                    "type": "boolean",
-                    "description": "Whether to show line numbers"
-                }
+                "line_numbers": {"type": "boolean", "description": "Whether to show line numbers"},
             },
-            "required": ["code"]
-        }
+            "required": ["code"],
+        },
     },
     {
         "name": "add_latex",
@@ -283,25 +243,16 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "content": {
-                    "type": "string",
-                    "description": "The LaTeX equation to display"
-                },
-                "help": {
-                    "type": "string",
-                    "description": "Optional tooltip text"
-                }
+                "content": {"type": "string", "description": "The LaTeX equation to display"},
+                "help": {"type": "string", "description": "Optional tooltip text"},
             },
-            "required": ["content"]
-        }
+            "required": ["content"],
+        },
     },
     {
         "name": "add_divider",
         "description": "Add a horizontal divider line using st.divider()",
-        "inputSchema": {
-            "type": "object",
-            "properties": {}
-        }
+        "inputSchema": {"type": "object", "properties": {}},
     },
     {
         "name": "add_html",
@@ -309,17 +260,11 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "html": {
-                    "type": "string",
-                    "description": "The HTML content to display"
-                },
-                "help": {
-                    "type": "string",
-                    "description": "Optional tooltip text"
-                }
+                "html": {"type": "string", "description": "The HTML content to display"},
+                "help": {"type": "string", "description": "Optional tooltip text"},
             },
-            "required": ["html"]
-        }
+            "required": ["html"],
+        },
     },
     {
         "name": "add_badge",
@@ -327,16 +272,10 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "label": {
-                    "type": "string",
-                    "description": "The badge label text"
-                },
-                "icon": {
-                    "type": "string",
-                    "description": "Optional icon emoji or name"
-                }
+                "label": {"type": "string", "description": "The badge label text"},
+                "icon": {"type": "string", "description": "Optional icon emoji or name"},
             },
-            "required": ["label"]
-        }
-    }
+            "required": ["label"],
+        },
+    },
 ]

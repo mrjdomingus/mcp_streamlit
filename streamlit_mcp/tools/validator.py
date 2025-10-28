@@ -10,7 +10,7 @@ def validate_implementation(
     page_plan_file: Optional[str] = None,
     app_plan_file: Optional[str] = None,
     page_type: Optional[str] = None,
-    validation_mode: str = "standard"
+    validation_mode: str = "standard",
 ) -> Dict[str, Any]:
     """
     Validate implementation code against page and app plans.
@@ -48,7 +48,7 @@ def validate_implementation(
         "best_practices_validation": {},
         "missing_elements": [],
         "suggestions": [],
-        "alignment_with_plan": {}
+        "alignment_with_plan": {},
     }
 
     # Load plans if provided
@@ -108,25 +108,26 @@ def validate_implementation(
 
 
 def _validate_components(
-    code: str,
-    page_type: Optional[str],
-    page_plan_content: Optional[str]
+    code: str, page_type: Optional[str], page_plan_content: Optional[str]
 ) -> Dict[str, Any]:
     """Validate presence of expected components."""
-    results = {
-        "score": 0,
-        "found_components": [],
-        "missing_components": [],
-        "suggestions": []
-    }
+    results = {"score": 0, "found_components": [], "missing_components": [], "suggestions": []}
 
     # Define expected components by page type
     expected_by_type = {
-        "dashboard": ["st.metric", "st.plotly_chart|st.altair_chart|st.line_chart|st.bar_chart", "st.dataframe"],
-        "data_explorer": ["st.dataframe|st.data_editor", "st.file_uploader|load_data", "st.selectbox|st.multiselect"],
+        "dashboard": [
+            "st.metric",
+            "st.plotly_chart|st.altair_chart|st.line_chart|st.bar_chart",
+            "st.dataframe",
+        ],
+        "data_explorer": [
+            "st.dataframe|st.data_editor",
+            "st.file_uploader|load_data",
+            "st.selectbox|st.multiselect",
+        ],
         "chat": ["st.chat_message", "st.chat_input", "st.session_state"],
         "form": ["st.form", "st.text_input|st.number_input", "st.form_submit_button"],
-        "report": ["st.metric", "st.tabs", "st.markdown|st.write"]
+        "report": ["st.metric", "st.tabs", "st.markdown|st.write"],
     }
 
     expected_components = expected_by_type.get(page_type, []) if page_type else []
@@ -137,13 +138,13 @@ def _validate_components(
         # Handle OR patterns (e.g., "st.line_chart|st.bar_chart")
         if "|" in expected:
             patterns = expected.split("|")
-            if any(re.search(rf'\b{re.escape(p)}\b', code) for p in patterns):
+            if any(re.search(rf"\b{re.escape(p)}\b", code) for p in patterns):
                 found_count += 1
                 results["found_components"].append(expected)
             else:
                 results["missing_components"].append(f"One of: {expected}")
         else:
-            if re.search(rf'\b{re.escape(expected)}\b', code):
+            if re.search(rf"\b{re.escape(expected)}\b", code):
                 found_count += 1
                 results["found_components"].append(expected)
             else:
@@ -168,63 +169,62 @@ def _validate_components(
 
 
 def _validate_best_practices(
-    code: str,
-    page_type: Optional[str],
-    validation_mode: str
+    code: str, page_type: Optional[str], validation_mode: str
 ) -> Dict[str, Any]:
     """Validate Streamlit best practices."""
-    results = {
-        "score": 100,
-        "practices_checked": [],
-        "violations": [],
-        "suggestions": []
-    }
+    results = {"score": 100, "practices_checked": [], "violations": [], "suggestions": []}
 
     checks = []
 
     # Critical checks (all modes)
-    checks.append({
-        "name": "Page configuration",
-        "pattern": r"st\.set_page_config",
-        "severity": "critical",
-        "message": "Missing st.set_page_config() - should be first Streamlit command"
-    })
+    checks.append(
+        {
+            "name": "Page configuration",
+            "pattern": r"st\.set_page_config",
+            "severity": "critical",
+            "message": "Missing st.set_page_config() - should be first Streamlit command",
+        }
+    )
 
     # Standard checks
     if validation_mode in ["standard", "strict"]:
-        checks.extend([
-            {
-                "name": "Session state initialization",
-                "pattern": r"if .* not in st\.session_state:",
-                "severity": "warning",
-                "message": "Consider initializing session_state before accessing",
-                "context": "st.session_state" in code
-            },
-            {
-                "name": "Data caching",
-                "pattern": r"@st\.cache_data|@st\.cache_resource",
-                "severity": "warning",
-                "message": "Consider using @st.cache_data for data loading functions",
-                "context": "def load" in code or "def get_data" in code or "pd.read" in code
-            },
-        ])
+        checks.extend(
+            [
+                {
+                    "name": "Session state initialization",
+                    "pattern": r"if .* not in st\.session_state:",
+                    "severity": "warning",
+                    "message": "Consider initializing session_state before accessing",
+                    "context": "st.session_state" in code,
+                },
+                {
+                    "name": "Data caching",
+                    "pattern": r"@st\.cache_data|@st\.cache_resource",
+                    "severity": "warning",
+                    "message": "Consider using @st.cache_data for data loading functions",
+                    "context": "def load" in code or "def get_data" in code or "pd.read" in code,
+                },
+            ]
+        )
 
     # Strict checks
     if validation_mode == "strict":
-        checks.extend([
-            {
-                "name": "Type hints",
-                "pattern": r"def \w+\([^)]*:[^)]+\) ->",
-                "severity": "info",
-                "message": "Add type hints to functions for better code quality"
-            },
-            {
-                "name": "Docstrings",
-                "pattern": r'""".*?"""',
-                "severity": "info",
-                "message": "Add docstrings to document your functions"
-            }
-        ])
+        checks.extend(
+            [
+                {
+                    "name": "Type hints",
+                    "pattern": r"def \w+\([^)]*:[^)]+\) ->",
+                    "severity": "info",
+                    "message": "Add type hints to functions for better code quality",
+                },
+                {
+                    "name": "Docstrings",
+                    "pattern": r'""".*?"""',
+                    "severity": "info",
+                    "message": "Add docstrings to document your functions",
+                },
+            ]
+        )
 
     # Run checks
     points_deducted = 0
@@ -236,11 +236,13 @@ def _validate_best_practices(
         results["practices_checked"].append(check["name"])
 
         if not re.search(check["pattern"], code, re.DOTALL):
-            results["violations"].append({
-                "practice": check["name"],
-                "severity": check["severity"],
-                "message": check["message"]
-            })
+            results["violations"].append(
+                {
+                    "practice": check["name"],
+                    "severity": check["severity"],
+                    "message": check["message"],
+                }
+            )
 
             # Deduct points based on severity
             if check["severity"] == "critical":
@@ -258,16 +260,14 @@ def _validate_best_practices(
 
 
 def _validate_plan_alignment(
-    code: str,
-    page_plan_content: Optional[str],
-    app_plan_content: Optional[str]
+    code: str, page_plan_content: Optional[str], app_plan_content: Optional[str]
 ) -> Dict[str, Any]:
     """Validate alignment with plans."""
     results = {
         "score": 100,
         "suggestions": [],
         "plan_requirements_met": 0,
-        "plan_requirements_total": 0
+        "plan_requirements_total": 0,
     }
 
     if not page_plan_content and not app_plan_content:
@@ -286,9 +286,7 @@ def _validate_plan_alignment(
             if req.lower() in code.lower():
                 requirements_met += 1
             else:
-                results["suggestions"].append(
-                    f"Plan requirement not implemented: {req}"
-                )
+                results["suggestions"].append(f"Plan requirement not implemented: {req}")
 
     if app_plan_content:
         # Check for shared dependencies mentioned in app plan
@@ -313,10 +311,7 @@ def _extract_components_from_plan(plan_content: str) -> List[str]:
     components = []
 
     # Look for component mentions in backticks or code blocks
-    patterns = [
-        r"`(st\.\w+)`",
-        r"```python\n(.*?)```"
-    ]
+    patterns = [r"`(st\.\w+)`", r"```python\n(.*?)```"]
 
     for pattern in patterns:
         matches = re.findall(pattern, plan_content, re.DOTALL)
@@ -332,11 +327,11 @@ def _extract_requirements_from_plan(plan_content: str) -> List[str]:
     requirements = []
 
     # Look for bullet points or numbered items
-    lines = plan_content.split('\n')
+    lines = plan_content.split("\n")
     for line in lines:
         # Check for implementation steps or requirements
-        if re.match(r'^\s*[-*\d.]+\s+', line):
-            clean_line = re.sub(r'^\s*[-*\d.]+\s+', '', line).strip()
+        if re.match(r"^\s*[-*\d.]+\s+", line):
+            clean_line = re.sub(r"^\s*[-*\d.]+\s+", "", line).strip()
             if clean_line and len(clean_line) > 10:  # Meaningful requirement
                 requirements.append(clean_line[:100])  # Truncate long lines
 
@@ -349,7 +344,7 @@ def _extract_shared_dependencies(app_plan_content: str) -> List[str]:
 
     # Look for shared dependencies section
     if "shared dependencies" in app_plan_content.lower():
-        lines = app_plan_content.split('\n')
+        lines = app_plan_content.split("\n")
         in_section = False
 
         for line in lines:
@@ -358,10 +353,10 @@ def _extract_shared_dependencies(app_plan_content: str) -> List[str]:
                 continue
 
             if in_section:
-                if line.startswith('#'):  # New section
+                if line.startswith("#"):  # New section
                     break
-                if line.strip().startswith('-'):
-                    dep = re.sub(r'^\s*-\s*', '', line).strip()
+                if line.strip().startswith("-"):
+                    dep = re.sub(r"^\s*-\s*", "", line).strip()
                     if dep:
                         dependencies.append(dep[:50])  # Truncate
 
@@ -407,30 +402,27 @@ TOOL = {
     "inputSchema": {
         "type": "object",
         "properties": {
-            "code": {
-                "type": "string",
-                "description": "The implementation code to validate"
-            },
+            "code": {"type": "string", "description": "The implementation code to validate"},
             "page_plan_file": {
                 "type": "string",
-                "description": "Path to the page plan markdown file (e.g., './plans/page_dashboard.md')"
+                "description": "Path to the page plan markdown file (e.g., './plans/page_dashboard.md')",
             },
             "app_plan_file": {
                 "type": "string",
-                "description": "Path to the full app plan markdown file (e.g., './plans/full_plan.md')"
+                "description": "Path to the full app plan markdown file (e.g., './plans/full_plan.md')",
             },
             "page_type": {
                 "type": "string",
                 "enum": ["dashboard", "data_explorer", "chat", "form", "report", "custom"],
-                "description": "Expected page type for component validation"
+                "description": "Expected page type for component validation",
             },
             "validation_mode": {
                 "type": "string",
                 "enum": ["lenient", "standard", "strict"],
                 "description": "Validation strictness level",
-                "default": "standard"
-            }
+                "default": "standard",
+            },
         },
-        "required": ["code"]
-    }
+        "required": ["code"],
+    },
 }

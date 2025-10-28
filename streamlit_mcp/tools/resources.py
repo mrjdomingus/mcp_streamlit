@@ -1,9 +1,8 @@
 """Resource management tools for accessing guides, snippets, and templates."""
 
 import json
-import os
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 
 # Get the base directory for resources
@@ -28,7 +27,7 @@ def get_caching_guide(topic: str = "overview") -> str:
     guides = {
         "overview": RESOURCES_DIR / "guides" / "caching_deep_dive.md",
         "cache_data": RESOURCES_DIR / "guides" / "cache_data_guide.md",
-        "cache_resource": RESOURCES_DIR / "guides" / "cache_resource_guide.md"
+        "cache_resource": RESOURCES_DIR / "guides" / "cache_resource_guide.md",
     }
 
     guide_path = guides.get(topic)
@@ -49,7 +48,7 @@ def get_docs_overview() -> str:
     docs_path = RESOURCES_DIR / "docs_overview.md"
     if not docs_path.exists():
         return "Documentation overview not found."
-    
+
     return docs_path.read_text()
 
 
@@ -79,60 +78,60 @@ def get_api_quick_ref(api_name: str) -> str:
         "tabs": "api-reference/layout/tabs.md",
         "plotly_chart": "api-reference/charts/plotly_chart.md",
         "bar_chart": "api-reference/charts/bar_chart.md",
-        "line_chart": "api-reference/charts/line_chart.md"
+        "line_chart": "api-reference/charts/line_chart.md",
     }
-    
+
     file_path = api_map.get(api_name.lower())
     if not file_path:
         available_apis = ", ".join(sorted(api_map.keys()))
         return f"API '{api_name}' not found in quick reference. Available APIs: {available_apis}"
-    
+
     full_path = RESOURCES_DIR / "official" / file_path
     if not full_path.exists():
         return f"Documentation file not found: {file_path}"
-    
+
     try:
         content = full_path.read_text()
-        lines = content.split('\n')
-        
+        lines = content.split("\n")
+
         # Extract key information
         title = ""
         description = ""
         signature = ""
         example = ""
-        
+
         in_frontmatter = False
         in_code_block = False
         code_block_content = []
-        
+
         for i, line in enumerate(lines):
             if line.strip() == "---":
                 in_frontmatter = not in_frontmatter
                 continue
-                
+
             if in_frontmatter:
-                if line.startswith('title:'):
-                    title = line.replace('title:', '').strip()
-                elif line.startswith('description:'):
-                    description = line.replace('description:', '').strip()
+                if line.startswith("title:"):
+                    title = line.replace("title:", "").strip()
+                elif line.startswith("description:"):
+                    description = line.replace("description:", "").strip()
             else:
                 # Look for function signature
-                if 'st.' in line and '(' in line and not signature:
+                if "st." in line and "(" in line and not signature:
                     signature = line.strip()
-                
+
                 # Capture first code example
-                if line.strip().startswith('```python') and not example:
+                if line.strip().startswith("```python") and not example:
                     in_code_block = True
                     continue
-                elif line.strip() == '```' and in_code_block:
-                    example = '\n'.join(code_block_content)
+                elif line.strip() == "```" and in_code_block:
+                    example = "\n".join(code_block_content)
                     break
                 elif in_code_block:
                     code_block_content.append(line)
                     if len(code_block_content) > 10:  # Limit example length
-                        example = '\n'.join(code_block_content)
+                        example = "\n".join(code_block_content)
                         break
-        
+
         # Format quick reference
         quick_ref = f"## {title}\n\n"
         if description:
@@ -141,11 +140,11 @@ def get_api_quick_ref(api_name: str) -> str:
             quick_ref += f"**Signature**: `{signature}`\n\n"
         if example:
             quick_ref += f"**Example**:\n```python\n{example}\n```\n\n"
-        
+
         quick_ref += f"**Full documentation**: `official/{file_path}`"
-        
+
         return quick_ref
-        
+
     except Exception as e:
         return f"Error reading API documentation: {str(e)}"
 
@@ -164,10 +163,10 @@ def search_develop_docs(query: str, mode: str = "quick") -> str:
     official_dir = RESOURCES_DIR / "official"
     if not official_dir.exists():
         return "Official documentation directory not found."
-    
+
     results = []
     search_term = query.lower()
-    
+
     # Search through markdown files
     for md_file in official_dir.rglob("*.md"):
         try:
@@ -175,50 +174,50 @@ def search_develop_docs(query: str, mode: str = "quick") -> str:
             if search_term in content.lower():
                 # Get relative path from official docs
                 rel_path = md_file.relative_to(official_dir)
-                
+
                 if mode == "quick":
                     # Quick mode: just show file path and brief description
-                    title_line = content.split('\n')[0] if content.split('\n') else ""
-                    if title_line.startswith('title:'):
-                        title = title_line.replace('title:', '').strip().strip('"')
+                    title_line = content.split("\n")[0] if content.split("\n") else ""
+                    if title_line.startswith("title:"):
+                        title = title_line.replace("title:", "").strip().strip('"')
                     else:
-                        title = rel_path.stem.replace('-', ' ').title()
-                    
+                        title = rel_path.stem.replace("-", " ").title()
+
                     # Get first description line
-                    lines = content.split('\n')
+                    lines = content.split("\n")
                     description = ""
                     for line in lines:
-                        if line.startswith('description:'):
-                            description = line.replace('description:', '').strip()
+                        if line.startswith("description:"):
+                            description = line.replace("description:", "").strip()
                             break
-                    
+
                     results.append(f"**{rel_path}**: {title}")
                     if description:
                         results.append(f"  ↳ {description}")
-                    
+
                 else:
                     # Detailed mode: show context around matches
-                    lines = content.split('\n')
+                    lines = content.split("\n")
                     matching_lines = []
                     for i, line in enumerate(lines):
                         if search_term in line.lower():
                             # Include context around the match
-                            start = max(0, i-1)
-                            end = min(len(lines), i+2)
-                            context = '\n'.join(lines[start:end])
+                            start = max(0, i - 1)
+                            end = min(len(lines), i + 2)
+                            context = "\n".join(lines[start:end])
                             matching_lines.append(f"Line {i+1}: {context}")
                             if len(matching_lines) >= 3:  # Limit matches per file
                                 break
-                    
+
                     if matching_lines:
                         results.append(f"**{rel_path}**:\n" + "\n\n".join(matching_lines))
-                        
-        except Exception as e:
+
+        except Exception:
             continue  # Skip files that can't be read
-    
+
     if not results:
         return f"No matches found for '{query}' in official Streamlit documentation."
-    
+
     if mode == "quick":
         # Show more results in quick mode since they're shorter
         result_count = min(10, len(results))
@@ -242,9 +241,7 @@ def get_architecture_guide(topic: str = "execution") -> str:
     Returns:
         Markdown content of the guide
     """
-    guides = {
-        "execution": RESOURCES_DIR / "guides" / "execution_model.md"
-    }
+    guides = {"execution": RESOURCES_DIR / "guides" / "execution_model.md"}
 
     guide_path = guides.get(topic)
     if not guide_path or not guide_path.exists():
@@ -273,7 +270,7 @@ def get_code_snippets(category: str = "all") -> Dict[str, Any]:
         "caching": RESOURCES_DIR / "snippets" / "caching_snippets.json",
         "navigation": RESOURCES_DIR / "snippets" / "navigation_snippets.json",
         "session_state": RESOURCES_DIR / "snippets" / "session_state_snippets.json",
-        "data_loading": RESOURCES_DIR / "snippets" / "data_loading_snippets.json"
+        "data_loading": RESOURCES_DIR / "snippets" / "data_loading_snippets.json",
     }
 
     if category == "all":
@@ -312,9 +309,9 @@ def search_snippets(query: str) -> Dict[str, Any]:
                 if isinstance(snippet, dict):
                     # Search in description, code, and use_case
                     searchable = (
-                        snippet.get("description", "").lower() +
-                        snippet.get("code", "").lower() +
-                        snippet.get("use_case", "").lower()
+                        snippet.get("description", "").lower()
+                        + snippet.get("code", "").lower()
+                        + snippet.get("use_case", "").lower()
                     )
                     if query_lower in searchable:
                         if category not in results:
@@ -339,7 +336,7 @@ def list_templates() -> Dict[str, Any]:
             "description": "Professional dashboard with caching best practices, metrics, and charts",
             "features": ["@st.cache_data", "TTL", "Plotly charts", "Filters", "Download"],
             "difficulty": "intermediate",
-            "lines": 300
+            "lines": 300,
         },
         "multipage_modern": {
             "file": "multipage_modern/",
@@ -348,9 +345,14 @@ def list_templates() -> Dict[str, Any]:
             "description": "Modern multi-page app using st.navigation() with auth",
             "features": ["st.navigation()", "Authentication", "State sharing", "Grouped pages"],
             "difficulty": "intermediate",
-            "files": ["app.py", "pages_lib/home.py", "pages_lib/data_analysis.py",
-                     "pages_lib/visualizations.py", "pages_lib/settings.py"]
-        }
+            "files": [
+                "app.py",
+                "pages_lib/home.py",
+                "pages_lib/data_analysis.py",
+                "pages_lib/visualizations.py",
+                "pages_lib/settings.py",
+            ],
+        },
     }
 
     # Add existence check
@@ -470,7 +472,7 @@ def load_data():
         "reason": reason,
         "example": example,
         "additional_recommendations": recommendations,
-        "learn_more": f"Use get_caching_guide('{decorator.replace('cache_', '')}') for details"
+        "learn_more": f"Use get_caching_guide('{decorator.replace('cache_', '')}') for details",
     }
 
 
@@ -499,10 +501,10 @@ TOOLS = [
                     "type": "string",
                     "enum": ["overview", "cache_data", "cache_resource"],
                     "description": "Which caching topic: overview (complete guide), cache_data, or cache_resource",
-                    "default": "overview"
+                    "default": "overview",
                 }
-            }
-        }
+            },
+        },
     },
     {
         "name": "get_architecture_guide",
@@ -514,10 +516,10 @@ TOOLS = [
                     "type": "string",
                     "enum": ["execution"],
                     "description": "Which architecture topic",
-                    "default": "execution"
+                    "default": "execution",
                 }
-            }
-        }
+            },
+        },
     },
     {
         "name": "get_code_snippets",
@@ -529,10 +531,10 @@ TOOLS = [
                     "type": "string",
                     "enum": ["all", "caching", "navigation", "session_state", "data_loading"],
                     "description": "Snippet category to retrieve",
-                    "default": "all"
+                    "default": "all",
                 }
-            }
-        }
+            },
+        },
     },
     {
         "name": "search_snippets",
@@ -540,21 +542,15 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "Search term to find in snippets"
-                }
+                "query": {"type": "string", "description": "Search term to find in snippets"}
             },
-            "required": ["query"]
-        }
+            "required": ["query"],
+        },
     },
     {
         "name": "list_templates",
         "description": "List all available Streamlit app templates",
-        "inputSchema": {
-            "type": "object",
-            "properties": {}
-        }
+        "inputSchema": {"type": "object", "properties": {}},
     },
     {
         "name": "load_template",
@@ -565,11 +561,11 @@ TOOLS = [
                 "template_name": {
                     "type": "string",
                     "enum": ["dashboard_cached", "multipage_modern"],
-                    "description": "Name of template to load"
+                    "description": "Name of template to load",
                 }
             },
-            "required": ["template_name"]
-        }
+            "required": ["template_name"],
+        },
     },
     {
         "name": "suggest_cache_strategy",
@@ -579,27 +575,21 @@ TOOLS = [
             "properties": {
                 "use_case": {
                     "type": "string",
-                    "description": "Description of what you want to cache (e.g., 'load CSV file', 'ML model', 'API call')"
+                    "description": "Description of what you want to cache (e.g., 'load CSV file', 'ML model', 'API call')",
                 }
             },
-            "required": ["use_case"]
-        }
+            "required": ["use_case"],
+        },
     },
     {
         "name": "get_navigation_guide",
         "description": "Get guide on modern st.navigation() patterns and multi-page apps",
-        "inputSchema": {
-            "type": "object",
-            "properties": {}
-        }
+        "inputSchema": {"type": "object", "properties": {}},
     },
     {
         "name": "get_docs_overview",
         "description": "Get complete Streamlit documentation index with API reference, concepts, and tutorials",
-        "inputSchema": {
-            "type": "object",
-            "properties": {}
-        }
+        "inputSchema": {"type": "object", "properties": {}},
     },
     {
         "name": "get_api_quick_ref",
@@ -609,11 +599,11 @@ TOOLS = [
             "properties": {
                 "api_name": {
                     "type": "string",
-                    "description": "Name of the API function (e.g., 'cache_data', 'session_state', 'dataframe', 'button', 'plotly_chart')"
+                    "description": "Name of the API function (e.g., 'cache_data', 'session_state', 'dataframe', 'button', 'plotly_chart')",
                 }
             },
-            "required": ["api_name"]
-        }
+            "required": ["api_name"],
+        },
     },
     {
         "name": "search_develop_docs",
@@ -623,16 +613,16 @@ TOOLS = [
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "Search term to find in documentation (e.g., 'cache_data', 'session_state', 'charts')"
+                    "description": "Search term to find in documentation (e.g., 'cache_data', 'session_state', 'charts')",
                 },
                 "mode": {
                     "type": "string",
                     "enum": ["quick", "detailed"],
                     "description": "Search mode: 'quick' for brief file list with descriptions, 'detailed' for full context around matches",
-                    "default": "quick"
-                }
+                    "default": "quick",
+                },
             },
-            "required": ["query"]
-        }
-    }
+            "required": ["query"],
+        },
+    },
 ]

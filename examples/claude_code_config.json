@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "streamlit": {
+      "command": "python",
+      "args": [
+        "-m",
+        "streamlit_mcp.server"
+      ],
+      "env": {},
+      "disabled": false
+    }
+  }
+}

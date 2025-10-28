@@ -1,7 +1,7 @@
 """Vision and drawing analysis helpers for interpreting page layouts."""
 
 import re
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any
 
 
 # Component label mappings for text-based identification
@@ -12,7 +12,6 @@ COMPONENT_KEYWORDS = {
     "plot": "charts",
     "visualization": "charts",
     "viz": "charts",
-
     # Data handling
     "upload": "data_upload",
     "file": "data_upload",
@@ -22,7 +21,6 @@ COMPONENT_KEYWORDS = {
     "query": "data_filtering",
     "download": "file_download",
     "export": "file_download",
-
     # Metrics and data display
     "metric": "metrics",
     "kpi": "metrics",
@@ -31,7 +29,6 @@ COMPONENT_KEYWORDS = {
     "table": "charts",
     "dataframe": "charts",
     "grid": "charts",
-
     # Interactive elements
     "button": "user_input",
     "input": "user_input",
@@ -40,25 +37,22 @@ COMPONENT_KEYWORDS = {
     "select": "user_input",
     "dropdown": "user_input",
     "slider": "user_input",
-
     # Chat and messaging
     "chat": "chat_interface",
     "message": "chat_interface",
     "conversation": "chat_interface",
-
     # Auth
     "login": "authentication",
     "auth": "authentication",
     "sign in": "authentication",
     "user": "authentication",
-
     # Advanced features
     "wizard": "multi_step_form",
     "stepper": "multi_step_form",
     "multi-step": "multi_step_form",
     "realtime": "real_time_updates",
     "live": "real_time_updates",
-    "stream": "real_time_updates"
+    "stream": "real_time_updates",
 }
 
 
@@ -69,7 +63,7 @@ PAGE_TYPE_KEYWORDS = {
     "chat": ["chat", "chatbot", "conversation", "ai", "assistant"],
     "form": ["form", "input", "wizard", "survey", "questionnaire"],
     "report": ["report", "summary", "findings", "document"],
-    "custom": []  # default fallback
+    "custom": [],  # default fallback
 }
 
 
@@ -79,7 +73,7 @@ DATA_SOURCE_KEYWORDS = {
     "api": ["api", "fetch", "request", "endpoint", "rest", "http"],
     "database": ["database", "db", "sql", "query", "postgres", "mysql"],
     "example": ["example", "sample", "demo", "mock", "placeholder"],
-    "none": []
+    "none": [],
 }
 
 
@@ -118,7 +112,7 @@ def analyze_drawing_text(drawing_description: str, canvas_data: Dict = None) -> 
         "page_type": page_type,
         "data_source": data_source,
         "layout_preference": layout_pref,
-        "confidence": calculate_confidence(features, page_type, data_source)
+        "confidence": calculate_confidence(features, page_type, data_source),
     }
 
 
@@ -196,7 +190,7 @@ def analyze_layout_preference(text: str, canvas_data: Dict = None) -> str:
         return "sidebar"
 
     # Check for multiple columns indicator (suggests wide layout)
-    if re.search(r'\d+\s+column', text) or "multi-column" in text or "multicolumn" in text:
+    if re.search(r"\d+\s+column", text) or "multi-column" in text or "multicolumn" in text:
         return "wide"
 
     # Analyze canvas data if available
@@ -261,10 +255,12 @@ def analyze_image_layout_structure(description: str) -> Dict[str, Any]:
         columns = 3  # Default for multi-column
 
     # Detect sidebar
-    has_sidebar = ("sidebar" in desc_lower or
-                   "side panel" in desc_lower or
-                   "left menu" in desc_lower or
-                   "navigation panel" in desc_lower)
+    has_sidebar = (
+        "sidebar" in desc_lower
+        or "side panel" in desc_lower
+        or "left menu" in desc_lower
+        or "navigation panel" in desc_lower
+    )
 
     # Detect sections
     sections = []
@@ -277,7 +273,7 @@ def analyze_image_layout_structure(description: str) -> Dict[str, Any]:
         "columns": columns,
         "has_sidebar": has_sidebar,
         "sections": sections,
-        "complexity": "complex" if (columns > 2 or has_sidebar) else "simple"
+        "complexity": "complex" if (columns > 2 or has_sidebar) else "simple",
     }
 
 

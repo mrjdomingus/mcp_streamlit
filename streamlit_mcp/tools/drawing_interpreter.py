@@ -1,18 +1,19 @@
 """Drawing interpretation tool - converts page sketches to planner parameters."""
 
 import json
-import base64
 from typing import Dict, Any, Optional, List
 from ..utils.vision_helpers import (
     analyze_drawing_text,
     analyze_image_layout_structure,
-    create_enhanced_description
+    create_enhanced_description,
 )
 from .planner import plan_streamlit_page
 from .app_planner import create_app_plan, create_page_plan
 
 
-def _detect_multipage_intent(description: str, canvas_dict: Optional[Dict] = None) -> Dict[str, Any]:
+def _detect_multipage_intent(
+    description: str, canvas_dict: Optional[Dict] = None
+) -> Dict[str, Any]:
     """
     Detect if the drawing describes a multi-page app or single page.
 
@@ -25,14 +26,26 @@ def _detect_multipage_intent(description: str, canvas_dict: Optional[Dict] = Non
 
     # Keywords that indicate multi-page
     multipage_indicators = [
-        "multi-page", "multipage", "multiple pages", "navigation",
-        "home page", "dashboard page", "settings page",
-        "pages:", "page 1", "page 2", "page 3",
-        "sidebar navigation", "nav menu", "menu items"
+        "multi-page",
+        "multipage",
+        "multiple pages",
+        "navigation",
+        "home page",
+        "dashboard page",
+        "settings page",
+        "pages:",
+        "page 1",
+        "page 2",
+        "page 3",
+        "sidebar navigation",
+        "nav menu",
+        "menu items",
     ]
 
     # Check for page indicators
-    has_multipage_keywords = any(indicator in description_lower for indicator in multipage_indicators)
+    has_multipage_keywords = any(
+        indicator in description_lower for indicator in multipage_indicators
+    )
 
     # Try to extract page names
     pages = []
@@ -40,22 +53,35 @@ def _detect_multipage_intent(description: str, canvas_dict: Optional[Dict] = Non
 
     if has_multipage_keywords:
         # Look for explicit page mentions
-        lines = description.split('\n')
+        lines = description.split("\n")
         for line in lines:
             line_lower = line.lower()
             # Match patterns like "Home page", "Dashboard:", "1. Settings"
             if any(word in line_lower for word in ["page", "screen", "view"]):
                 # Extract page name
-                for page_type in ["home", "dashboard", "settings", "about", "data", "analytics",
-                                "profile", "admin", "reports", "visualizations", "chat"]:
+                for page_type in [
+                    "home",
+                    "dashboard",
+                    "settings",
+                    "about",
+                    "data",
+                    "analytics",
+                    "profile",
+                    "admin",
+                    "reports",
+                    "visualizations",
+                    "chat",
+                ]:
                     if page_type in line_lower:
                         page_name = page_type.title()
                         if not any(p["name"] == page_name for p in pages):
-                            pages.append({
-                                "name": page_name,
-                                "description": line.strip(),
-                                "type": _infer_page_type(page_type)
-                            })
+                            pages.append(
+                                {
+                                    "name": page_name,
+                                    "description": line.strip(),
+                                    "type": _infer_page_type(page_type),
+                                }
+                            )
 
         # Try to extract app name from first lines
         first_line = lines[0] if lines else ""
@@ -67,7 +93,7 @@ def _detect_multipage_intent(description: str, canvas_dict: Optional[Dict] = Non
     return {
         "is_multipage": is_multipage,
         "pages": pages if is_multipage else [],
-        "app_name": app_name if is_multipage else None
+        "app_name": app_name if is_multipage else None,
     }
 
 
@@ -79,7 +105,9 @@ def _infer_page_type(page_name_lower: str) -> str:
         return "data_explorer"
     elif any(word in page_name_lower for word in ["chat", "messages", "conversation"]):
         return "chat"
-    elif any(word in page_name_lower for word in ["settings", "config", "preferences", "profile", "form"]):
+    elif any(
+        word in page_name_lower for word in ["settings", "config", "preferences", "profile", "form"]
+    ):
         return "form"
     elif any(word in page_name_lower for word in ["report", "summary", "results"]):
         return "report"
@@ -93,7 +121,7 @@ def interpret_page_drawing(
     canvas_data: Optional[str] = None,
     confidence_threshold: str = "medium",
     auto_plan: bool = True,
-    workflow_mode: str = "auto"
+    workflow_mode: str = "auto",
 ) -> Dict[str, Any]:
     """
     Interpret a page drawing (sketch/wireframe) and translate it to planner parameters.
@@ -170,13 +198,16 @@ def interpret_page_drawing(
     # Route to appropriate workflow
     if is_multipage:
         return _handle_multipage_workflow(
-            drawing_description, multipage_detection, canvas_dict,
-            confidence_threshold, auto_plan, warnings
+            drawing_description,
+            multipage_detection,
+            canvas_dict,
+            confidence_threshold,
+            auto_plan,
+            warnings,
         )
     else:
         return _handle_single_page_workflow(
-            drawing_description, canvas_dict, confidence_threshold,
-            auto_plan, warnings, image_data
+            drawing_description, canvas_dict, confidence_threshold, auto_plan, warnings, image_data
         )
 
 
@@ -186,7 +217,7 @@ def _handle_single_page_workflow(
     confidence_threshold: str,
     auto_plan: bool,
     warnings: List[str],
-    image_data: Optional[str] = None
+    image_data: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Handle single-page workflow (existing logic)."""
     # Analyze the drawing text and canvas structure
@@ -225,7 +256,7 @@ def _handle_single_page_workflow(
         "data_source": extracted_info["data_source"],
         "layout_preference": extracted_info["layout_preference"],
         "multipage": False,  # Could be inferred from drawing in future
-        "include_testing": False
+        "include_testing": False,
     }
 
     # Add data freshness and performance hints if data source detected
@@ -241,10 +272,10 @@ def _handle_single_page_workflow(
             "data_source": extracted_info["data_source"],
             "layout_preference": extracted_info["layout_preference"],
             "layout_structure": layout_structure,
-            "confidence": confidence
+            "confidence": confidence,
         },
         "planner_parameters": planner_params,
-        "warnings": warnings
+        "warnings": warnings,
     }
 
     # Call planner if auto_plan is True
@@ -267,7 +298,7 @@ def _handle_multipage_workflow(
     canvas_dict: Optional[Dict],
     confidence_threshold: str,
     auto_plan: bool,
-    warnings: List[str]
+    warnings: List[str],
 ) -> Dict[str, Any]:
     """
     Handle multi-page workflow.
@@ -289,7 +320,7 @@ def _handle_multipage_workflow(
         detected_pages = [
             {"name": "Home", "description": "Main landing page", "type": "dashboard"},
             {"name": "Data", "description": "Data exploration page", "type": "data_explorer"},
-            {"name": "Settings", "description": "Settings page", "type": "form"}
+            {"name": "Settings", "description": "Settings page", "type": "form"},
         ]
 
     # Build result structure
@@ -299,20 +330,18 @@ def _handle_multipage_workflow(
             "app_name": app_name,
             "detected_pages": detected_pages,
             "page_count": len(detected_pages),
-            "confidence": "medium"  # Multi-page detection is generally medium confidence
+            "confidence": "medium",  # Multi-page detection is generally medium confidence
         },
         "warnings": warnings,
         "app_plan_result": None,
-        "page_plans": []
+        "page_plans": [],
     }
 
     if auto_plan:
         try:
             # Step 1: Create full app plan (ALWAYS FIRST!)
             app_plan_result = create_app_plan(
-                app_name=app_name,
-                description=drawing_description,
-                pages=detected_pages
+                app_name=app_name, description=drawing_description, pages=detected_pages
             )
             result["app_plan_result"] = app_plan_result
 
@@ -325,7 +354,7 @@ def _handle_multipage_workflow(
                         page_type=page.get("type", "custom"),
                         description=page.get("description", f"{page['name']} page"),
                         data_source="none",  # Can be inferred from description in future
-                        layout_preference="centered"
+                        layout_preference="centered",
                     )
                     page_plans.append(page_plan)
                 except Exception as e:
@@ -392,7 +421,7 @@ def _format_single_page_output(result: Dict[str, Any]) -> str:
     output.append(f"- **Columns**: {layout_struct.get('columns', 1)}")
     output.append(f"- **Sidebar**: {'Yes' if layout_struct.get('has_sidebar') else 'No'}")
     output.append(f"- **Complexity**: {layout_struct.get('complexity', 'simple').title()}")
-    if layout_struct.get('sections'):
+    if layout_struct.get("sections"):
         output.append(f"- **Sections**: {', '.join(layout_struct['sections'])}")
     output.append("")
 
@@ -417,7 +446,9 @@ def _format_single_page_output(result: Dict[str, Any]) -> str:
 
         output.append("## 📝 Generated Page Code")
         output.append("")
-        output.append("The planner has generated complete implementation code based on your drawing:")
+        output.append(
+            "The planner has generated complete implementation code based on your drawing:"
+        )
         output.append("")
         output.append("```python")
         output.append(planner_result.get("code", "# Code generation failed"))
@@ -451,7 +482,9 @@ def _format_single_page_output(result: Dict[str, Any]) -> str:
     output.append("")
 
     if interpretation["confidence"] == "low":
-        output.append("💡 **Tip**: Since confidence was low, consider providing more details about:")
+        output.append(
+            "💡 **Tip**: Since confidence was low, consider providing more details about:"
+        )
         output.append("   - Specific component types (e.g., 'line chart', 'upload button')")
         output.append("   - Data requirements (e.g., 'load data from API', 'user uploads CSV')")
         output.append("   - Layout details (e.g., 'sidebar on left', 'three columns')")
@@ -563,7 +596,9 @@ def _format_multipage_output(result: Dict[str, Any]) -> str:
     output.append("")
     output.append("- **Follow the plan**: Always refer back to the full app plan for consistency")
     output.append("- **Build incrementally**: Implement one page at a time and test")
-    output.append("- **Share state carefully**: Use `st.session_state` for data shared across pages")
+    output.append(
+        "- **Share state carefully**: Use `st.session_state` for data shared across pages"
+    )
     output.append("- **Keep navigation simple**: Use clear, descriptive page names")
     output.append("")
 
@@ -620,7 +655,7 @@ TOOL = {
                     "Example: 'Dashboard layout with sidebar containing filters. Main area "
                     "has 4 metric cards at top, two charts side by side (line and bar), "
                     "and a data table at the bottom.'"
-                )
+                ),
             },
             "image_data": {
                 "type": "string",
@@ -628,17 +663,17 @@ TOOL = {
                     "Optional base64-encoded image data (PNG or JPG format). Currently "
                     "used for reference only. Future versions will support full vision "
                     "analysis. Providing a detailed text description is recommended."
-                )
+                ),
             },
             "canvas_data": {
                 "type": "string",
                 "description": (
                     "Optional JSON string containing structured canvas data from drawing "
                     "tools like Excalidraw or Miro. Expected format: "
-                    '{\"elements\": [{\"type\": \"text\", \"text\": \"Upload Button\", '
-                    '\"x\": 100, \"y\": 200}, ...]}. This enhances interpretation accuracy '
+                    '{"elements": [{"type": "text", "text": "Upload Button", '
+                    '"x": 100, "y": 200}, ...]}. This enhances interpretation accuracy '
                     "when available."
-                )
+                ),
             },
             "confidence_threshold": {
                 "type": "string",
@@ -648,7 +683,7 @@ TOOL = {
                     "confidence in its interpretation is below this threshold, a warning "
                     "will be included suggesting more details. Default: 'medium'."
                 ),
-                "default": "medium"
+                "default": "medium",
             },
             "auto_plan": {
                 "type": "boolean",
@@ -658,7 +693,7 @@ TOOL = {
                     "If false, only returns the interpretation and planner parameters "
                     "for review before planning."
                 ),
-                "default": True
+                "default": True,
             },
             "workflow_mode": {
                 "type": "string",
@@ -671,9 +706,9 @@ TOOL = {
                     "- 'multi': Force multi-page workflow (uses create_app_plan + "
                     "create_page_plan for each page)"
                 ),
-                "default": "auto"
-            }
+                "default": "auto",
+            },
         },
-        "required": ["drawing_description"]
-    }
+        "required": ["drawing_description"],
+    },
 }

@@ -8,6 +8,7 @@ import importlib.util
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
+
 def test_imports():
     """Test that all modules can be imported."""
     print("Testing imports...")
@@ -63,7 +64,7 @@ def test_tool_functions():
 
     try:
         result = text.add_markdown("# Test Markdown")
-        assert 'st.markdown' in result
+        assert "st.markdown" in result
         print("✓ text.add_markdown")
     except Exception as e:
         print(f"✗ text.add_markdown: {e}")
@@ -80,7 +81,7 @@ def test_tool_functions():
 
     try:
         result = widgets.add_slider("Test Slider")
-        assert 'st.slider' in result
+        assert "st.slider" in result
         print("✓ widgets.add_slider")
     except Exception as e:
         print(f"✗ widgets.add_slider: {e}")
@@ -89,7 +90,7 @@ def test_tool_functions():
     # Test data display tools
     try:
         result = data.add_dataframe("df")
-        assert 'st.dataframe(df' in result
+        assert "st.dataframe(df" in result
         print("✓ data.add_dataframe")
     except Exception as e:
         print(f"✗ data.add_dataframe: {e}")
@@ -97,7 +98,7 @@ def test_tool_functions():
 
     try:
         result = data.add_metric("Revenue", "$1000", delta="+10%")
-        assert 'st.metric' in result
+        assert "st.metric" in result
         print("✓ data.add_metric")
     except Exception as e:
         print(f"✗ data.add_metric: {e}")
@@ -106,7 +107,7 @@ def test_tool_functions():
     # Test chart tools
     try:
         result = charts.add_line_chart("df")
-        assert 'st.line_chart' in result
+        assert "st.line_chart" in result
         print("✓ charts.add_line_chart")
     except Exception as e:
         print(f"✗ charts.add_line_chart: {e}")
@@ -114,7 +115,7 @@ def test_tool_functions():
 
     try:
         result = charts.add_plotly_chart("fig")
-        assert 'st.plotly_chart(fig' in result
+        assert "st.plotly_chart(fig" in result
         print("✓ charts.add_plotly_chart")
     except Exception as e:
         print(f"✗ charts.add_plotly_chart: {e}")
@@ -123,7 +124,7 @@ def test_tool_functions():
     # Test layout tools
     try:
         result = layout.add_columns(3)
-        assert 'st.columns' in result
+        assert "st.columns" in result
         print("✓ layout.add_columns")
     except Exception as e:
         print(f"✗ layout.add_columns: {e}")
@@ -131,7 +132,7 @@ def test_tool_functions():
 
     try:
         result = layout.add_tabs(["Tab 1", "Tab 2"])
-        assert 'st.tabs' in result
+        assert "st.tabs" in result
         print("✓ layout.add_tabs")
     except Exception as e:
         print(f"✗ layout.add_tabs: {e}")
@@ -140,7 +141,7 @@ def test_tool_functions():
     # Test status tools
     try:
         result = status.add_progress(0.5)
-        assert 'st.progress' in result
+        assert "st.progress" in result
         print("✓ status.add_progress")
     except Exception as e:
         print(f"✗ status.add_progress: {e}")
@@ -148,7 +149,7 @@ def test_tool_functions():
 
     try:
         result = status.add_success("Operation completed!")
-        assert 'st.success' in result
+        assert "st.success" in result
         print("✓ status.add_success")
     except Exception as e:
         print(f"✗ status.add_success: {e}")
@@ -157,7 +158,7 @@ def test_tool_functions():
     # Test media tools
     try:
         result = media.add_image("image.png")
-        assert 'st.image' in result
+        assert "st.image" in result
         print("✓ media.add_image")
     except Exception as e:
         print(f"✗ media.add_image: {e}")
@@ -165,7 +166,7 @@ def test_tool_functions():
 
     try:
         result = media.add_link_button("Visit", "https://example.com")
-        assert 'st.link_button' in result
+        assert "st.link_button" in result
         print("✓ media.add_link_button")
     except Exception as e:
         print(f"✗ media.add_link_button: {e}")
@@ -174,7 +175,7 @@ def test_tool_functions():
     # Test chat tools
     try:
         result = chat.add_chat_message("user")
-        assert 'st.chat_message' in result
+        assert "st.chat_message" in result
         print("✓ chat.add_chat_message")
     except Exception as e:
         print(f"✗ chat.add_chat_message: {e}")
@@ -182,7 +183,7 @@ def test_tool_functions():
 
     try:
         result = chat.add_chat_input("Type a message")
-        assert 'st.chat_input' in result
+        assert "st.chat_input" in result
         print("✓ chat.add_chat_input")
     except Exception as e:
         print(f"✗ chat.add_chat_input: {e}")
@@ -191,7 +192,7 @@ def test_tool_functions():
     # Test navigation tools
     try:
         result = navigation.add_navigation(["Home", "Settings"])
-        assert 'st.navigation' in result
+        assert "st.navigation" in result
         print("✓ navigation.add_navigation")
     except Exception as e:
         print(f"✗ navigation.add_navigation: {e}")
@@ -199,7 +200,7 @@ def test_tool_functions():
 
     try:
         result = navigation.switch_page("pages/settings.py")
-        assert 'st.switch_page' in result
+        assert "st.switch_page" in result
         print("✓ navigation.switch_page")
     except Exception as e:
         print(f"✗ navigation.switch_page: {e}")
@@ -208,7 +209,7 @@ def test_tool_functions():
     # Test state management tools
     try:
         result = state.init_session_state("counter", 0)
-        assert 'st.session_state' in result
+        assert "st.session_state" in result
         print("✓ state.init_session_state")
     except Exception as e:
         print(f"✗ state.init_session_state: {e}")
@@ -216,7 +217,7 @@ def test_tool_functions():
 
     try:
         result = state.manage_state_pattern("counter")
-        assert 'count' in result
+        assert "count" in result
         print("✓ state.manage_state_pattern")
     except Exception as e:
         print(f"✗ state.manage_state_pattern: {e}")
@@ -225,7 +226,7 @@ def test_tool_functions():
     # Test execution flow tools
     try:
         result = execution.add_fragment()
-        assert '@st.fragment' in result
+        assert "@st.fragment" in result
         print("✓ execution.add_fragment")
     except Exception as e:
         print(f"✗ execution.add_fragment: {e}")
@@ -233,7 +234,7 @@ def test_tool_functions():
 
     try:
         result = execution.add_rerun()
-        assert 'st.rerun()' in result
+        assert "st.rerun()" in result
         print("✓ execution.add_rerun")
     except Exception as e:
         print(f"✗ execution.add_rerun: {e}")
@@ -242,7 +243,7 @@ def test_tool_functions():
     # Test authentication tools
     try:
         result = auth.add_login()
-        assert 'st.login()' in result
+        assert "st.login()" in result
         print("✓ auth.add_login")
     except Exception as e:
         print(f"✗ auth.add_login: {e}")
@@ -250,7 +251,7 @@ def test_tool_functions():
 
     try:
         result = auth.add_logout()
-        assert 'st.logout()' in result
+        assert "st.logout()" in result
         print("✓ auth.add_logout")
     except Exception as e:
         print(f"✗ auth.add_logout: {e}")
@@ -258,7 +259,7 @@ def test_tool_functions():
 
     try:
         result = auth.check_user_status()
-        assert 'st.user.is_logged_in' in result
+        assert "st.user.is_logged_in" in result
         print("✓ auth.check_user_status")
     except Exception as e:
         print(f"✗ auth.check_user_status: {e}")
@@ -267,7 +268,7 @@ def test_tool_functions():
     # Test connection tools
     try:
         result = connections.add_sql_connection()
-        assert 'st.connection' in result
+        assert "st.connection" in result
         print("✓ connections.add_sql_connection")
     except Exception as e:
         print(f"✗ connections.add_sql_connection: {e}")
@@ -275,7 +276,7 @@ def test_tool_functions():
 
     try:
         result = connections.add_snowflake_connection()
-        assert 'st.connection' in result
+        assert "st.connection" in result
         print("✓ connections.add_snowflake_connection")
     except Exception as e:
         print(f"✗ connections.add_snowflake_connection: {e}")
@@ -283,7 +284,7 @@ def test_tool_functions():
 
     try:
         result = connections.add_custom_connection("my_conn")
-        assert 'st.connection' in result
+        assert "st.connection" in result
         print("✓ connections.add_custom_connection")
     except Exception as e:
         print(f"✗ connections.add_custom_connection: {e}")
@@ -295,11 +296,11 @@ def test_tool_functions():
             description="A simple dashboard",
             page_type="dashboard",
             features=["metrics", "charts"],
-            data_source="example"
+            data_source="example",
         )
-        assert 'layout' in result
-        assert 'components' in result
-        assert 'code' in result
+        assert "layout" in result
+        assert "components" in result
+        assert "code" in result
         print("✓ planner.plan_streamlit_page")
     except Exception as e:
         print(f"✗ planner.plan_streamlit_page: {e}")
@@ -315,11 +316,11 @@ def test_tool_functions():
             description="A test application",
             pages=[
                 {"name": "Home", "description": "Main page", "type": "dashboard"},
-                {"name": "Settings", "description": "Settings page", "type": "form"}
-            ]
+                {"name": "Settings", "description": "Settings page", "type": "form"},
+            ],
         )
-        assert result['status'] == 'success'
-        assert 'file_path' in result
+        assert result["status"] == "success"
+        assert "file_path" in result
         print("✓ app_planner.create_app_plan")
     except Exception as e:
         print(f"✗ app_planner.create_app_plan: {e}")
@@ -332,10 +333,10 @@ def test_tool_functions():
             page_type="dashboard",
             description="A test page",
             features=["metrics", "charts"],
-            data_source="example"
+            data_source="example",
         )
-        assert result['status'] == 'success'
-        assert 'file_path' in result
+        assert result["status"] == "success"
+        assert "file_path" in result
         print("✓ app_planner.create_page_plan")
     except Exception as e:
         print(f"✗ app_planner.create_page_plan: {e}")
@@ -405,20 +406,33 @@ def test_tool_definitions():
     print(f"✓ connections.TOOLS ({len(connections.TOOLS)} tools)")
 
     # Check planner tool
-    assert planner.TOOL['name'] == 'plan_streamlit_page'
+    assert planner.TOOL["name"] == "plan_streamlit_page"
     print("✓ planner.TOOL")
 
     # Check app planner tools
     from streamlit_mcp.tools import app_planner
-    assert len(app_planner.TOOLS) == 2, f"Expected 2 app planner tools, got {len(app_planner.TOOLS)}"
+
+    assert (
+        len(app_planner.TOOLS) == 2
+    ), f"Expected 2 app planner tools, got {len(app_planner.TOOLS)}"
     print(f"✓ app_planner.TOOLS ({len(app_planner.TOOLS)} tools)")
 
     # Calculate total tools
-    total = (len(text.TOOLS) + len(widgets.TOOLS) + len(data.TOOLS) +
-             len(charts.TOOLS) + len(layout.TOOLS) + len(status.TOOLS) +
-             len(media.TOOLS) + len(chat.TOOLS) + len(navigation.TOOLS) +
-             len(state.TOOLS) + len(execution.TOOLS) + len(auth.TOOLS) +
-             len(connections.TOOLS))
+    total = (
+        len(text.TOOLS)
+        + len(widgets.TOOLS)
+        + len(data.TOOLS)
+        + len(charts.TOOLS)
+        + len(layout.TOOLS)
+        + len(status.TOOLS)
+        + len(media.TOOLS)
+        + len(chat.TOOLS)
+        + len(navigation.TOOLS)
+        + len(state.TOOLS)
+        + len(execution.TOOLS)
+        + len(auth.TOOLS)
+        + len(connections.TOOLS)
+    )
     print(f"\n📊 Total component tools: {total}")
     print("   + 2 app planner tools")
     print("   + 1 planner tool")
@@ -435,7 +449,6 @@ def test_code_generation():
     from streamlit_mcp.utils.codegen import (
         StreamlitCodeGenerator,
         format_kwargs,
-        generate_text_element
     )
 
     # Test code generator
@@ -456,8 +469,8 @@ def test_code_generation():
     try:
         result = format_kwargs({"key": "value", "num": 42, "flag": True})
         assert 'key="value"' in result
-        assert 'num=42' in result
-        assert 'flag=True' in result
+        assert "num=42" in result
+        assert "flag=True" in result
         print("✓ format_kwargs")
     except Exception as e:
         print(f"✗ format_kwargs: {e}")

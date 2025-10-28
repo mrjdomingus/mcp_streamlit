@@ -1,7 +1,7 @@
 """Data display tools for Streamlit MCP server."""
 
-from typing import Any, Dict, List, Optional
-from ...utils.codegen import generate_widget, format_kwargs
+from typing import Any, Dict, List
+from ...utils.codegen import format_kwargs
 
 
 def add_dataframe(
@@ -11,7 +11,7 @@ def add_dataframe(
     use_container_width: bool = True,
     hide_index: bool | None = None,
     column_order: List[str] | None = None,
-    column_config: Dict[str, Any] | None = None
+    column_config: Dict[str, Any] | None = None,
 ) -> str:
     """Generate code for st.dataframe()."""
     kwargs = {}
@@ -30,8 +30,8 @@ def add_dataframe(
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'st.dataframe({data_variable}, {kwargs_str})'
-    return f'st.dataframe({data_variable})'
+        return f"st.dataframe({data_variable}, {kwargs_str})"
+    return f"st.dataframe({data_variable})"
 
 
 def add_data_editor(
@@ -44,7 +44,7 @@ def add_data_editor(
     column_config: Dict[str, Any] | None = None,
     num_rows: str = "fixed",
     disabled: bool | List[str] = False,
-    key: str | None = None
+    key: str | None = None,
 ) -> str:
     """Generate code for st.data_editor()."""
     kwargs = {}
@@ -69,13 +69,13 @@ def add_data_editor(
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'edited_data = st.data_editor({data_variable}, {kwargs_str})'
-    return f'edited_data = st.data_editor({data_variable})'
+        return f"edited_data = st.data_editor({data_variable}, {kwargs_str})"
+    return f"edited_data = st.data_editor({data_variable})"
 
 
 def add_table(data_variable: str = "data") -> str:
     """Generate code for st.table()."""
-    return f'st.table({data_variable})'
+    return f"st.table({data_variable})"
 
 
 def add_metric(
@@ -84,7 +84,7 @@ def add_metric(
     delta: str | int | float | None = None,
     delta_color: str = "normal",
     help_text: str | None = None,
-    label_visibility: str = "visible"
+    label_visibility: str = "visible",
 ) -> str:
     """Generate code for st.metric()."""
     kwargs = {}
@@ -109,14 +109,11 @@ def add_metric(
     return f'st.metric("{label}", {value_str})'
 
 
-def add_json(
-    data_variable: str = "data",
-    expanded: bool = True
-) -> str:
+def add_json(data_variable: str = "data", expanded: bool = True) -> str:
     """Generate code for st.json()."""
     if not expanded:
-        return f'st.json({data_variable}, expanded=False)'
-    return f'st.json({data_variable})'
+        return f"st.json({data_variable}, expanded=False)"
+    return f"st.json({data_variable})"
 
 
 def add_column_config(
@@ -127,7 +124,7 @@ def add_column_config(
     help_text: str | None = None,
     disabled: bool = False,
     required: bool = False,
-    **extra_kwargs
+    **extra_kwargs,
 ) -> str:
     """
     Generate column configuration code for st.dataframe or st.data_editor.
@@ -147,16 +144,16 @@ def add_column_config(
     if help_text:
         config_parts.append(f'help="{help_text}"')
     if disabled:
-        config_parts.append(f'disabled={disabled}')
+        config_parts.append(f"disabled={disabled}")
     if required:
-        config_parts.append(f'required={required}')
+        config_parts.append(f"required={required}")
 
     # Add any extra kwargs specific to the column type
     for key, value in extra_kwargs.items():
         if isinstance(value, str):
             config_parts.append(f'{key}="{value}"')
         else:
-            config_parts.append(f'{key}={value}')
+            config_parts.append(f"{key}={value}")
 
     config_str = ", ".join(config_parts)
 
@@ -176,37 +173,31 @@ TOOLS = [
                 "data_variable": {
                     "type": "string",
                     "description": "Name of the DataFrame or data variable to display",
-                    "default": "data"
+                    "default": "data",
                 },
-                "width": {
-                    "type": "integer",
-                    "description": "Width in pixels (optional)"
-                },
-                "height": {
-                    "type": "integer",
-                    "description": "Height in pixels (optional)"
-                },
+                "width": {"type": "integer", "description": "Width in pixels (optional)"},
+                "height": {"type": "integer", "description": "Height in pixels (optional)"},
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Whether to use container width (default: true)",
-                    "default": True
+                    "default": True,
                 },
                 "hide_index": {
                     "type": "boolean",
-                    "description": "Whether to hide the index column"
+                    "description": "Whether to hide the index column",
                 },
                 "column_order": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "List of column names in desired order"
+                    "description": "List of column names in desired order",
                 },
                 "column_config": {
                     "type": "object",
-                    "description": "Column configuration dictionary"
-                }
+                    "description": "Column configuration dictionary",
+                },
             },
-            "required": ["data_variable"]
-        }
+            "required": ["data_variable"],
+        },
     },
     {
         "name": "add_data_editor",
@@ -217,52 +208,43 @@ TOOLS = [
                 "data_variable": {
                     "type": "string",
                     "description": "Name of the DataFrame or data variable to edit",
-                    "default": "data"
+                    "default": "data",
                 },
-                "width": {
-                    "type": "integer",
-                    "description": "Width in pixels (optional)"
-                },
-                "height": {
-                    "type": "integer",
-                    "description": "Height in pixels (optional)"
-                },
+                "width": {"type": "integer", "description": "Width in pixels (optional)"},
+                "height": {"type": "integer", "description": "Height in pixels (optional)"},
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Whether to use container width (default: true)",
-                    "default": True
+                    "default": True,
                 },
                 "hide_index": {
                     "type": "boolean",
-                    "description": "Whether to hide the index column"
+                    "description": "Whether to hide the index column",
                 },
                 "column_order": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "List of column names in desired order"
+                    "description": "List of column names in desired order",
                 },
                 "column_config": {
                     "type": "object",
-                    "description": "Column configuration dictionary"
+                    "description": "Column configuration dictionary",
                 },
                 "num_rows": {
                     "type": "string",
                     "enum": ["fixed", "dynamic"],
                     "description": "Whether users can add/delete rows (default: 'fixed')",
-                    "default": "fixed"
+                    "default": "fixed",
                 },
                 "disabled": {
                     "type": ["boolean", "array"],
                     "description": "Disable editing (true/false or list of column names)",
-                    "default": False
+                    "default": False,
                 },
-                "key": {
-                    "type": "string",
-                    "description": "Unique key for the widget"
-                }
+                "key": {"type": "string", "description": "Unique key for the widget"},
             },
-            "required": ["data_variable"]
-        }
+            "required": ["data_variable"],
+        },
     },
     {
         "name": "add_table",
@@ -273,11 +255,11 @@ TOOLS = [
                 "data_variable": {
                     "type": "string",
                     "description": "Name of the DataFrame or data variable to display",
-                    "default": "data"
+                    "default": "data",
                 }
             },
-            "required": ["data_variable"]
-        }
+            "required": ["data_variable"],
+        },
     },
     {
         "name": "add_metric",
@@ -285,37 +267,31 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "label": {
-                    "type": "string",
-                    "description": "The metric label"
-                },
+                "label": {"type": "string", "description": "The metric label"},
                 "value": {
                     "type": ["string", "number"],
-                    "description": "The metric value to display"
+                    "description": "The metric value to display",
                 },
                 "delta": {
                     "type": ["string", "number"],
-                    "description": "Optional change/delta to show (e.g., '+12%', -5)"
+                    "description": "Optional change/delta to show (e.g., '+12%', -5)",
                 },
                 "delta_color": {
                     "type": "string",
                     "enum": ["normal", "inverse", "off"],
                     "description": "Color behavior for delta (default: 'normal')",
-                    "default": "normal"
+                    "default": "normal",
                 },
-                "help": {
-                    "type": "string",
-                    "description": "Optional tooltip text"
-                },
+                "help": {"type": "string", "description": "Optional tooltip text"},
                 "label_visibility": {
                     "type": "string",
                     "enum": ["visible", "hidden", "collapsed"],
                     "description": "Label visibility (default: 'visible')",
-                    "default": "visible"
-                }
+                    "default": "visible",
+                },
             },
-            "required": ["label", "value"]
-        }
+            "required": ["label", "value"],
+        },
     },
     {
         "name": "add_json",
@@ -326,16 +302,16 @@ TOOLS = [
                 "data_variable": {
                     "type": "string",
                     "description": "Name of the dict or JSON variable to display",
-                    "default": "data"
+                    "default": "data",
                 },
                 "expanded": {
                     "type": "boolean",
                     "description": "Whether to expand all nodes by default (default: true)",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": ["data_variable"]
-        }
+            "required": ["data_variable"],
+        },
     },
     {
         "name": "add_column_config",
@@ -343,39 +319,30 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "column_name": {
-                    "type": "string",
-                    "description": "Name of the column to configure"
-                },
+                "column_name": {"type": "string", "description": "Name of the column to configure"},
                 "config_type": {
                     "type": "string",
                     "description": "Column type (TextColumn, NumberColumn, CheckboxColumn, SelectboxColumn, LinkColumn, ImageColumn, etc.)",
-                    "default": "TextColumn"
+                    "default": "TextColumn",
                 },
-                "label": {
-                    "type": "string",
-                    "description": "Display label for the column"
-                },
+                "label": {"type": "string", "description": "Display label for the column"},
                 "width": {
                     "type": "string",
-                    "description": "Column width (e.g., 'small', 'medium', 'large', or pixels)"
+                    "description": "Column width (e.g., 'small', 'medium', 'large', or pixels)",
                 },
-                "help": {
-                    "type": "string",
-                    "description": "Tooltip text for the column header"
-                },
+                "help": {"type": "string", "description": "Tooltip text for the column header"},
                 "disabled": {
                     "type": "boolean",
                     "description": "Whether to disable editing for this column",
-                    "default": False
+                    "default": False,
                 },
                 "required": {
                     "type": "boolean",
                     "description": "Whether this column is required (for data_editor)",
-                    "default": False
-                }
+                    "default": False,
+                },
             },
-            "required": ["column_name"]
-        }
-    }
+            "required": ["column_name"],
+        },
+    },
 ]

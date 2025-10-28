@@ -7,7 +7,7 @@ This module provides tools for multi-page app navigation and URL parameters:
 - Query parameters
 """
 
-from typing import Any, Dict, List, Optional
+from typing import List
 
 from ...utils.codegen import format_kwargs
 
@@ -31,7 +31,9 @@ def add_navigation(pages: List[str], position: str = "sidebar") -> str:
             page_objects.append(f'{var_name} = st.Page("{page}")')
         else:
             # Assume it's a page name, create a simple page
-            page_objects.append(f'{var_name} = st.Page("{page.lower().replace(" ", "_")}.py", title="{page}")')
+            page_objects.append(
+                f'{var_name} = st.Page("{page.lower().replace(" ", "_")}.py", title="{page}")'
+            )
 
     page_vars = ", ".join([f"page{i+1}" for i in range(len(pages))])
 
@@ -51,8 +53,9 @@ def add_navigation(pages: List[str], position: str = "sidebar") -> str:
     return code
 
 
-def add_page_link(page: str, label: str | None = None, icon: str | None = None,
-                  disabled: bool = False) -> str:
+def add_page_link(
+    page: str, label: str | None = None, icon: str | None = None, disabled: bool = False
+) -> str:
     """Generate code for st.page_link() - create a link to another page.
 
     Args:
@@ -96,7 +99,7 @@ def get_query_params() -> str:
     Returns:
         str: Generated Streamlit code with example usage
     """
-    return '''# Get query parameters from URL
+    return """# Get query parameters from URL
 params = st.query_params
 
 # Access individual parameters
@@ -104,7 +107,7 @@ params = st.query_params
 user = params.get("user", "guest")
 page_num = params.get("page", "1")
 
-st.write(f"User: {user}, Page: {page_num}")'''
+st.write(f"User: {user}, Page: {page_num}")"""
 
 
 def set_query_params(**params) -> str:
@@ -126,14 +129,14 @@ st.query_params.update({{{params_str}}})
 # st.query_params["key"] = "value"'''
     else:
         # Generate generic example
-        return '''# Set query parameters in URL
+        return """# Set query parameters in URL
 st.query_params.update({"user": "john", "page": "2"})
 
 # Or set individual parameters:
 st.query_params["key"] = "value"
 
 # Clear all parameters:
-st.query_params.clear()'''
+st.query_params.clear()"""
 
 
 # MCP tool definitions
@@ -148,17 +151,17 @@ TOOLS = [
                     "type": "array",
                     "description": "List of page names or file paths (e.g., ['Home', 'Settings'] or ['pages/home.py', 'pages/settings.py'])",
                     "items": {"type": "string"},
-                    "minItems": 1
+                    "minItems": 1,
                 },
                 "position": {
                     "type": "string",
                     "description": "Navigation position",
                     "enum": ["sidebar", "hidden"],
-                    "default": "sidebar"
-                }
+                    "default": "sidebar",
+                },
             },
-            "required": ["pages"]
-        }
+            "required": ["pages"],
+        },
     },
     {
         "name": "add_page_link",
@@ -168,24 +171,21 @@ TOOLS = [
             "properties": {
                 "page": {
                     "type": "string",
-                    "description": "Page path to link to (e.g., 'pages/settings.py' or 'settings.py')"
+                    "description": "Page path to link to (e.g., 'pages/settings.py' or 'settings.py')",
                 },
                 "label": {
                     "type": "string",
-                    "description": "Link text (default: derived from page name)"
+                    "description": "Link text (default: derived from page name)",
                 },
-                "icon": {
-                    "type": "string",
-                    "description": "Optional emoji icon"
-                },
+                "icon": {"type": "string", "description": "Optional emoji icon"},
                 "disabled": {
                     "type": "boolean",
                     "description": "Whether the link is disabled",
-                    "default": False
-                }
+                    "default": False,
+                },
             },
-            "required": ["page"]
-        }
+            "required": ["page"],
+        },
     },
     {
         "name": "switch_page",
@@ -195,19 +195,16 @@ TOOLS = [
             "properties": {
                 "page": {
                     "type": "string",
-                    "description": "Page path to switch to (e.g., 'pages/settings.py')"
+                    "description": "Page path to switch to (e.g., 'pages/settings.py')",
                 }
             },
-            "required": ["page"]
-        }
+            "required": ["page"],
+        },
     },
     {
         "name": "get_query_params",
         "description": "Get URL query parameters (st.query_params). Read parameters from the URL for deep linking, state sharing, tracking. Use for shareable links, page state.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {}
-        }
+        "inputSchema": {"type": "object", "properties": {}},
     },
     {
         "name": "set_query_params",
@@ -218,9 +215,9 @@ TOOLS = [
                 "params": {
                     "type": "object",
                     "description": "Key-value pairs for query parameters (e.g., {'user': 'john', 'page': '2'})",
-                    "additionalProperties": {"type": "string"}
+                    "additionalProperties": {"type": "string"},
                 }
-            }
-        }
-    }
+            },
+        },
+    },
 ]

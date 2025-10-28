@@ -1,10 +1,11 @@
 """Chart and visualization tools for Streamlit MCP server."""
 
-from typing import Any, Dict, List, Optional
+from typing import List
 from ...utils.codegen import generate_chart, format_kwargs
 
 
 # Simple chart functions
+
 
 def add_line_chart(
     data_variable: str = "data",
@@ -13,7 +14,7 @@ def add_line_chart(
     color: str | None = None,
     width: int | None = None,
     height: int | None = None,
-    use_container_width: bool = True
+    use_container_width: bool = True,
 ) -> str:
     """Generate code for st.line_chart()."""
     kwargs = {}
@@ -41,7 +42,7 @@ def add_bar_chart(
     width: int | None = None,
     height: int | None = None,
     use_container_width: bool = True,
-    horizontal: bool = False
+    horizontal: bool = False,
 ) -> str:
     """Generate code for st.bar_chart()."""
     kwargs = {}
@@ -70,7 +71,7 @@ def add_area_chart(
     color: str | None = None,
     width: int | None = None,
     height: int | None = None,
-    use_container_width: bool = True
+    use_container_width: bool = True,
 ) -> str:
     """Generate code for st.area_chart()."""
     kwargs = {}
@@ -98,7 +99,7 @@ def add_scatter_chart(
     size: str | None = None,
     width: int | None = None,
     height: int | None = None,
-    use_container_width: bool = True
+    use_container_width: bool = True,
 ) -> str:
     """Generate code for st.scatter_chart()."""
     kwargs = {}
@@ -127,7 +128,7 @@ def add_map(
     color: str | None = None,
     size: str | None = None,
     zoom: int | None = None,
-    use_container_width: bool = True
+    use_container_width: bool = True,
 ) -> str:
     """Generate code for st.map() - scatter map visualization."""
     kwargs = {}
@@ -149,11 +150,12 @@ def add_map(
 
 # Advanced chart functions
 
+
 def add_plotly_chart(
     figure_variable: str = "fig",
     use_container_width: bool = True,
     theme: str | None = None,
-    key: str | None = None
+    key: str | None = None,
 ) -> str:
     """Generate code for st.plotly_chart()."""
     kwargs = {}
@@ -166,15 +168,15 @@ def add_plotly_chart(
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'st.plotly_chart({figure_variable}, {kwargs_str})'
-    return f'st.plotly_chart({figure_variable})'
+        return f"st.plotly_chart({figure_variable}, {kwargs_str})"
+    return f"st.plotly_chart({figure_variable})"
 
 
 def add_altair_chart(
     chart_variable: str = "chart",
     use_container_width: bool = True,
     theme: str | None = None,
-    key: str | None = None
+    key: str | None = None,
 ) -> str:
     """Generate code for st.altair_chart()."""
     kwargs = {}
@@ -187,8 +189,8 @@ def add_altair_chart(
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'st.altair_chart({chart_variable}, {kwargs_str})'
-    return f'st.altair_chart({chart_variable})'
+        return f"st.altair_chart({chart_variable}, {kwargs_str})"
+    return f"st.altair_chart({chart_variable})"
 
 
 def add_vega_lite_chart(
@@ -196,7 +198,7 @@ def add_vega_lite_chart(
     spec_variable: str | None = None,
     use_container_width: bool = True,
     theme: str | None = None,
-    key: str | None = None
+    key: str | None = None,
 ) -> str:
     """Generate code for st.vega_lite_chart()."""
     kwargs = {}
@@ -211,14 +213,12 @@ def add_vega_lite_chart(
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'st.vega_lite_chart({data_variable}, {kwargs_str})'
-    return f'st.vega_lite_chart({data_variable})'
+        return f"st.vega_lite_chart({data_variable}, {kwargs_str})"
+    return f"st.vega_lite_chart({data_variable})"
 
 
 def add_bokeh_chart(
-    figure_variable: str = "fig",
-    use_container_width: bool = True,
-    key: str | None = None
+    figure_variable: str = "fig", use_container_width: bool = True, key: str | None = None
 ) -> str:
     """Generate code for st.bokeh_chart()."""
     kwargs = {}
@@ -229,14 +229,12 @@ def add_bokeh_chart(
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'st.bokeh_chart({figure_variable}, {kwargs_str})'
-    return f'st.bokeh_chart({figure_variable})'
+        return f"st.bokeh_chart({figure_variable}, {kwargs_str})"
+    return f"st.bokeh_chart({figure_variable})"
 
 
 def add_pydeck_chart(
-    deck_variable: str = "deck",
-    use_container_width: bool = True,
-    key: str | None = None
+    deck_variable: str = "deck", use_container_width: bool = True, key: str | None = None
 ) -> str:
     """Generate code for st.pydeck_chart() - 3D map visualizations."""
     kwargs = {}
@@ -247,14 +245,12 @@ def add_pydeck_chart(
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'st.pydeck_chart({deck_variable}, {kwargs_str})'
-    return f'st.pydeck_chart({deck_variable})'
+        return f"st.pydeck_chart({deck_variable}, {kwargs_str})"
+    return f"st.pydeck_chart({deck_variable})"
 
 
 def add_graphviz_chart(
-    graph_variable: str = "graph",
-    use_container_width: bool = True,
-    key: str | None = None
+    graph_variable: str = "graph", use_container_width: bool = True, key: str | None = None
 ) -> str:
     """Generate code for st.graphviz_chart() - graph/network visualizations."""
     kwargs = {}
@@ -265,15 +261,15 @@ def add_graphviz_chart(
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'st.graphviz_chart({graph_variable}, {kwargs_str})'
-    return f'st.graphviz_chart({graph_variable})'
+        return f"st.graphviz_chart({graph_variable}, {kwargs_str})"
+    return f"st.graphviz_chart({graph_variable})"
 
 
 def add_pyplot(
     figure_variable: str = "fig",
     clear_figure: bool = True,
     use_container_width: bool = True,
-    key: str | None = None
+    key: str | None = None,
 ) -> str:
     """Generate code for st.pyplot() - matplotlib figures."""
     kwargs = {}
@@ -286,8 +282,8 @@ def add_pyplot(
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'st.pyplot({figure_variable}, {kwargs_str})'
-    return f'st.pyplot({figure_variable})'
+        return f"st.pyplot({figure_variable}, {kwargs_str})"
+    return f"st.pyplot({figure_variable})"
 
 
 # Tool definitions for MCP server
@@ -301,36 +297,24 @@ TOOLS = [
                 "data_variable": {
                     "type": "string",
                     "description": "Name of the DataFrame variable containing chart data",
-                    "default": "data"
+                    "default": "data",
                 },
-                "x": {
-                    "type": "string",
-                    "description": "Column name for x-axis"
-                },
+                "x": {"type": "string", "description": "Column name for x-axis"},
                 "y": {
                     "type": ["string", "array"],
-                    "description": "Column name(s) for y-axis (single or multiple)"
+                    "description": "Column name(s) for y-axis (single or multiple)",
                 },
-                "color": {
-                    "type": "string",
-                    "description": "Column name for color encoding"
-                },
-                "width": {
-                    "type": "integer",
-                    "description": "Chart width in pixels"
-                },
-                "height": {
-                    "type": "integer",
-                    "description": "Chart height in pixels"
-                },
+                "color": {"type": "string", "description": "Column name for color encoding"},
+                "width": {"type": "integer", "description": "Chart width in pixels"},
+                "height": {"type": "integer", "description": "Chart height in pixels"},
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Use container width (default: true)",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": ["data_variable"]
-        }
+            "required": ["data_variable"],
+        },
     },
     {
         "name": "add_bar_chart",
@@ -341,41 +325,26 @@ TOOLS = [
                 "data_variable": {
                     "type": "string",
                     "description": "Name of the DataFrame variable containing chart data",
-                    "default": "data"
+                    "default": "data",
                 },
-                "x": {
-                    "type": "string",
-                    "description": "Column name for x-axis"
-                },
-                "y": {
-                    "type": ["string", "array"],
-                    "description": "Column name(s) for y-axis"
-                },
-                "color": {
-                    "type": "string",
-                    "description": "Column name for color encoding"
-                },
-                "width": {
-                    "type": "integer",
-                    "description": "Chart width in pixels"
-                },
-                "height": {
-                    "type": "integer",
-                    "description": "Chart height in pixels"
-                },
+                "x": {"type": "string", "description": "Column name for x-axis"},
+                "y": {"type": ["string", "array"], "description": "Column name(s) for y-axis"},
+                "color": {"type": "string", "description": "Column name for color encoding"},
+                "width": {"type": "integer", "description": "Chart width in pixels"},
+                "height": {"type": "integer", "description": "Chart height in pixels"},
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Use container width (default: true)",
-                    "default": True
+                    "default": True,
                 },
                 "horizontal": {
                     "type": "boolean",
                     "description": "Display horizontal bars (default: false)",
-                    "default": False
-                }
+                    "default": False,
+                },
             },
-            "required": ["data_variable"]
-        }
+            "required": ["data_variable"],
+        },
     },
     {
         "name": "add_area_chart",
@@ -386,36 +355,21 @@ TOOLS = [
                 "data_variable": {
                     "type": "string",
                     "description": "Name of the DataFrame variable containing chart data",
-                    "default": "data"
+                    "default": "data",
                 },
-                "x": {
-                    "type": "string",
-                    "description": "Column name for x-axis"
-                },
-                "y": {
-                    "type": ["string", "array"],
-                    "description": "Column name(s) for y-axis"
-                },
-                "color": {
-                    "type": "string",
-                    "description": "Column name for color encoding"
-                },
-                "width": {
-                    "type": "integer",
-                    "description": "Chart width in pixels"
-                },
-                "height": {
-                    "type": "integer",
-                    "description": "Chart height in pixels"
-                },
+                "x": {"type": "string", "description": "Column name for x-axis"},
+                "y": {"type": ["string", "array"], "description": "Column name(s) for y-axis"},
+                "color": {"type": "string", "description": "Column name for color encoding"},
+                "width": {"type": "integer", "description": "Chart width in pixels"},
+                "height": {"type": "integer", "description": "Chart height in pixels"},
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Use container width (default: true)",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": ["data_variable"]
-        }
+            "required": ["data_variable"],
+        },
     },
     {
         "name": "add_scatter_chart",
@@ -426,40 +380,22 @@ TOOLS = [
                 "data_variable": {
                     "type": "string",
                     "description": "Name of the DataFrame variable containing chart data",
-                    "default": "data"
+                    "default": "data",
                 },
-                "x": {
-                    "type": "string",
-                    "description": "Column name for x-axis"
-                },
-                "y": {
-                    "type": "string",
-                    "description": "Column name for y-axis"
-                },
-                "color": {
-                    "type": "string",
-                    "description": "Column name for color encoding"
-                },
-                "size": {
-                    "type": "string",
-                    "description": "Column name for point size"
-                },
-                "width": {
-                    "type": "integer",
-                    "description": "Chart width in pixels"
-                },
-                "height": {
-                    "type": "integer",
-                    "description": "Chart height in pixels"
-                },
+                "x": {"type": "string", "description": "Column name for x-axis"},
+                "y": {"type": "string", "description": "Column name for y-axis"},
+                "color": {"type": "string", "description": "Column name for color encoding"},
+                "size": {"type": "string", "description": "Column name for point size"},
+                "width": {"type": "integer", "description": "Chart width in pixels"},
+                "height": {"type": "integer", "description": "Chart height in pixels"},
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Use container width (default: true)",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": ["data_variable"]
-        }
+            "required": ["data_variable"],
+        },
     },
     {
         "name": "add_map",
@@ -470,36 +406,27 @@ TOOLS = [
                 "data_variable": {
                     "type": "string",
                     "description": "Name of the DataFrame variable with lat/lon columns",
-                    "default": "data"
+                    "default": "data",
                 },
                 "latitude": {
                     "type": "string",
-                    "description": "Column name for latitude (default: 'latitude' or 'lat')"
+                    "description": "Column name for latitude (default: 'latitude' or 'lat')",
                 },
                 "longitude": {
                     "type": "string",
-                    "description": "Column name for longitude (default: 'longitude' or 'lon')"
+                    "description": "Column name for longitude (default: 'longitude' or 'lon')",
                 },
-                "color": {
-                    "type": "string",
-                    "description": "Column name for color encoding"
-                },
-                "size": {
-                    "type": "string",
-                    "description": "Column name for point size"
-                },
-                "zoom": {
-                    "type": "integer",
-                    "description": "Initial zoom level"
-                },
+                "color": {"type": "string", "description": "Column name for color encoding"},
+                "size": {"type": "string", "description": "Column name for point size"},
+                "zoom": {"type": "integer", "description": "Initial zoom level"},
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Use container width (default: true)",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": ["data_variable"]
-        }
+            "required": ["data_variable"],
+        },
     },
     {
         "name": "add_plotly_chart",
@@ -510,25 +437,22 @@ TOOLS = [
                 "figure_variable": {
                     "type": "string",
                     "description": "Name of the Plotly figure variable",
-                    "default": "fig"
+                    "default": "fig",
                 },
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Use container width (default: true)",
-                    "default": True
+                    "default": True,
                 },
                 "theme": {
                     "type": "string",
                     "enum": ["streamlit", "None"],
-                    "description": "Theme to use (default: 'streamlit')"
+                    "description": "Theme to use (default: 'streamlit')",
                 },
-                "key": {
-                    "type": "string",
-                    "description": "Unique key for the widget"
-                }
+                "key": {"type": "string", "description": "Unique key for the widget"},
             },
-            "required": ["figure_variable"]
-        }
+            "required": ["figure_variable"],
+        },
     },
     {
         "name": "add_altair_chart",
@@ -539,25 +463,22 @@ TOOLS = [
                 "chart_variable": {
                     "type": "string",
                     "description": "Name of the Altair chart variable",
-                    "default": "chart"
+                    "default": "chart",
                 },
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Use container width (default: true)",
-                    "default": True
+                    "default": True,
                 },
                 "theme": {
                     "type": "string",
                     "enum": ["streamlit", "None"],
-                    "description": "Theme to use (default: 'streamlit')"
+                    "description": "Theme to use (default: 'streamlit')",
                 },
-                "key": {
-                    "type": "string",
-                    "description": "Unique key for the widget"
-                }
+                "key": {"type": "string", "description": "Unique key for the widget"},
             },
-            "required": ["chart_variable"]
-        }
+            "required": ["chart_variable"],
+        },
     },
     {
         "name": "add_vega_lite_chart",
@@ -568,29 +489,26 @@ TOOLS = [
                 "data_variable": {
                     "type": "string",
                     "description": "Name of the data variable",
-                    "default": "data"
+                    "default": "data",
                 },
                 "spec_variable": {
                     "type": "string",
-                    "description": "Name of the Vega-Lite spec variable (optional)"
+                    "description": "Name of the Vega-Lite spec variable (optional)",
                 },
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Use container width (default: true)",
-                    "default": True
+                    "default": True,
                 },
                 "theme": {
                     "type": "string",
                     "enum": ["streamlit", "None"],
-                    "description": "Theme to use (default: 'streamlit')"
+                    "description": "Theme to use (default: 'streamlit')",
                 },
-                "key": {
-                    "type": "string",
-                    "description": "Unique key for the widget"
-                }
+                "key": {"type": "string", "description": "Unique key for the widget"},
             },
-            "required": ["data_variable"]
-        }
+            "required": ["data_variable"],
+        },
     },
     {
         "name": "add_bokeh_chart",
@@ -601,20 +519,17 @@ TOOLS = [
                 "figure_variable": {
                     "type": "string",
                     "description": "Name of the Bokeh figure variable",
-                    "default": "fig"
+                    "default": "fig",
                 },
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Use container width (default: true)",
-                    "default": True
+                    "default": True,
                 },
-                "key": {
-                    "type": "string",
-                    "description": "Unique key for the widget"
-                }
+                "key": {"type": "string", "description": "Unique key for the widget"},
             },
-            "required": ["figure_variable"]
-        }
+            "required": ["figure_variable"],
+        },
     },
     {
         "name": "add_pydeck_chart",
@@ -625,20 +540,17 @@ TOOLS = [
                 "deck_variable": {
                     "type": "string",
                     "description": "Name of the PyDeck deck variable",
-                    "default": "deck"
+                    "default": "deck",
                 },
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Use container width (default: true)",
-                    "default": True
+                    "default": True,
                 },
-                "key": {
-                    "type": "string",
-                    "description": "Unique key for the widget"
-                }
+                "key": {"type": "string", "description": "Unique key for the widget"},
             },
-            "required": ["deck_variable"]
-        }
+            "required": ["deck_variable"],
+        },
     },
     {
         "name": "add_graphviz_chart",
@@ -649,20 +561,17 @@ TOOLS = [
                 "graph_variable": {
                     "type": "string",
                     "description": "Name of the Graphviz graph variable",
-                    "default": "graph"
+                    "default": "graph",
                 },
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Use container width (default: true)",
-                    "default": True
+                    "default": True,
                 },
-                "key": {
-                    "type": "string",
-                    "description": "Unique key for the widget"
-                }
+                "key": {"type": "string", "description": "Unique key for the widget"},
             },
-            "required": ["graph_variable"]
-        }
+            "required": ["graph_variable"],
+        },
     },
     {
         "name": "add_pyplot",
@@ -673,24 +582,21 @@ TOOLS = [
                 "figure_variable": {
                     "type": "string",
                     "description": "Name of the Matplotlib figure variable",
-                    "default": "fig"
+                    "default": "fig",
                 },
                 "clear_figure": {
                     "type": "boolean",
                     "description": "Clear figure after rendering (default: true)",
-                    "default": True
+                    "default": True,
                 },
                 "use_container_width": {
                     "type": "boolean",
                     "description": "Use container width (default: true)",
-                    "default": True
+                    "default": True,
                 },
-                "key": {
-                    "type": "string",
-                    "description": "Unique key for the widget"
-                }
+                "key": {"type": "string", "description": "Unique key for the widget"},
             },
-            "required": ["figure_variable"]
-        }
-    }
+            "required": ["figure_variable"],
+        },
+    },
 ]

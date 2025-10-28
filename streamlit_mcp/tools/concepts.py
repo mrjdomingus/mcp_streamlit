@@ -1,7 +1,6 @@
 """Streamlit concepts knowledge base for planning tool."""
 
 from typing import Dict, List, Any
-from pathlib import Path
 
 
 class StreamlitConcepts:
@@ -13,16 +12,13 @@ class StreamlitConcepts:
     @staticmethod
     def get_caching_guidance(data_source: str, data_freshness: str = "medium") -> Dict[str, Any]:
         """Get caching strategy recommendations based on data source and freshness needs."""
-        guidance = {
-            "decorator": None,
-            "ttl": None,
-            "explanation": "",
-            "example": ""
-        }
+        guidance = {"decorator": None, "ttl": None, "explanation": "", "example": ""}
 
         if data_source == "upload":
             guidance["decorator"] = None
-            guidance["explanation"] = "User-uploaded data should not be cached as it's session-specific"
+            guidance["explanation"] = (
+                "User-uploaded data should not be cached as it's session-specific"
+            )
             guidance["example"] = "# No caching needed - user uploads are session-specific"
 
         elif data_source == "api":
@@ -38,7 +34,9 @@ class StreamlitConcepts:
                 "API data should use @st.cache_data with TTL to balance freshness and performance. "
                 "The cache creates a new copy for each session, preventing race conditions."
             )
-            guidance["example"] = f"""@st.cache_data(ttl={guidance['ttl']})  # Cache for {guidance['ttl']/60:.0f} minutes
+            guidance[
+                "example"
+            ] = f"""@st.cache_data(ttl={guidance['ttl']})  # Cache for {guidance['ttl']/60:.0f} minutes
 def load_api_data():
     response = requests.get("https://api.example.com/data")
     return pd.DataFrame(response.json())"""
@@ -56,7 +54,9 @@ def load_api_data():
                 "Database queries should use @st.cache_data with TTL. For connection objects, "
                 "use @st.cache_resource to avoid recreating connections."
             )
-            guidance["example"] = f"""@st.cache_data(ttl={guidance['ttl']})  # Cache query results
+            guidance[
+                "example"
+            ] = f"""@st.cache_data(ttl={guidance['ttl']})  # Cache query results
 def run_query(query):
     conn = st.connection("sql")
     return conn.query(query)
@@ -69,7 +69,9 @@ def get_database_connection():
             guidance["decorator"] = "@st.cache_data"
             guidance["ttl"] = None
             guidance["explanation"] = "Static example data can be cached indefinitely"
-            guidance["example"] = """@st.cache_data  # Cache indefinitely
+            guidance[
+                "example"
+            ] = """@st.cache_data  # Cache indefinitely
 def generate_sample_data():
     return pd.DataFrame({
         'x': np.random.randn(100),
@@ -85,32 +87,46 @@ def generate_sample_data():
             "required": False,
             "variables": [],
             "initialization_code": "",
-            "best_practices": []
+            "best_practices": [],
         }
 
         # Chat interfaces always need session state
         if page_type == "chat":
             patterns["required"] = True
             patterns["variables"] = [
-                {"name": "messages", "type": "list", "purpose": "Store chat history", "default": "[]"}
+                {
+                    "name": "messages",
+                    "type": "list",
+                    "purpose": "Store chat history",
+                    "default": "[]",
+                }
             ]
-            patterns["initialization_code"] = """# Initialize chat history
+            patterns[
+                "initialization_code"
+            ] = """# Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []"""
             patterns["best_practices"] = [
                 "Always check if key exists before initializing",
                 "Use session state for chat history to persist across reruns",
-                "Session state persists across pages in multipage apps"
+                "Session state persists across pages in multipage apps",
             ]
 
         # Data filtering needs session state
         if "data_filtering" in features:
             patterns["required"] = True
             patterns["variables"].append(
-                {"name": "filters", "type": "dict", "purpose": "Active filter values", "default": "{}"}
+                {
+                    "name": "filters",
+                    "type": "dict",
+                    "purpose": "Active filter values",
+                    "default": "{}",
+                }
             )
             if not patterns["initialization_code"]:
-                patterns["initialization_code"] = """# Initialize filter state
+                patterns[
+                    "initialization_code"
+                ] = """# Initialize filter state
 if "filters" not in st.session_state:
     st.session_state.filters = {}"""
 
@@ -118,7 +134,12 @@ if "filters" not in st.session_state:
         if "authentication" in features:
             patterns["required"] = True
             patterns["variables"].append(
-                {"name": "authenticated", "type": "bool", "purpose": "Auth status", "default": "False"}
+                {
+                    "name": "authenticated",
+                    "type": "bool",
+                    "purpose": "Auth status",
+                    "default": "False",
+                }
             )
             patterns["best_practices"].append(
                 "Store authentication state in session_state to persist across pages"
@@ -127,10 +148,17 @@ if "filters" not in st.session_state:
         # Multi-step forms need state
         if "multi_step_form" in features:
             patterns["required"] = True
-            patterns["variables"].extend([
-                {"name": "step", "type": "int", "purpose": "Current form step", "default": "0"},
-                {"name": "form_data", "type": "dict", "purpose": "Collected form data", "default": "{}"}
-            ])
+            patterns["variables"].extend(
+                [
+                    {"name": "step", "type": "int", "purpose": "Current form step", "default": "0"},
+                    {
+                        "name": "form_data",
+                        "type": "dict",
+                        "purpose": "Collected form data",
+                        "default": "{}",
+                    },
+                ]
+            )
             patterns["best_practices"].append(
                 "Use session state to preserve form data between steps"
             )
@@ -140,11 +168,7 @@ if "filters" not in st.session_state:
     @staticmethod
     def get_fragment_recommendations(page_type: str, features: List[str]) -> Dict[str, Any]:
         """Recommend fragment usage for performance optimization."""
-        recommendations = {
-            "should_use": False,
-            "use_cases": [],
-            "example_code": ""
-        }
+        recommendations = {"should_use": False, "use_cases": [], "example_code": ""}
 
         # Dashboards with charts benefit from fragments
         if page_type == "dashboard":
@@ -152,9 +176,11 @@ if "filters" not in st.session_state:
             recommendations["use_cases"] = [
                 "Wrap filter controls in fragment to update charts without full rerun",
                 "Wrap individual chart sections to update independently",
-                "Use for expensive visualizations that don't need to update together"
+                "Use for expensive visualizations that don't need to update together",
             ]
-            recommendations["example_code"] = """@st.fragment
+            recommendations[
+                "example_code"
+            ] = """@st.fragment
 def chart_section():
     # This chart updates independently
     filter_val = st.slider("Filter", 0, 100, 50)
@@ -168,7 +194,7 @@ chart_section()  # Only this section reruns when slider changes"""
             recommendations["should_use"] = True
             recommendations["use_cases"] = [
                 "Isolate expensive data processing in fragments",
-                "Update visualizations without reloading data"
+                "Update visualizations without reloading data",
             ]
 
         # Real-time updates need fragments
@@ -176,9 +202,11 @@ chart_section()  # Only this section reruns when slider changes"""
             recommendations["should_use"] = True
             recommendations["use_cases"] = [
                 "Auto-refresh specific components without full rerun",
-                "Stream data updates to isolated sections"
+                "Stream data updates to isolated sections",
             ]
-            recommendations["example_code"] = """@st.fragment(run_every="5s")
+            recommendations[
+                "example_code"
+            ] = """@st.fragment(run_every="5s")
 def live_metrics():
     # Auto-updates every 5 seconds
     latest_data = fetch_latest_data()
@@ -191,11 +219,7 @@ live_metrics()"""
     @staticmethod
     def get_form_recommendations(page_type: str, features: List[str]) -> Dict[str, Any]:
         """Recommend form usage for batch input."""
-        recommendations = {
-            "should_use": False,
-            "rationale": "",
-            "example_code": ""
-        }
+        recommendations = {"should_use": False, "rationale": "", "example_code": ""}
 
         # Form pages obviously need forms
         if page_type == "form":
@@ -204,7 +228,9 @@ live_metrics()"""
                 "Forms batch user input into a single rerun, preventing the app from "
                 "updating with each field change. Essential for multi-field forms."
             )
-            recommendations["example_code"] = """with st.form("my_form"):
+            recommendations[
+                "example_code"
+            ] = """with st.form("my_form"):
     name = st.text_input("Name")
     email = st.text_input("Email")
     age = st.number_input("Age", min_value=0)
@@ -232,7 +258,7 @@ live_metrics()"""
             "method": "st.navigation",
             "rationale": "",
             "structure": {},
-            "example_code": ""
+            "example_code": "",
         }
 
         # Recommend multipage for complex apps
@@ -251,10 +277,12 @@ live_metrics()"""
                     "Better code organization",
                     "Faster load times (lazy loading)",
                     "Session state persists across pages",
-                    "Flexible file organization (no magic folders)"
-                ]
+                    "Flexible file organization (no magic folders)",
+                ],
             }
-            guidance["example_code"] = """# app.py (entrypoint)
+            guidance[
+                "example_code"
+            ] = """# app.py (entrypoint)
 import streamlit as st
 
 # Define page functions directly (no pages folder needed)
@@ -369,9 +397,7 @@ pg.run()
 
         # Forms
         if page_type == "form" or "data_filtering" in features:
-            tips.append(
-                "✓ Use st.form to batch multiple inputs, preventing reruns on each change"
-            )
+            tips.append("✓ Use st.form to batch multiple inputs, preventing reruns on each change")
 
         # Dataframes
         if page_type in ["dashboard", "data_explorer"]:
@@ -428,7 +454,7 @@ def get_concept_based_recommendations(
     features: List[str],
     data_source: str,
     data_freshness: str = "medium",
-    performance_priority: str = "balanced"
+    performance_priority: str = "balanced",
 ) -> Dict[str, Any]:
     """
     Get comprehensive concept-based recommendations for app planning.
@@ -453,5 +479,5 @@ def get_concept_based_recommendations(
         "multipage": concepts.get_multipage_guidance(features),
         "architecture_notes": concepts.get_architecture_notes(page_type, features),
         "performance_tips": concepts.get_performance_tips(page_type, data_source, features),
-        "common_pitfalls": concepts.get_common_pitfalls(page_type, features)
+        "common_pitfalls": concepts.get_common_pitfalls(page_type, features),
     }

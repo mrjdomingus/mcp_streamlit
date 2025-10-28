@@ -7,7 +7,6 @@ This module provides tools for displaying status indicators and feedback element
 - Celebration effects (balloons, snow)
 """
 
-from typing import Any, Dict, List, Optional
 
 from ...utils.codegen import format_kwargs
 
@@ -24,7 +23,7 @@ def add_progress(value: float = 0.0, text: str | None = None) -> str:
     """
     if text:
         return f'st.progress({value}, text="{text}")'
-    return f'st.progress({value})'
+    return f"st.progress({value})"
 
 
 def add_spinner(text: str = "In progress...") -> str:
@@ -36,13 +35,12 @@ def add_spinner(text: str = "In progress...") -> str:
     Returns:
         str: Generated Streamlit code with context manager
     """
-    return f'''with st.spinner("{text}"):
+    return f"""with st.spinner("{text}"):
     # Your long-running operation here
-    pass'''
+    pass"""
 
 
-def add_status(label: str = "Running...", state: str = "running",
-               expanded: bool = False) -> str:
+def add_status(label: str = "Running...", state: str = "running", expanded: bool = False) -> str:
     """Generate code for st.status() - display an expandable status container.
 
     Args:
@@ -61,12 +59,12 @@ def add_status(label: str = "Running...", state: str = "running",
 
     kwargs_str = format_kwargs(kwargs)
     if kwargs_str:
-        return f'''with st.status("{label}", {kwargs_str}):
+        return f"""with st.status("{label}", {kwargs_str}):
     st.write("Operation in progress...")
-    # Add status updates here'''
-    return f'''with st.status("{label}"):
+    # Add status updates here"""
+    return f"""with st.status("{label}"):
     st.write("Operation in progress...")
-    # Add status updates here'''
+    # Add status updates here"""
 
 
 def add_toast(body: str, icon: str | None = None) -> str:
@@ -170,7 +168,7 @@ def add_balloons() -> str:
     Returns:
         str: Generated Streamlit code
     """
-    return 'st.balloons()'
+    return "st.balloons()"
 
 
 def add_snow() -> str:
@@ -179,7 +177,7 @@ def add_snow() -> str:
     Returns:
         str: Generated Streamlit code
     """
-    return 'st.snow()'
+    return "st.snow()"
 
 
 # MCP tool definitions
@@ -195,14 +193,14 @@ TOOLS = [
                     "description": "Progress value between 0.0 (0%) and 1.0 (100%)",
                     "minimum": 0.0,
                     "maximum": 1.0,
-                    "default": 0.0
+                    "default": 0.0,
                 },
                 "text": {
                     "type": "string",
-                    "description": "Optional text to display above the progress bar"
-                }
-            }
-        }
+                    "description": "Optional text to display above the progress bar",
+                },
+            },
+        },
     },
     {
         "name": "add_spinner",
@@ -213,10 +211,10 @@ TOOLS = [
                 "text": {
                     "type": "string",
                     "description": "Text to display next to the spinner",
-                    "default": "In progress..."
+                    "default": "In progress...",
                 }
-            }
-        }
+            },
+        },
     },
     {
         "name": "add_status",
@@ -227,21 +225,21 @@ TOOLS = [
                 "label": {
                     "type": "string",
                     "description": "Label text for the status container",
-                    "default": "Running..."
+                    "default": "Running...",
                 },
                 "state": {
                     "type": "string",
                     "description": "Status state: 'running' (animated), 'complete' (checkmark), or 'error' (X mark)",
                     "enum": ["running", "complete", "error"],
-                    "default": "running"
+                    "default": "running",
                 },
                 "expanded": {
                     "type": "boolean",
                     "description": "Whether to show the status expanded by default",
-                    "default": False
-                }
-            }
-        }
+                    "default": False,
+                },
+            },
+        },
     },
     {
         "name": "add_toast",
@@ -249,17 +247,14 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "body": {
-                    "type": "string",
-                    "description": "Text content of the toast message"
-                },
+                "body": {"type": "string", "description": "Text content of the toast message"},
                 "icon": {
                     "type": "string",
-                    "description": "Optional emoji icon (e.g., '🎉', '✅', '❌')"
-                }
+                    "description": "Optional emoji icon (e.g., '🎉', '✅', '❌')",
+                },
             },
-            "required": ["body"]
-        }
+            "required": ["body"],
+        },
     },
     {
         "name": "add_success",
@@ -267,17 +262,11 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "body": {
-                    "type": "string",
-                    "description": "Success message text"
-                },
-                "icon": {
-                    "type": "string",
-                    "description": "Optional emoji icon (default: ✅)"
-                }
+                "body": {"type": "string", "description": "Success message text"},
+                "icon": {"type": "string", "description": "Optional emoji icon (default: ✅)"},
             },
-            "required": ["body"]
-        }
+            "required": ["body"],
+        },
     },
     {
         "name": "add_error",
@@ -285,17 +274,11 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "body": {
-                    "type": "string",
-                    "description": "Error message text"
-                },
-                "icon": {
-                    "type": "string",
-                    "description": "Optional emoji icon (default: 🚨)"
-                }
+                "body": {"type": "string", "description": "Error message text"},
+                "icon": {"type": "string", "description": "Optional emoji icon (default: 🚨)"},
             },
-            "required": ["body"]
-        }
+            "required": ["body"],
+        },
     },
     {
         "name": "add_warning",
@@ -303,17 +286,11 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "body": {
-                    "type": "string",
-                    "description": "Warning message text"
-                },
-                "icon": {
-                    "type": "string",
-                    "description": "Optional emoji icon (default: ⚠️)"
-                }
+                "body": {"type": "string", "description": "Warning message text"},
+                "icon": {"type": "string", "description": "Optional emoji icon (default: ⚠️)"},
             },
-            "required": ["body"]
-        }
+            "required": ["body"],
+        },
     },
     {
         "name": "add_info",
@@ -321,32 +298,20 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "body": {
-                    "type": "string",
-                    "description": "Info message text"
-                },
-                "icon": {
-                    "type": "string",
-                    "description": "Optional emoji icon (default: ℹ️)"
-                }
+                "body": {"type": "string", "description": "Info message text"},
+                "icon": {"type": "string", "description": "Optional emoji icon (default: ℹ️)"},
             },
-            "required": ["body"]
-        }
+            "required": ["body"],
+        },
     },
     {
         "name": "add_balloons",
         "description": "Add a balloon celebration animation (st.balloons). Use to celebrate user achievements, milestones, or successful completions.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {}
-        }
+        "inputSchema": {"type": "object", "properties": {}},
     },
     {
         "name": "add_snow",
         "description": "Add a snow animation (st.snow). Use for seasonal effects or celebrations.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {}
-        }
-    }
+        "inputSchema": {"type": "object", "properties": {}},
+    },
 ]

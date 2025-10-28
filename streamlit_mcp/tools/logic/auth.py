@@ -7,9 +7,7 @@ This module provides tools for user authentication with OIDC providers:
 - Authentication patterns
 """
 
-from typing import Any, Dict, List, Optional
 
-from ...utils.codegen import format_kwargs
 
 
 def add_login(provider: str | None = None, button_text: str = "Log in") -> str:
@@ -23,23 +21,23 @@ def add_login(provider: str | None = None, button_text: str = "Log in") -> str:
         str: Generated Streamlit code with login flow
     """
     if provider:
-        return f'''# Login with specific OIDC provider
+        return f"""# Login with specific OIDC provider
 if not st.user.is_logged_in:
     if st.button("{button_text}"):
         st.login("{provider}")
     st.stop()
 
 # User is logged in - continue with app
-st.write(f"Welcome, {{st.user.name}}!")'''
+st.write(f"Welcome, {{st.user.name}}!")"""
     else:
-        return f'''# Login with default OIDC provider
+        return f"""# Login with default OIDC provider
 if not st.user.is_logged_in:
     if st.button("{button_text}"):
         st.login()
     st.stop()
 
 # User is logged in - continue with app
-st.write(f"Welcome, {{st.user.name}}!")'''
+st.write(f"Welcome, {{st.user.name}}!")"""
 
 
 def add_logout(button_text: str = "Log out") -> str:
@@ -51,9 +49,9 @@ def add_logout(button_text: str = "Log out") -> str:
     Returns:
         str: Generated Streamlit code
     """
-    return f'''# Logout button
+    return f"""# Logout button
 if st.button("{button_text}"):
-    st.logout()'''
+    st.logout()"""
 
 
 def check_user_status() -> str:
@@ -62,7 +60,7 @@ def check_user_status() -> str:
     Returns:
         str: Generated Streamlit code with user status check
     """
-    return '''# Check user authentication status
+    return """# Check user authentication status
 if st.user.is_logged_in:
     st.success(f"Logged in as: {st.user.name}")
     st.write(f"Email: {st.user.email}")
@@ -71,7 +69,7 @@ if st.user.is_logged_in:
     user_dict = st.user.to_dict()
     st.json(user_dict)
 else:
-    st.warning("Not logged in")'''
+    st.warning("Not logged in")"""
 
 
 def generate_auth_pattern(pattern: str = "single_provider") -> str:
@@ -84,7 +82,7 @@ def generate_auth_pattern(pattern: str = "single_provider") -> str:
         str: Generated Streamlit code with authentication pattern
     """
     if pattern == "single_provider":
-        return '''# Single OIDC provider authentication
+        return """# Single OIDC provider authentication
 import streamlit as st
 
 if not st.user.is_logged_in:
@@ -99,10 +97,10 @@ st.title("Dashboard")
 st.write(f"Hello, {st.user.name}!")
 
 if st.button("Log out"):
-    st.logout()'''
+    st.logout()"""
 
     elif pattern == "multi_provider":
-        return '''# Multiple OIDC provider authentication
+        return """# Multiple OIDC provider authentication
 import streamlit as st
 
 if not st.user.is_logged_in:
@@ -123,10 +121,10 @@ st.title("Dashboard")
 st.write(f"Hello, {st.user.name}!")
 
 if st.button("Log out"):
-    st.logout()'''
+    st.logout()"""
 
     elif pattern == "protected_page":
-        return '''# Protected page with authentication
+        return """# Protected page with authentication
 import streamlit as st
 
 # Redirect to login if not authenticated
@@ -144,10 +142,10 @@ st.write("This content is only visible to authenticated users.")
 # Logout option
 with st.sidebar:
     if st.button("Log out"):
-        st.logout()'''
+        st.logout()"""
 
     elif pattern == "admin_check":
-        return '''# Admin role check with authentication
+        return """# Admin role check with authentication
 import streamlit as st
 
 # Check if user is logged in
@@ -176,10 +174,10 @@ else:
 
 # Logout for all users
 if st.button("Log out"):
-    st.logout()'''
+    st.logout()"""
 
     else:
-        return '''# Custom authentication pattern
+        return """# Custom authentication pattern
 import streamlit as st
 
 if not st.user.is_logged_in:
@@ -187,7 +185,7 @@ if not st.user.is_logged_in:
         st.login()
     st.stop()
 
-st.write(f"Hello, {st.user.name}!")'''
+st.write(f"Hello, {st.user.name}!")"""
 
 
 def generate_secrets_config(provider: str = "google", multi_provider: bool = False) -> str:
@@ -233,7 +231,7 @@ server_metadata_url = "https://accounts.google.com/.well-known/openid-configurat
 # redirect_uri = "https://your-app.streamlit.app/oauth2callback"'''
 
         elif provider == "microsoft":
-            return '''# .streamlit/secrets.toml - Microsoft Entra ID
+            return """# .streamlit/secrets.toml - Microsoft Entra ID
 [auth]
 redirect_uri = "http://localhost:8501/oauth2callback"
 cookie_secret = "your-strong-random-secret-here"
@@ -242,10 +240,10 @@ client_secret = "your-microsoft-client-secret"
 server_metadata_url = "https://login.microsoftonline.com/{tenant}/v2.0/.well-known/openid-configuration"
 
 # Replace {tenant} with: common, organizations, consumers, or your tenant ID
-# For production, update redirect_uri to your deployed app URL'''
+# For production, update redirect_uri to your deployed app URL"""
 
         elif provider == "auth0":
-            return '''# .streamlit/secrets.toml - Auth0
+            return """# .streamlit/secrets.toml - Auth0
 [auth]
 redirect_uri = "http://localhost:8501/oauth2callback"
 cookie_secret = "your-strong-random-secret-here"
@@ -255,10 +253,10 @@ server_metadata_url = "https://{account}.{region}.auth0.com/.well-known/openid-c
 client_kwargs = { "prompt" = "login" }
 
 # Replace {account} and {region} with your Auth0 values
-# For production, update redirect_uri to your deployed app URL'''
+# For production, update redirect_uri to your deployed app URL"""
 
         elif provider == "okta":
-            return '''# .streamlit/secrets.toml - Okta
+            return """# .streamlit/secrets.toml - Okta
 [auth]
 redirect_uri = "http://localhost:8501/oauth2callback"
 cookie_secret = "your-strong-random-secret-here"
@@ -267,10 +265,10 @@ client_secret = "your-okta-client-secret"
 server_metadata_url = "https://{your-okta-domain}/oauth2/default/.well-known/openid-configuration"
 
 # Replace {your-okta-domain} with your Okta domain
-# For production, update redirect_uri to your deployed app URL'''
+# For production, update redirect_uri to your deployed app URL"""
 
         else:  # generic
-            return '''# .streamlit/secrets.toml - Generic OIDC Provider
+            return """# .streamlit/secrets.toml - Generic OIDC Provider
 [auth]
 redirect_uri = "http://localhost:8501/oauth2callback"
 cookie_secret = "your-strong-random-secret-here"
@@ -281,7 +279,7 @@ server_metadata_url = "https://your-provider.com/.well-known/openid-configuratio
 # Optional: Customize OIDC parameters
 # client_kwargs = { "prompt" = "select_account", "scope" = "openid profile email" }
 
-# For production, update redirect_uri to your deployed app URL'''
+# For production, update redirect_uri to your deployed app URL"""
 
 
 # MCP tool definitions
@@ -294,15 +292,15 @@ TOOLS = [
             "properties": {
                 "provider": {
                     "type": "string",
-                    "description": "OIDC provider name (e.g., 'google', 'microsoft', 'auth0'). Required only if using multiple providers."
+                    "description": "OIDC provider name (e.g., 'google', 'microsoft', 'auth0'). Required only if using multiple providers.",
                 },
                 "button_text": {
                     "type": "string",
                     "description": "Text for the login button",
-                    "default": "Log in"
-                }
-            }
-        }
+                    "default": "Log in",
+                },
+            },
+        },
     },
     {
         "name": "add_logout",
@@ -313,18 +311,15 @@ TOOLS = [
                 "button_text": {
                     "type": "string",
                     "description": "Text for the logout button",
-                    "default": "Log out"
+                    "default": "Log out",
                 }
-            }
-        }
+            },
+        },
     },
     {
         "name": "check_user_status",
         "description": "Check user authentication status (st.user). Display user info like name, email, login status. Use for personalizing content, showing user profile.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {}
-        }
+        "inputSchema": {"type": "object", "properties": {}},
     },
     {
         "name": "generate_auth_pattern",
@@ -336,10 +331,10 @@ TOOLS = [
                     "type": "string",
                     "description": "Authentication pattern to generate",
                     "enum": ["single_provider", "multi_provider", "protected_page", "admin_check"],
-                    "default": "single_provider"
+                    "default": "single_provider",
                 }
-            }
-        }
+            },
+        },
     },
     {
         "name": "generate_secrets_config",
@@ -351,14 +346,14 @@ TOOLS = [
                     "type": "string",
                     "description": "OIDC provider to configure",
                     "enum": ["google", "microsoft", "auth0", "okta", "generic"],
-                    "default": "google"
+                    "default": "google",
                 },
                 "multi_provider": {
                     "type": "boolean",
                     "description": "Whether to generate config for multiple providers",
-                    "default": False
-                }
-            }
-        }
-    }
+                    "default": False,
+                },
+            },
+        },
+    },
 ]

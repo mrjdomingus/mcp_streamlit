@@ -7,13 +7,12 @@ This module provides tools for connecting to data sources:
 - Custom connection implementations
 """
 
-from typing import Any, Dict, List, Optional
-
-from ...utils.codegen import format_kwargs
 
 
-def add_sql_connection(connection_name: str = "sql", query: str | None = None,
-                       ttl: int | None = 600) -> str:
+
+def add_sql_connection(
+    connection_name: str = "sql", query: str | None = None, ttl: int | None = 600
+) -> str:
     """Generate code for SQL database connection (st.connection with SQLConnection).
 
     Args:
@@ -42,7 +41,7 @@ conn = st.connection("{connection_name}", type="sql")
 df = conn.query("""{query}""")
 st.dataframe(df)'''
     else:
-        return f'''# SQL database connection
+        return f"""# SQL database connection
 conn = st.connection("{connection_name}", type="sql")
 
 # Query with caching
@@ -55,12 +54,12 @@ st.dataframe(df)
 
 # Alternative: Direct query without caching
 # df = conn.query("SELECT * FROM your_table", ttl={ttl or 600})
-# st.dataframe(df)'''
+# st.dataframe(df)"""
 
 
-def add_snowflake_connection(connection_name: str = "snowflake",
-                              query: str | None = None,
-                              use_snowpark: bool = False) -> str:
+def add_snowflake_connection(
+    connection_name: str = "snowflake", query: str | None = None, use_snowpark: bool = False
+) -> str:
     """Generate code for Snowflake connection (st.connection with SnowflakeConnection).
 
     Args:
@@ -72,7 +71,7 @@ def add_snowflake_connection(connection_name: str = "snowflake",
         str: Generated Streamlit code with Snowflake connection
     """
     if use_snowpark:
-        return f'''# Snowflake connection with Snowpark
+        return f"""# Snowflake connection with Snowpark
 conn = st.connection("{connection_name}", type="snowflake")
 
 # Use Snowpark session for DataFrame operations
@@ -83,7 +82,7 @@ def get_data_snowpark():
     return df
 
 df = get_data_snowpark()
-st.dataframe(df)'''
+st.dataframe(df)"""
     else:
         if query:
             return f'''# Snowflake connection
@@ -97,7 +96,7 @@ def run_query(query):
 df = run_query("""{query}""")
 st.dataframe(df)'''
         else:
-            return f'''# Snowflake connection
+            return f"""# Snowflake connection
 conn = st.connection("{connection_name}", type="snowflake")
 
 # Query with caching
@@ -109,7 +108,7 @@ df = get_data()
 st.dataframe(df)
 
 # Write data back to Snowflake (optional)
-# conn.write_pandas(df, "target_table", auto_create_table=True)'''
+# conn.write_pandas(df, "target_table", auto_create_table=True)"""
 
 
 def add_custom_connection(connection_name: str, connection_type: str | None = None) -> str:
@@ -123,7 +122,7 @@ def add_custom_connection(connection_name: str, connection_type: str | None = No
         str: Generated Streamlit code with custom connection
     """
     if connection_type:
-        return f'''# Custom data connection
+        return f"""# Custom data connection
 conn = st.connection("{connection_name}", type="{connection_type}")
 
 # Use connection methods based on your custom implementation
@@ -136,9 +135,9 @@ def get_data():
     return data
 
 result = get_data()
-st.write(result)'''
+st.write(result)"""
     else:
-        return f'''# Generic data connection
+        return f"""# Generic data connection
 conn = st.connection("{connection_name}")
 
 # Access connection methods
@@ -148,11 +147,10 @@ def get_data():
     return conn.query("SELECT * FROM table")
 
 df = get_data()
-st.dataframe(df)'''
+st.dataframe(df)"""
 
 
-def generate_connection_config(connection_type: str = "sql",
-                                database: str = "postgresql") -> str:
+def generate_connection_config(connection_type: str = "sql", database: str = "postgresql") -> str:
     """Generate secrets.toml configuration for data connections.
 
     Args:
@@ -233,7 +231,7 @@ url = "dialect://username:password@host:port/database"
 # Example: "postgresql://user:pass@localhost:5432/mydb"'''
 
     elif connection_type == "snowflake":
-        return '''# .streamlit/secrets.toml - Snowflake Connection
+        return """# .streamlit/secrets.toml - Snowflake Connection
 [connections.snowflake]
 account = "your_account"
 user = "your_username"
@@ -245,10 +243,10 @@ schema = "your_schema"
 
 # Optional parameters:
 # authenticator = "externalbrowser"  # For SSO
-# private_key_file = "/path/to/key.p8"  # For key-pair auth'''
+# private_key_file = "/path/to/key.p8"  # For key-pair auth"""
 
     elif connection_type == "custom":
-        return '''# .streamlit/secrets.toml - Custom Connection
+        return """# .streamlit/secrets.toml - Custom Connection
 [connections.my_connection]
 # Add your custom connection parameters
 api_key = "your_api_key"
@@ -256,7 +254,7 @@ endpoint = "https://api.example.com"
 timeout = 30
 
 # Parameters depend on your custom connection implementation
-# See st.connections.BaseConnection for creating custom connections'''
+# See st.connections.BaseConnection for creating custom connections"""
 
     else:
         return '''# .streamlit/secrets.toml - Connection Configuration
@@ -282,7 +280,7 @@ def generate_connection_pattern(pattern: str = "cached_query") -> str:
         str: Generated Streamlit code with connection pattern
     """
     if pattern == "cached_query":
-        return '''# Cached query pattern for better performance
+        return """# Cached query pattern for better performance
 import streamlit as st
 
 conn = st.connection("sql", type="sql")
@@ -297,10 +295,10 @@ st.dataframe(df)
 
 # Filter in Streamlit (not database)
 filtered = df[df['role'] == st.selectbox('Role', df['role'].unique())]
-st.dataframe(filtered)'''
+st.dataframe(filtered)"""
 
     elif pattern == "parameterized_query":
-        return '''# Parameterized query pattern (safe from SQL injection)
+        return """# Parameterized query pattern (safe from SQL injection)
 import streamlit as st
 
 conn = st.connection("sql", type="sql")
@@ -315,10 +313,10 @@ def get_user_data(uid):
     return conn.query(query, params={"user_id": uid})
 
 df = get_user_data(user_id)
-st.dataframe(df)'''
+st.dataframe(df)"""
 
     elif pattern == "write_data":
-        return '''# Write data pattern for Snowflake
+        return """# Write data pattern for Snowflake
 import streamlit as st
 import pandas as pd
 
@@ -341,10 +339,10 @@ if uploaded_file:
                 schema="my_schema",
                 auto_create_table=True
             )
-        st.success("Data written successfully!")'''
+        st.success("Data written successfully!")"""
 
     elif pattern == "connection_pool":
-        return '''# Connection pooling pattern for multiple queries
+        return """# Connection pooling pattern for multiple queries
 import streamlit as st
 
 # Create connection (automatically pooled)
@@ -375,17 +373,17 @@ st.subheader("Orders")
 st.dataframe(orders_df)
 
 st.subheader("Products")
-st.dataframe(products_df)'''
+st.dataframe(products_df)"""
 
     else:
-        return '''# Custom connection pattern
+        return """# Custom connection pattern
 import streamlit as st
 
 conn = st.connection("your_connection")
 
 # Your custom data access logic here
 data = conn.query("your query")
-st.write(data)'''
+st.write(data)"""
 
 
 # MCP tool definitions
@@ -399,19 +397,19 @@ TOOLS = [
                 "connection_name": {
                     "type": "string",
                     "description": "Connection name from secrets.toml",
-                    "default": "sql"
+                    "default": "sql",
                 },
                 "query": {
                     "type": "string",
-                    "description": "SQL query to execute (e.g., 'SELECT * FROM users')"
+                    "description": "SQL query to execute (e.g., 'SELECT * FROM users')",
                 },
                 "ttl": {
                     "type": "integer",
                     "description": "Cache TTL in seconds (default: 600)",
-                    "default": 600
-                }
-            }
-        }
+                    "default": 600,
+                },
+            },
+        },
     },
     {
         "name": "add_snowflake_connection",
@@ -422,19 +420,16 @@ TOOLS = [
                 "connection_name": {
                     "type": "string",
                     "description": "Connection name from secrets.toml",
-                    "default": "snowflake"
+                    "default": "snowflake",
                 },
-                "query": {
-                    "type": "string",
-                    "description": "SQL query to execute in Snowflake"
-                },
+                "query": {"type": "string", "description": "SQL query to execute in Snowflake"},
                 "use_snowpark": {
                     "type": "boolean",
                     "description": "Whether to use Snowpark session for DataFrame operations",
-                    "default": False
-                }
-            }
-        }
+                    "default": False,
+                },
+            },
+        },
     },
     {
         "name": "add_custom_connection",
@@ -444,15 +439,15 @@ TOOLS = [
             "properties": {
                 "connection_name": {
                     "type": "string",
-                    "description": "Connection name from secrets.toml"
+                    "description": "Connection name from secrets.toml",
                 },
                 "connection_type": {
                     "type": "string",
-                    "description": "Connection type (e.g., 'sql', 'snowflake', or custom class name)"
-                }
+                    "description": "Connection type (e.g., 'sql', 'snowflake', or custom class name)",
+                },
             },
-            "required": ["connection_name"]
-        }
+            "required": ["connection_name"],
+        },
     },
     {
         "name": "generate_connection_config",
@@ -464,16 +459,16 @@ TOOLS = [
                     "type": "string",
                     "description": "Type of connection configuration to generate",
                     "enum": ["sql", "snowflake", "custom"],
-                    "default": "sql"
+                    "default": "sql",
                 },
                 "database": {
                     "type": "string",
                     "description": "For SQL connections, specify database type",
                     "enum": ["postgresql", "mysql", "sqlite", "mssql", "oracle"],
-                    "default": "postgresql"
-                }
-            }
-        }
+                    "default": "postgresql",
+                },
+            },
+        },
     },
     {
         "name": "generate_connection_pattern",
@@ -484,10 +479,15 @@ TOOLS = [
                 "pattern": {
                     "type": "string",
                     "description": "Connection pattern to generate",
-                    "enum": ["cached_query", "parameterized_query", "write_data", "connection_pool"],
-                    "default": "cached_query"
+                    "enum": [
+                        "cached_query",
+                        "parameterized_query",
+                        "write_data",
+                        "connection_pool",
+                    ],
+                    "default": "cached_query",
                 }
-            }
-        }
-    }
+            },
+        },
+    },
 ]

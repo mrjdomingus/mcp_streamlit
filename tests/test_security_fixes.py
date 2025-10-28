@@ -7,11 +7,12 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
+
 def test_string_escaping():
     """Test that string escaping is now safe using repr()."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Testing String Escaping Fixes")
-    print("="*60)
+    print("=" * 60)
 
     from streamlit_mcp.tools.display import text
 
@@ -21,7 +22,7 @@ def test_string_escaping():
     assert "repr(" in result or "'" in result or '"' in result
 
     # Test 2: Backslashes in LaTeX
-    result = text.add_latex(r'\frac{1}{2}')
+    result = text.add_latex(r"\frac{1}{2}")
     print(f"✓ Test 2 - LaTeX backslashes: {result}")
     assert "repr(" in result or "'" in result or '"' in result
 
@@ -33,7 +34,7 @@ def test_string_escaping():
     # Test 4: Code injection attempt
     malicious = '"""); import os; os.system("ls"); st.code("""'
     result = text.add_code(malicious)
-    print(f"✓ Test 4 - Injection attempt safely escaped")
+    print("✓ Test 4 - Injection attempt safely escaped")
     # Should be safely escaped, not executable
     assert '"""' not in result or repr(malicious) in result
 
@@ -42,9 +43,9 @@ def test_string_escaping():
 
 def test_path_traversal_protection():
     """Test that path traversal is now blocked."""
-    print("="*60)
+    print("=" * 60)
     print("Testing Path Traversal Protection")
-    print("="*60)
+    print("=" * 60)
 
     from streamlit_mcp.tools import resources
 
@@ -66,9 +67,9 @@ def test_path_traversal_protection():
 
 def test_error_handling():
     """Test that tool execution has proper error handling."""
-    print("="*60)
+    print("=" * 60)
     print("Testing Error Handling in Tool Execution")
-    print("="*60)
+    print("=" * 60)
 
     from streamlit_mcp.tools.display import text
 
@@ -91,9 +92,9 @@ def test_error_handling():
 
 def main():
     """Run all security fix tests."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Security Fixes Verification Test Suite")
-    print("="*60)
+    print("=" * 60)
 
     tests = [
         ("String Escaping", test_string_escaping),
@@ -109,12 +110,13 @@ def main():
         except Exception as e:
             print(f"\n✗ {test_name} failed with exception: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((test_name, False))
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Security Test Results Summary")
-    print("="*60)
+    print("=" * 60)
 
     passed = sum(1 for _, result in results if result)
     total = len(results)

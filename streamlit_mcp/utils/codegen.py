@@ -51,25 +51,23 @@ def format_kwargs(kwargs: Dict[str, Any]) -> str:
         if isinstance(value, str):
             parts.append(f'{key}="{value}"')
         elif isinstance(value, bool):
-            parts.append(f'{key}={value}')
+            parts.append(f"{key}={value}")
         elif isinstance(value, (int, float)):
-            parts.append(f'{key}={value}')
+            parts.append(f"{key}={value}")
         elif isinstance(value, list):
-            parts.append(f'{key}={value}')
+            parts.append(f"{key}={value}")
         elif isinstance(value, dict):
-            parts.append(f'{key}={value}')
+            parts.append(f"{key}={value}")
         elif value is None:
-            parts.append(f'{key}=None')
+            parts.append(f"{key}=None")
         else:
-            parts.append(f'{key}={repr(value)}')
+            parts.append(f"{key}={repr(value)}")
 
     return ", ".join(parts)
 
 
 def generate_text_element(
-    element_type: str,
-    content: str,
-    kwargs: Optional[Dict[str, Any]] = None
+    element_type: str, content: str, kwargs: Optional[Dict[str, Any]] = None
 ) -> str:
     """Generate code for text elements like st.title(), st.header(), etc."""
     kwargs_str = format_kwargs(kwargs or {})
@@ -78,11 +76,7 @@ def generate_text_element(
     return f'st.{element_type}("{content}")'
 
 
-def generate_widget(
-    widget_type: str,
-    label: str,
-    kwargs: Optional[Dict[str, Any]] = None
-) -> str:
+def generate_widget(widget_type: str, label: str, kwargs: Optional[Dict[str, Any]] = None) -> str:
     """Generate code for input widgets."""
     kwargs_str = format_kwargs(kwargs or {})
     if kwargs_str:
@@ -91,95 +85,87 @@ def generate_widget(
 
 
 def generate_chart(
-    chart_type: str,
-    data_var: str = "data",
-    kwargs: Optional[Dict[str, Any]] = None
+    chart_type: str, data_var: str = "data", kwargs: Optional[Dict[str, Any]] = None
 ) -> str:
     """Generate code for charts."""
     kwargs_str = format_kwargs(kwargs or {})
     if kwargs_str:
-        return f'st.{chart_type}({data_var}, {kwargs_str})'
-    return f'st.{chart_type}({data_var})'
+        return f"st.{chart_type}({data_var}, {kwargs_str})"
+    return f"st.{chart_type}({data_var})"
 
 
-def generate_layout(
-    layout_type: str,
-    kwargs: Optional[Dict[str, Any]] = None
-) -> str:
+def generate_layout(layout_type: str, kwargs: Optional[Dict[str, Any]] = None) -> str:
     """Generate code for layout elements."""
     kwargs_str = format_kwargs(kwargs or {})
     if kwargs_str:
-        return f'st.{layout_type}({kwargs_str})'
-    return f'st.{layout_type}()'
+        return f"st.{layout_type}({kwargs_str})"
+    return f"st.{layout_type}()"
 
 
 def generate_data_loader(data_type: str) -> tuple[str, str]:
     """Generate example data loading code."""
     if data_type == "csv":
         imports = "import pandas as pd"
-        code = '''# Load data from CSV
+        code = """# Load data from CSV
 data = pd.read_csv("your_data.csv")
-st.dataframe(data)'''
+st.dataframe(data)"""
         return imports, code
 
     elif data_type == "api":
         imports = "import pandas as pd\nimport requests"
-        code = '''# Load data from API
+        code = """# Load data from API
 response = requests.get("https://api.example.com/data")
 data = pd.DataFrame(response.json())
-st.dataframe(data)'''
+st.dataframe(data)"""
         return imports, code
 
     elif data_type == "sql":
         imports = ""
-        code = '''# Load data from SQL
+        code = """# Load data from SQL
 conn = st.connection("sql")
 data = conn.query("SELECT * FROM your_table")
-st.dataframe(data)'''
+st.dataframe(data)"""
         return imports, code
 
     elif data_type == "example":
         imports = "import pandas as pd\nimport numpy as np"
-        code = '''# Generate example data
+        code = """# Generate example data
 data = pd.DataFrame({
     'column_1': np.random.randn(100),
     'column_2': np.random.randn(100),
     'category': np.random.choice(['A', 'B', 'C'], 100)
 })
-st.dataframe(data)'''
+st.dataframe(data)"""
         return imports, code
 
     else:
         return "", "data = None  # Replace with your data source"
 
 
-def generate_session_state_code(
-    var_name: str,
-    initial_value: Any = None
-) -> str:
+def generate_session_state_code(var_name: str, initial_value: Any = None) -> str:
     """Generate session state code."""
     if initial_value is None:
-        return f'''# Initialize session state
+        return f"""# Initialize session state
 if "{var_name}" not in st.session_state:
-    st.session_state.{var_name} = None'''
+    st.session_state.{var_name} = None"""
     else:
-        return f'''# Initialize session state
+        return f"""# Initialize session state
 if "{var_name}" not in st.session_state:
-    st.session_state.{var_name} = {repr(initial_value)}'''
+    st.session_state.{var_name} = {repr(initial_value)}"""
 
 
 def generate_cache_decorator(cache_type: str, kwargs: Optional[Dict[str, Any]] = None) -> str:
     """Generate cache decorator code."""
     kwargs_str = format_kwargs(kwargs or {})
     if kwargs_str:
-        return f'@st.{cache_type}({kwargs_str})'
-    return f'@st.{cache_type}'
+        return f"@st.{cache_type}({kwargs_str})"
+    return f"@st.{cache_type}"
 
 
 def generate_multipage_structure() -> Dict[str, str]:
     """Generate a multi-page app structure using modern st.navigation API."""
     return {
-        "app.py": '''import streamlit as st
+        "app.py": """import streamlit as st
 
 # ===================================================================
 # MODERN MULTIPAGE APP USING st.navigation()
@@ -242,7 +228,7 @@ pg.run()
 # }
 # Note: Files can be anywhere, no pages/ folder needed!
 # ===================================================================
-'''
+"""
     }
 
 
@@ -262,22 +248,16 @@ def generate_column_config(column_name: str, config_type: str, **kwargs) -> str:
 
 
 def generate_data_display(
-    display_type: str,
-    data_var: str = "data",
-    kwargs: Optional[Dict[str, Any]] = None
+    display_type: str, data_var: str = "data", kwargs: Optional[Dict[str, Any]] = None
 ) -> str:
     """Generate code for data display elements like dataframe, table, etc."""
     kwargs_str = format_kwargs(kwargs or {})
     if kwargs_str:
-        return f'st.{display_type}({data_var}, {kwargs_str})'
-    return f'st.{display_type}({data_var})'
+        return f"st.{display_type}({data_var}, {kwargs_str})"
+    return f"st.{display_type}({data_var})"
 
 
-def generate_metric(
-    label: str,
-    value: Any,
-    kwargs: Optional[Dict[str, Any]] = None
-) -> str:
+def generate_metric(label: str, value: Any, kwargs: Optional[Dict[str, Any]] = None) -> str:
     """Generate code for st.metric()."""
     if isinstance(value, str):
         value_str = f'"{value}"'
@@ -291,19 +271,17 @@ def generate_metric(
 
 
 def generate_layout_context(
-    layout_type: str,
-    *args,
-    kwargs: Optional[Dict[str, Any]] = None
+    layout_type: str, *args, kwargs: Optional[Dict[str, Any]] = None
 ) -> str:
     """Generate code for layout context managers (columns, tabs, expander, etc.)."""
     args_str = ", ".join(str(arg) for arg in args)
     kwargs_str = format_kwargs(kwargs or {})
 
     if args_str and kwargs_str:
-        return f'with st.{layout_type}({args_str}, {kwargs_str}):\n    pass'
+        return f"with st.{layout_type}({args_str}, {kwargs_str}):\n    pass"
     elif args_str:
-        return f'with st.{layout_type}({args_str}):\n    pass'
+        return f"with st.{layout_type}({args_str}):\n    pass"
     elif kwargs_str:
-        return f'with st.{layout_type}({kwargs_str}):\n    pass'
+        return f"with st.{layout_type}({kwargs_str}):\n    pass"
     else:
-        return f'with st.{layout_type}():\n    pass'
+        return f"with st.{layout_type}():\n    pass"

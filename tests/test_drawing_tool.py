@@ -9,7 +9,10 @@ import json
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from streamlit_mcp.tools.drawing_interpreter import interpret_page_drawing, format_interpretation_output
+from streamlit_mcp.tools.drawing_interpreter import (
+    interpret_page_drawing,
+    format_interpretation_output,
+)
 
 
 def test_simple_dashboard():
@@ -25,7 +28,7 @@ def test_simple_dashboard():
             "Below that are two charts side by side - a line chart on the left "
             "and a bar chart on the right. At the bottom is a data table."
         ),
-        auto_plan=True
+        auto_plan=True,
     )
 
     print(format_interpretation_output(result))
@@ -45,7 +48,7 @@ def test_data_explorer():
             "with search functionality. At the bottom is a download button "
             "to export the filtered data as CSV."
         ),
-        auto_plan=True
+        auto_plan=True,
     )
 
     print(format_interpretation_output(result))
@@ -64,7 +67,7 @@ def test_chat_interface():
             "alternating user and assistant bubbles. At the bottom is a "
             "text input field for the user to type messages."
         ),
-        auto_plan=True
+        auto_plan=True,
     )
 
     print(format_interpretation_output(result))
@@ -80,9 +83,23 @@ def test_with_canvas_data():
     canvas_data = {
         "elements": [
             {"type": "text", "text": "Upload Button", "x": 50, "y": 50},
-            {"type": "rectangle", "label": "Line Chart", "x": 100, "y": 200, "width": 400, "height": 300},
+            {
+                "type": "rectangle",
+                "label": "Line Chart",
+                "x": 100,
+                "y": 200,
+                "width": 400,
+                "height": 300,
+            },
             {"type": "text", "text": "Filter Sidebar", "x": 10, "y": 300},
-            {"type": "rectangle", "label": "Metrics Row", "x": 100, "y": 100, "width": 600, "height": 80}
+            {
+                "type": "rectangle",
+                "label": "Metrics Row",
+                "x": 100,
+                "y": 100,
+                "width": 600,
+                "height": 80,
+            },
         ]
     }
 
@@ -92,7 +109,7 @@ def test_with_canvas_data():
             "with charts and data upload capability."
         ),
         canvas_data=json.dumps(canvas_data),
-        auto_plan=True
+        auto_plan=True,
     )
 
     print(format_interpretation_output(result))
@@ -108,7 +125,7 @@ def test_low_confidence():
     result = interpret_page_drawing(
         drawing_description="A page with some stuff on it.",
         confidence_threshold="medium",
-        auto_plan=True
+        auto_plan=True,
     )
 
     print(format_interpretation_output(result))
@@ -135,4 +152,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n❌ TEST FAILED: {str(e)}")
         import traceback
+
         traceback.print_exc()

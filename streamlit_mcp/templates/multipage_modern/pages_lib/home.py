@@ -2,11 +2,13 @@
 
 import streamlit as st
 
+
 def show():
     """Display the home page."""
     st.title("🏠 Welcome to the Multi-Page App")
 
-    st.markdown("""
+    st.markdown(
+        """
     This is a modern Streamlit multi-page application using **st.navigation()**.
 
     ### Features
@@ -34,7 +36,8 @@ def show():
     ### Getting Started
 
     Try navigating to the **Data Analysis** page to load some sample data!
-    """)
+    """
+    )
 
     # Example: Shared state across pages
     if "visit_count" not in st.session_state:

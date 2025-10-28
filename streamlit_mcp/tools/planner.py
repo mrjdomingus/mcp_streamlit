@@ -13,7 +13,7 @@ def plan_streamlit_page(
     data_freshness: str = "medium",
     performance_priority: str = "balanced",
     multipage: bool = False,
-    include_testing: bool = False
+    include_testing: bool = False,
 ) -> Dict[str, Any]:
     """
     Plan a Streamlit page based on requirements with architectural best practices.
@@ -30,7 +30,7 @@ def plan_streamlit_page(
         features=features,
         data_source=data_source,
         data_freshness=data_freshness,
-        performance_priority=performance_priority
+        performance_priority=performance_priority,
     )
 
     # Component recommendations based on page type and features
@@ -43,17 +43,22 @@ def plan_streamlit_page(
             "caching_strategy": concept_recommendations["caching"],
             "architecture_notes": concept_recommendations["architecture_notes"],
             "performance_tips": concept_recommendations["performance_tips"],
-            "common_pitfalls": concept_recommendations["common_pitfalls"]
+            "common_pitfalls": concept_recommendations["common_pitfalls"],
         },
         "advanced_features": {
             "fragments": concept_recommendations["fragments"],
             "forms": concept_recommendations["forms"],
-            "multipage": concept_recommendations["multipage"] if multipage else None
+            "multipage": concept_recommendations["multipage"] if multipage else None,
         },
         "code": _generate_page_code(
-            description, page_type, features, data_source, layout_preference,
-            concept_recommendations, include_testing
-        )
+            description,
+            page_type,
+            features,
+            data_source,
+            layout_preference,
+            concept_recommendations,
+            include_testing,
+        ),
     }
 
     return recommendations
@@ -64,9 +69,9 @@ def _plan_layout(page_type: str, layout_preference: str, features: List[str]) ->
     layout_plan = {
         "page_config": {
             "layout": "wide" if layout_preference == "wide" else "centered",
-            "initial_sidebar_state": "expanded" if layout_preference == "sidebar" else "auto"
+            "initial_sidebar_state": "expanded" if layout_preference == "sidebar" else "auto",
         },
-        "structure": []
+        "structure": [],
     }
 
     if page_type == "dashboard":
@@ -74,35 +79,38 @@ def _plan_layout(page_type: str, layout_preference: str, features: List[str]) ->
             {"type": "title", "content": "Dashboard"},
             {"type": "metrics_row", "columns": 4},
             {"type": "charts_section", "columns": 2},
-            {"type": "data_table"}
+            {"type": "data_table"},
         ]
     elif page_type == "data_explorer":
         layout_plan["structure"] = [
             {"type": "title", "content": "Data Explorer"},
-            {"type": "sidebar", "content": ["filters", "data_upload"] if "data_upload" in features else ["filters"]},
-            {"type": "main_content", "sections": ["data_preview", "visualizations", "statistics"]}
+            {
+                "type": "sidebar",
+                "content": ["filters", "data_upload"] if "data_upload" in features else ["filters"],
+            },
+            {"type": "main_content", "sections": ["data_preview", "visualizations", "statistics"]},
         ]
     elif page_type == "chat":
         layout_plan["structure"] = [
             {"type": "title", "content": "Chat Interface"},
             {"type": "chat_container"},
-            {"type": "chat_input"}
+            {"type": "chat_input"},
         ]
     elif page_type == "form":
         layout_plan["structure"] = [
             {"type": "title", "content": "Form"},
-            {"type": "form", "fields": ["text_inputs", "selectors", "submit_button"]}
+            {"type": "form", "fields": ["text_inputs", "selectors", "submit_button"]},
         ]
     elif page_type == "report":
         layout_plan["structure"] = [
             {"type": "title", "content": "Report"},
             {"type": "executive_summary"},
-            {"type": "tabs", "sections": ["overview", "details", "analysis"]}
+            {"type": "tabs", "sections": ["overview", "details", "analysis"]},
         ]
     else:  # custom
         layout_plan["structure"] = [
             {"type": "title", "content": "Custom Page"},
-            {"type": "flexible", "note": "Build custom structure based on requirements"}
+            {"type": "flexible", "note": "Build custom structure based on requirements"},
         ]
 
     return layout_plan
@@ -113,48 +121,74 @@ def _plan_components(page_type: str, features: List[str], data_source: str) -> L
     components = []
 
     # Always start with page config
-    components.append({
-        "component": "st.set_page_config",
-        "purpose": "Configure page metadata and layout",
-        "priority": "critical"
-    })
+    components.append(
+        {
+            "component": "st.set_page_config",
+            "purpose": "Configure page metadata and layout",
+            "priority": "critical",
+        }
+    )
 
     # Add components based on page type
     if page_type == "dashboard":
-        components.extend([
-            {"component": "st.metric", "purpose": "Display KPIs", "count": "3-6"},
-            {"component": "st.plotly_chart / st.altair_chart", "purpose": "Interactive visualizations", "count": "2-4"},
-            {"component": "st.dataframe", "purpose": "Show data tables", "count": "1-2"},
-            {"component": "st.columns", "purpose": "Side-by-side layout"},
-        ])
+        components.extend(
+            [
+                {"component": "st.metric", "purpose": "Display KPIs", "count": "3-6"},
+                {
+                    "component": "st.plotly_chart / st.altair_chart",
+                    "purpose": "Interactive visualizations",
+                    "count": "2-4",
+                },
+                {"component": "st.dataframe", "purpose": "Show data tables", "count": "1-2"},
+                {"component": "st.columns", "purpose": "Side-by-side layout"},
+            ]
+        )
 
     elif page_type == "data_explorer":
-        components.extend([
-            {"component": "st.file_uploader", "purpose": "Data upload"} if "data_upload" in features else None,
-            {"component": "st.selectbox / st.multiselect", "purpose": "Data filtering"},
-            {"component": "st.dataframe / st.data_editor", "purpose": "Interactive data view"},
-            {"component": "st.download_button", "purpose": "Export data"} if "file_download" in features else None,
-            {"component": "st.line_chart / st.bar_chart", "purpose": "Quick visualizations"},
-        ])
+        components.extend(
+            [
+                (
+                    {"component": "st.file_uploader", "purpose": "Data upload"}
+                    if "data_upload" in features
+                    else None
+                ),
+                {"component": "st.selectbox / st.multiselect", "purpose": "Data filtering"},
+                {"component": "st.dataframe / st.data_editor", "purpose": "Interactive data view"},
+                (
+                    {"component": "st.download_button", "purpose": "Export data"}
+                    if "file_download" in features
+                    else None
+                ),
+                {"component": "st.line_chart / st.bar_chart", "purpose": "Quick visualizations"},
+            ]
+        )
         components = [c for c in components if c is not None]
 
     elif page_type == "chat":
-        components.extend([
-            {"component": "st.chat_message", "purpose": "Display messages"},
-            {"component": "st.chat_input", "purpose": "User input"},
-            {"component": "st.session_state", "purpose": "Store conversation history"},
-            {"component": "st.write_stream", "purpose": "Streaming responses"} if "real_time_updates" in features else None,
-        ])
+        components.extend(
+            [
+                {"component": "st.chat_message", "purpose": "Display messages"},
+                {"component": "st.chat_input", "purpose": "User input"},
+                {"component": "st.session_state", "purpose": "Store conversation history"},
+                (
+                    {"component": "st.write_stream", "purpose": "Streaming responses"}
+                    if "real_time_updates" in features
+                    else None
+                ),
+            ]
+        )
         components = [c for c in components if c is not None]
 
     elif page_type == "form":
-        components.extend([
-            {"component": "st.form", "purpose": "Group inputs for batch submission"},
-            {"component": "st.text_input", "purpose": "Text fields"},
-            {"component": "st.selectbox / st.radio", "purpose": "Selection inputs"},
-            {"component": "st.slider / st.number_input", "purpose": "Numeric inputs"},
-            {"component": "st.form_submit_button", "purpose": "Submit form"},
-        ])
+        components.extend(
+            [
+                {"component": "st.form", "purpose": "Group inputs for batch submission"},
+                {"component": "st.text_input", "purpose": "Text fields"},
+                {"component": "st.selectbox / st.radio", "purpose": "Selection inputs"},
+                {"component": "st.slider / st.number_input", "purpose": "Numeric inputs"},
+                {"component": "st.form_submit_button", "purpose": "Submit form"},
+            ]
+        )
 
     # Add common features
     if "data_filtering" in features:
@@ -169,7 +203,9 @@ def _plan_components(page_type: str, features: List[str], data_source: str) -> L
     return components
 
 
-def _plan_data_handling(data_source: str, features: List[str], concept_recommendations: Dict[str, Any]) -> Dict[str, Any]:
+def _plan_data_handling(
+    data_source: str, features: List[str], concept_recommendations: Dict[str, Any]
+) -> Dict[str, Any]:
     """Plan data loading and processing with concept-based guidance."""
     data_plan = {}
     caching_guidance = concept_recommendations["caching"]
@@ -207,7 +243,9 @@ def _plan_data_handling(data_source: str, features: List[str], concept_recommend
     return data_plan
 
 
-def _plan_state_management(page_type: str, features: List[str], concept_recommendations: Dict[str, Any]) -> Dict[str, Any]:
+def _plan_state_management(
+    page_type: str, features: List[str], concept_recommendations: Dict[str, Any]
+) -> Dict[str, Any]:
     """Plan session state usage with concept-based patterns."""
     # Use concept-based session state patterns
     state_patterns = concept_recommendations["session_state"]
@@ -216,7 +254,7 @@ def _plan_state_management(page_type: str, features: List[str], concept_recommen
         "required": state_patterns["required"],
         "variables": state_patterns["variables"],
         "initialization_code": state_patterns["initialization_code"],
-        "best_practices": state_patterns["best_practices"]
+        "best_practices": state_patterns["best_practices"],
     }
 
     return state_plan
@@ -229,7 +267,7 @@ def _generate_page_code(
     data_source: str,
     layout_preference: str,
     concept_recommendations: Dict[str, Any],
-    include_testing: bool = False
+    include_testing: bool = False,
 ) -> str:
     """Generate complete page code with best practices."""
 
@@ -244,7 +282,7 @@ def _generate_page_code(
 
     # Generate page config with comments
     layout = "wide" if layout_preference == "wide" else "centered"
-    page_config = f'''# Page Configuration
+    page_config = f"""# Page Configuration
 # Learn more: https://docs.streamlit.io/develop/api-reference/configuration/st.set_page_config
 st.set_page_config(
     page_title="{page_type.replace('_', ' ').title()}",
@@ -252,7 +290,7 @@ st.set_page_config(
     layout="{layout}",  # 'wide' for dashboards, 'centered' for forms
     initial_sidebar_state="auto"
 )
-'''
+"""
 
     # Add best practices header comment
     best_practices_comment = """
@@ -281,7 +319,9 @@ st.set_page_config(
         main_content = _generate_custom_code(description, features, concept_recommendations)
 
     # Combine all parts
-    full_code = "\n".join(imports) + "\n" + page_config + best_practices_comment + "\n" + main_content
+    full_code = (
+        "\n".join(imports) + "\n" + page_config + best_practices_comment + "\n" + main_content
+    )
 
     # Add testing template if requested
     if include_testing:
@@ -290,7 +330,9 @@ st.set_page_config(
     return full_code
 
 
-def _generate_dashboard_code(features: List[str], data_source: str, concept_recommendations: Dict[str, Any]) -> str:
+def _generate_dashboard_code(
+    features: List[str], data_source: str, concept_recommendations: Dict[str, Any]
+) -> str:
     """Generate dashboard page code with proper caching and best practices."""
     # Get caching recommendation from concepts
     caching = concept_recommendations["caching"]
@@ -299,7 +341,9 @@ def _generate_dashboard_code(features: List[str], data_source: str, concept_reco
     # Determine cache decorator
     if caching["decorator"]:
         if caching["ttl"]:
-            cache_decorator = f'{caching["decorator"]}(ttl={caching["ttl"]})  # {caching["explanation"]}'
+            cache_decorator = (
+                f'{caching["decorator"]}(ttl={caching["ttl"]})  # {caching["explanation"]}'
+            )
         else:
             cache_decorator = f'{caching["decorator"]}  # {caching["explanation"]}'
     else:
@@ -373,7 +417,7 @@ st.dataframe(data, use_container_width=True, hide_index=True)
 '''
     else:
         # Standard dashboard without fragments
-        return f'''
+        return f"""
 # Dashboard Title
 st.title("📊 Dashboard")
 
@@ -420,14 +464,16 @@ st.divider()
 # Data Table
 st.subheader("Data Table")
 st.dataframe(data, use_container_width=True, hide_index=True)
-'''
+"""
 
 
-def _generate_data_explorer_code(features: List[str], data_source: str, concept_recommendations: Dict[str, Any]) -> str:
+def _generate_data_explorer_code(
+    features: List[str], data_source: str, concept_recommendations: Dict[str, Any]
+) -> str:
     """Generate data explorer page code with best practices."""
     upload_code = ""
     if "data_upload" in features:
-        upload_code = '''
+        upload_code = """
 # File Upload
 uploaded_file = st.sidebar.file_uploader("Upload CSV file", type=['csv'])
 if uploaded_file is not None:
@@ -439,18 +485,18 @@ else:
         'B': np.random.randn(100),
         'Category': np.random.choice(['X', 'Y', 'Z'], 100)
     })
-'''
+"""
     else:
-        upload_code = '''
+        upload_code = """
 # Load example data
 data = pd.DataFrame({
     'A': np.random.randn(100),
     'B': np.random.randn(100),
     'Category': np.random.choice(['X', 'Y', 'Z'], 100)
 })
-'''
+"""
 
-    return f'''
+    return f"""
 st.title("🔍 Data Explorer")
 
 {upload_code}
@@ -504,16 +550,19 @@ with tab3:
         file_name="data.csv",
         mime="text/csv"
     )
-'''
+"""
 
 
 def _generate_chat_code(features: List[str], concept_recommendations: Dict[str, Any]) -> str:
     """Generate chat interface code with best practices."""
     # Get session state initialization from concepts
     session_state = concept_recommendations["session_state"]
-    init_code = session_state.get("initialization_code", "# Initialize chat history\nif 'messages' not in st.session_state:\n    st.session_state.messages = []")
+    init_code = session_state.get(
+        "initialization_code",
+        "# Initialize chat history\nif 'messages' not in st.session_state:\n    st.session_state.messages = []",
+    )
 
-    return f'''
+    return f"""
 st.title("💬 Chat Interface")
 
 # ================================================================================
@@ -545,12 +594,12 @@ if prompt := st.chat_input("What would you like to know?"):
 
     # Add assistant message to history
     st.session_state.messages.append({{"role": "assistant", "content": response}})
-'''
+"""
 
 
 def _generate_form_code(features: List[str], concept_recommendations: Dict[str, Any]) -> str:
     """Generate form page code with best practices."""
-    return '''
+    return """
 st.title("📝 Form")
 
 with st.form("my_form"):
@@ -579,10 +628,12 @@ with st.form("my_form"):
             "category": category,
             "comments": comments
         })
-'''
+"""
 
 
-def _generate_report_code(features: List[str], data_source: str, concept_recommendations: Dict[str, Any]) -> str:
+def _generate_report_code(
+    features: List[str], data_source: str, concept_recommendations: Dict[str, Any]
+) -> str:
     """Generate report page code with best practices."""
     return '''
 st.title("📄 Report")
@@ -620,7 +671,9 @@ with tab3:
 '''
 
 
-def _generate_custom_code(description: str, features: List[str], concept_recommendations: Dict[str, Any]) -> str:
+def _generate_custom_code(
+    description: str, features: List[str], concept_recommendations: Dict[str, Any]
+) -> str:
     """Generate custom page code with best practices."""
     return f'''
 st.title("Custom Page")
@@ -692,61 +745,68 @@ TOOL = {
         "properties": {
             "description": {
                 "type": "string",
-                "description": "Detailed description of what the page should do/display"
+                "description": "Detailed description of what the page should do/display",
             },
             "page_type": {
                 "type": "string",
                 "enum": ["dashboard", "data_explorer", "chat", "form", "report", "custom"],
                 "description": "Type of page to create",
-                "default": "custom"
+                "default": "custom",
             },
             "features": {
                 "type": "array",
                 "items": {
                     "type": "string",
                     "enum": [
-                        "data_upload", "data_filtering", "charts", "metrics",
-                        "user_input", "file_download", "chat_interface",
-                        "authentication", "multi_step_form", "real_time_updates"
-                    ]
+                        "data_upload",
+                        "data_filtering",
+                        "charts",
+                        "metrics",
+                        "user_input",
+                        "file_download",
+                        "chat_interface",
+                        "authentication",
+                        "multi_step_form",
+                        "real_time_updates",
+                    ],
                 },
-                "description": "List of features the page should include"
+                "description": "List of features the page should include",
             },
             "data_source": {
                 "type": "string",
                 "enum": ["upload", "api", "database", "example", "none"],
                 "description": "Where data comes from",
-                "default": "none"
+                "default": "none",
             },
             "layout_preference": {
                 "type": "string",
                 "enum": ["wide", "centered", "sidebar"],
                 "description": "Preferred layout style",
-                "default": "centered"
+                "default": "centered",
             },
             "data_freshness": {
                 "type": "string",
                 "enum": ["high", "medium", "low"],
                 "description": "How fresh data needs to be (affects caching TTL)",
-                "default": "medium"
+                "default": "medium",
             },
             "performance_priority": {
                 "type": "string",
                 "enum": ["speed", "memory", "balanced"],
                 "description": "Performance optimization priority",
-                "default": "balanced"
+                "default": "balanced",
             },
             "multipage": {
                 "type": "boolean",
                 "description": "Whether to include multipage app guidance",
-                "default": False
+                "default": False,
             },
             "include_testing": {
                 "type": "boolean",
                 "description": "Whether to include test template",
-                "default": False
-            }
+                "default": False,
+            },
         },
-        "required": ["description", "page_type"]
-    }
+        "required": ["description", "page_type"],
+    },
 }

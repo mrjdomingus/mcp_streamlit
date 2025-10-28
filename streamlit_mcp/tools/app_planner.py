@@ -1,6 +1,5 @@
 """App planning tools - comprehensive planning system for Streamlit apps."""
 
-import os
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional
@@ -29,7 +28,7 @@ def create_app_plan(
     tech_stack: Optional[List[str]] = None,
     shared_dependencies: Optional[List[str]] = None,
     implementation_phases: Optional[List[str]] = None,
-    architecture_notes: Optional[str] = None
+    architecture_notes: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Create a comprehensive full application plan.
@@ -92,10 +91,10 @@ This application consists of {len(pages)} page(s):
 
 """
     for i, page in enumerate(pages, 1):
-        page_name = page.get('name', f'Page {i}')
-        page_desc = page.get('description', 'No description provided')
-        page_type = page.get('type', 'custom')
-        page_filename = page_name.lower().replace(' ', '_')
+        page_name = page.get("name", f"Page {i}")
+        page_desc = page.get("description", "No description provided")
+        page_type = page.get("type", "custom")
+        page_filename = page_name.lower().replace(" ", "_")
 
         pages_section += f"""### {i}. {page_name}
 **Type**: {page_type}
@@ -210,12 +209,12 @@ project/
 
     # Combine all sections
     full_content = (
-        overview_section +
-        pages_section +
-        dependencies_section +
-        implementation_section +
-        architecture_section +
-        next_steps_section
+        overview_section
+        + pages_section
+        + dependencies_section
+        + implementation_section
+        + architecture_section
+        + next_steps_section
     )
 
     # Write or append to file
@@ -235,7 +234,7 @@ project/
         "app_name": app_name,
         "pages_count": len(pages),
         "message": f"Full application plan created/updated at {plan_file}",
-        "next_action": "Use create_page_plan tool to plan individual pages"
+        "next_action": "Use create_page_plan tool to plan individual pages",
     }
 
 
@@ -249,7 +248,7 @@ def create_page_plan(
     data_freshness: str = "medium",
     performance_priority: str = "balanced",
     dependencies: Optional[List[str]] = None,
-    related_pages: Optional[List[str]] = None
+    related_pages: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """
     Create a detailed plan for an individual page.
@@ -289,11 +288,11 @@ def create_page_plan(
         features=features,
         data_source=data_source,
         data_freshness=data_freshness,
-        performance_priority=performance_priority
+        performance_priority=performance_priority,
     )
 
     timestamp = get_timestamp()
-    page_filename = page_name.lower().replace(' ', '_')
+    page_filename = page_name.lower().replace(" ", "_")
 
     # Header Section
     header_section = f"""# {page_name} - Page Plan
@@ -402,7 +401,7 @@ def create_page_plan(
 
 """
     if state_rec["required"]:
-        data_flow_section += f"""**State Variables**:
+        data_flow_section += """**State Variables**:
 """
         for var in state_rec.get("variables", []):
             data_flow_section += f"- `{var}`\n"
@@ -439,7 +438,7 @@ def create_page_plan(
     if related_pages:
         dependencies_section += "\n### Related Pages\n"
         for page in related_pages:
-            page_file = page.lower().replace(' ', '_')
+            page_file = page.lower().replace(" ", "_")
             dependencies_section += f"- [{page}](./page_{page_file}.md)\n"
 
     # Implementation Steps Section
@@ -540,13 +539,13 @@ See the generated code template using the `plan_streamlit_page` tool, or build m
 
     # Combine all sections
     full_content = (
-        header_section +
-        components_section +
-        data_flow_section +
-        dependencies_section +
-        implementation_section +
-        best_practices_section +
-        code_section
+        header_section
+        + components_section
+        + data_flow_section
+        + dependencies_section
+        + implementation_section
+        + best_practices_section
+        + code_section
     )
 
     # Write or append to file
@@ -570,8 +569,8 @@ See the generated code template using the `plan_streamlit_page` tool, or build m
             "caching": caching_rec.get("decorator"),
             "session_state_required": state_rec["required"],
             "use_fragments": fragments_rec.get("should_use", False),
-            "use_forms": forms_rec.get("should_use", False)
-        }
+            "use_forms": forms_rec.get("should_use", False),
+        },
     }
 
 
@@ -595,13 +594,10 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "app_name": {
-                    "type": "string",
-                    "description": "Name of the application"
-                },
+                "app_name": {"type": "string", "description": "Name of the application"},
                 "description": {
                     "type": "string",
-                    "description": "Detailed description of what the app does and its purpose"
+                    "description": "Detailed description of what the app does and its purpose",
                 },
                 "pages": {
                     "type": "array",
@@ -612,35 +608,42 @@ TOOLS = [
                             "description": {"type": "string"},
                             "type": {
                                 "type": "string",
-                                "enum": ["dashboard", "data_explorer", "chat", "form", "report", "custom"]
-                            }
+                                "enum": [
+                                    "dashboard",
+                                    "data_explorer",
+                                    "chat",
+                                    "form",
+                                    "report",
+                                    "custom",
+                                ],
+                            },
                         },
-                        "required": ["name", "description"]
+                        "required": ["name", "description"],
                     },
-                    "description": "List of pages in the app, each with name, description, and optional type"
+                    "description": "List of pages in the app, each with name, description, and optional type",
                 },
                 "tech_stack": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "Technologies and libraries to use (optional, defaults provided)"
+                    "description": "Technologies and libraries to use (optional, defaults provided)",
                 },
                 "shared_dependencies": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "Shared components, utilities, or data models (optional)"
+                    "description": "Shared components, utilities, or data models (optional)",
                 },
                 "implementation_phases": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "List of implementation phases/milestones (optional, defaults provided)"
+                    "description": "List of implementation phases/milestones (optional, defaults provided)",
                 },
                 "architecture_notes": {
                     "type": "string",
-                    "description": "Additional architecture considerations (optional)"
-                }
+                    "description": "Additional architecture considerations (optional)",
+                },
             },
-            "required": ["app_name", "description", "pages"]
-        }
+            "required": ["app_name", "description", "pages"],
+        },
     },
     {
         "name": "create_page_plan",
@@ -660,67 +663,71 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "page_name": {
-                    "type": "string",
-                    "description": "Name of the page"
-                },
+                "page_name": {"type": "string", "description": "Name of the page"},
                 "page_type": {
                     "type": "string",
                     "enum": ["dashboard", "data_explorer", "chat", "form", "report", "custom"],
-                    "description": "Type of page to create"
+                    "description": "Type of page to create",
                 },
                 "description": {
                     "type": "string",
-                    "description": "Detailed description of what the page should do/display"
+                    "description": "Detailed description of what the page should do/display",
                 },
                 "features": {
                     "type": "array",
                     "items": {
                         "type": "string",
                         "enum": [
-                            "data_upload", "data_filtering", "charts", "metrics",
-                            "user_input", "file_download", "chat_interface",
-                            "authentication", "multi_step_form", "real_time_updates"
-                        ]
+                            "data_upload",
+                            "data_filtering",
+                            "charts",
+                            "metrics",
+                            "user_input",
+                            "file_download",
+                            "chat_interface",
+                            "authentication",
+                            "multi_step_form",
+                            "real_time_updates",
+                        ],
                     },
-                    "description": "List of features the page should include (optional)"
+                    "description": "List of features the page should include (optional)",
                 },
                 "data_source": {
                     "type": "string",
                     "enum": ["upload", "api", "database", "example", "none"],
                     "description": "Where data comes from",
-                    "default": "none"
+                    "default": "none",
                 },
                 "layout_preference": {
                     "type": "string",
                     "enum": ["wide", "centered", "sidebar"],
                     "description": "Preferred layout style",
-                    "default": "centered"
+                    "default": "centered",
                 },
                 "data_freshness": {
                     "type": "string",
                     "enum": ["high", "medium", "low"],
                     "description": "How fresh data needs to be (affects caching TTL)",
-                    "default": "medium"
+                    "default": "medium",
                 },
                 "performance_priority": {
                     "type": "string",
                     "enum": ["speed", "memory", "balanced"],
                     "description": "Performance optimization priority",
-                    "default": "balanced"
+                    "default": "balanced",
                 },
                 "dependencies": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "List of required libraries/components beyond defaults (optional)"
+                    "description": "List of required libraries/components beyond defaults (optional)",
                 },
                 "related_pages": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "List of related pages that this page links to/from (optional)"
-                }
+                    "description": "List of related pages that this page links to/from (optional)",
+                },
             },
-            "required": ["page_name", "page_type", "description"]
-        }
-    }
+            "required": ["page_name", "page_type", "description"],
+        },
+    },
 ]

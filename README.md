@@ -498,6 +498,192 @@ python tests/test_drawing_tool.py
 - ⏳ Testing utilities
 - ⏳ CLI commands
 
+## Troubleshooting
+
+### Server Won't Start
+
+**Problem**: `ModuleNotFoundError: No module named 'mcp'`
+
+**Solution**:
+```bash
+# Install dependencies
+pip install -e ".[dev]"
+
+# Verify installation
+python -c "from streamlit_mcp.server import run; print('✅ Server ready!')"
+```
+
+**Problem**: `ImportError` or other Python errors
+
+**Solution**:
+- Check Python version: `python --version` (need 3.10+)
+- Try reinstalling: `pip install -e ".[dev]" --force-reinstall`
+- Check for conflicting packages in your environment
+
+### Claude Code Integration Issues
+
+**Problem**: Claude Code doesn't see the MCP server
+
+**Solution**:
+1. Check config file location:
+   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - Linux: `~/.config/Claude/claude_desktop_config.json`
+   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+2. Verify JSON syntax (use a JSON validator)
+
+3. Ensure the Python path in config is correct:
+   ```json
+   {
+     "mcpServers": {
+       "streamlit": {
+         "command": "python",  // or full path: "/usr/bin/python3"
+         "args": ["-m", "streamlit_mcp.server"],
+         "env": {}
+       }
+     }
+   }
+   ```
+
+4. Restart Claude Code completely
+
+5. Check Claude Code logs/console for error messages
+
+**Problem**: Server starts but commands don't work
+
+**Solution**:
+- Verify the server is listed: Ask Claude "List MCP servers"
+- Try a simple command: "Use streamlit MCP to add a title"
+- Check if other MCP servers work to isolate the issue
+
+### Generated Code Issues
+
+**Problem**: Generated code has syntax errors
+
+**Solution**:
+- Use the validator: "Use streamlit MCP validator to check this code"
+- Copy the error message and ask Claude to fix it
+- Check for missing imports or incorrect indentation
+
+**Problem**: Streamlit raises deprecation warnings
+
+**Solution**:
+- Check your Streamlit version: `pip show streamlit`
+- Update if needed: `pip install --upgrade streamlit`
+- Some features require Streamlit ≥1.40.0
+
+**Problem**: Code runs but doesn't match expectations
+
+**Solution**:
+- Validate against the plan: Use `validate_implementation` tool
+- Check the generated code carefully
+- Try regenerating with more specific description
+
+### Orchestrator/Planner Issues
+
+**Problem**: Multi-page app detected as single-page (or vice versa)
+
+**Solution**:
+- Be explicit in description: "Multi-page app with 3 pages: ..."
+- Use keywords: "pages", "navigation", "multi-page"
+- Use workflow_mode parameter: `workflow_mode="multi"` or `"single"`
+
+**Problem**: Generated plans are missing details
+
+**Solution**:
+- Provide more detailed descriptions
+- Mention specific components: "4 metrics", "line chart", "data table"
+- Specify page types: "dashboard", "data_explorer", "chat"
+
+**Problem**: Validation scores are low
+
+**Solution**:
+- Check the suggestions in validation output
+- Ensure required components are present
+- Follow Streamlit best practices (caching, page config, etc.)
+- Use appropriate page type for validation
+
+### Common Errors
+
+**Error**: `FileNotFoundError` when loading templates or resources
+
+**Solution**:
+- Ensure you're in the project directory
+- Check that `streamlit_mcp/resources/` and `streamlit_mcp/templates/` exist
+- Reinstall the package: `pip install -e .`
+
+**Error**: Test failures
+
+**Solution**:
+```bash
+# Run tests with verbose output
+pytest tests/ -v
+
+# Run specific test file
+pytest tests/test_server.py -v
+
+# Check for import issues
+python -c "import streamlit_mcp"
+```
+
+**Error**: Permission denied errors
+
+**Solution**:
+- Check file permissions
+- On Unix/Mac: `chmod +x script.sh`
+- Try using `pip install --user -e ".[dev]"`
+
+### Performance Issues
+
+**Problem**: Orchestrator is slow
+
+**Solution**:
+- Set `validate_plans=False` for faster execution
+- Set `generate_code=False` if you only need plans
+- Break large apps into smaller chunks
+
+**Problem**: Large apps take too long
+
+**Solution**:
+- Use `create_page_plan` for individual pages instead of full orchestration
+- Generate pages separately
+- Cache intermediate results
+
+### Getting More Help
+
+If problems persist:
+
+1. **Check the logs**: Look for error messages in console output
+2. **Run diagnostics**: `python tests/test_server.py`
+3. **Verify environment**: `pip list | grep -E "(mcp|streamlit)"`
+4. **Review examples**: Check `examples/` directory for working code
+5. **Report issues**: Create a GitHub issue with:
+   - Error message
+   - Steps to reproduce
+   - Python version
+   - Environment details
+
+### Quick Diagnostics
+
+Run this diagnostic script:
+
+```bash
+# Check Python version
+python --version
+
+# Check package installation
+python -c "import streamlit_mcp; print('✅ Package imported')"
+
+# Check MCP installation
+python -c "import mcp; print('✅ MCP installed')"
+
+# Run server import test
+python -c "from streamlit_mcp.server import run; print('✅ Server can run')"
+
+# Run basic tests
+pytest tests/test_server.py::test_imports -v
+```
+
 ## Contributing
 
 Contributions welcome! Areas of focus:

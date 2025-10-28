@@ -7,13 +7,11 @@ This module provides tools for managing session state:
 - State patterns and best practices
 """
 
-from typing import Any, Dict, List, Optional
-
-from ...utils.codegen import format_kwargs
+from typing import Any, List
 
 
-def init_session_state(var_name: str, initial_value: Any = None,
-                       value_type: str = "any") -> str:
+
+def init_session_state(var_name: str, initial_value: Any = None, value_type: str = "any") -> str:
     """Generate code to initialize a session state variable.
 
     Args:
@@ -44,9 +42,9 @@ def init_session_state(var_name: str, initial_value: Any = None,
     else:
         init_val = str(initial_value)
 
-    return f'''# Initialize session state variable
+    return f"""# Initialize session state variable
 if "{var_name}" not in st.session_state:
-    st.session_state.{var_name} = {init_val}'''
+    st.session_state.{var_name} = {init_val}"""
 
 
 def get_session_state(var_name: str, default_value: Any = None) -> str:
@@ -60,14 +58,14 @@ def get_session_state(var_name: str, default_value: Any = None) -> str:
         str: Generated Streamlit code
     """
     if default_value is None:
-        return f'''# Get session state variable
-value = st.session_state.get("{var_name}", None)'''
+        return f"""# Get session state variable
+value = st.session_state.get("{var_name}", None)"""
     elif isinstance(default_value, str):
-        return f'''# Get session state variable
-value = st.session_state.get("{var_name}", "{default_value}")'''
+        return f"""# Get session state variable
+value = st.session_state.get("{var_name}", "{default_value}")"""
     else:
-        return f'''# Get session state variable
-value = st.session_state.get("{var_name}", {default_value})'''
+        return f"""# Get session state variable
+value = st.session_state.get("{var_name}", {default_value})"""
 
 
 def set_session_state(var_name: str, value: Any = None) -> str:
@@ -81,17 +79,17 @@ def set_session_state(var_name: str, value: Any = None) -> str:
         str: Generated Streamlit code
     """
     if value is None:
-        return f'''# Set session state variable
-st.session_state.{var_name} = "new_value"  # Replace with actual value'''
+        return f"""# Set session state variable
+st.session_state.{var_name} = "new_value"  # Replace with actual value"""
     elif isinstance(value, str):
         return f'''# Set session state variable
 st.session_state.{var_name} = "{value}"'''
     elif isinstance(value, (list, dict)):
-        return f'''# Set session state variable
-st.session_state.{var_name} = {value}'''
+        return f"""# Set session state variable
+st.session_state.{var_name} = {value}"""
     else:
-        return f'''# Set session state variable
-st.session_state.{var_name} = {value}'''
+        return f"""# Set session state variable
+st.session_state.{var_name} = {value}"""
 
 
 def clear_session_state(specific_keys: List[str] | None = None) -> str:
@@ -107,15 +105,15 @@ def clear_session_state(specific_keys: List[str] | None = None) -> str:
         lines = ["# Clear specific session state variables"]
         for key in specific_keys:
             lines.append(f'if "{key}" in st.session_state:')
-            lines.append(f'    del st.session_state.{key}')
+            lines.append(f"    del st.session_state.{key}")
         return "\n".join(lines)
     else:
-        return '''# Clear all session state
+        return """# Clear all session state
 for key in list(st.session_state.keys()):
     del st.session_state[key]
 
 # Or to clear all at once:
-# st.session_state.clear()'''
+# st.session_state.clear()"""
 
 
 def manage_state_pattern(pattern: str = "counter") -> str:
@@ -128,7 +126,7 @@ def manage_state_pattern(pattern: str = "counter") -> str:
         str: Generated Streamlit code with pattern implementation
     """
     if pattern == "counter":
-        return '''# Counter pattern
+        return """# Counter pattern
 if "count" not in st.session_state:
     st.session_state.count = 0
 
@@ -136,10 +134,10 @@ st.write(f"Count: {st.session_state.count}")
 
 if st.button("Increment"):
     st.session_state.count += 1
-    st.rerun()'''
+    st.rerun()"""
 
     elif pattern == "toggle":
-        return '''# Toggle pattern
+        return """# Toggle pattern
 if "show_details" not in st.session_state:
     st.session_state.show_details = False
 
@@ -148,10 +146,10 @@ if st.button("Toggle Details"):
     st.rerun()
 
 if st.session_state.show_details:
-    st.write("Here are the details...")'''
+    st.write("Here are the details...")"""
 
     elif pattern == "list":
-        return '''# List management pattern
+        return """# List management pattern
 if "items" not in st.session_state:
     st.session_state.items = []
 
@@ -167,10 +165,10 @@ for i, item in enumerate(st.session_state.items):
     with col2:
         if st.button("Remove", key=f"remove_{i}"):
             st.session_state.items.pop(i)
-            st.rerun()'''
+            st.rerun()"""
 
     elif pattern == "form_data":
-        return '''# Form data pattern
+        return """# Form data pattern
 if "form_data" not in st.session_state:
     st.session_state.form_data = {}
 
@@ -180,10 +178,10 @@ with st.form("user_form"):
 
     if st.form_submit_button("Save"):
         st.session_state.form_data = {"name": name, "email": email}
-        st.success("Form saved!")'''
+        st.success("Form saved!")"""
 
     elif pattern == "chat_history":
-        return '''# Chat history pattern
+        return """# Chat history pattern
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -200,14 +198,14 @@ if prompt := st.chat_input("Your message"):
     # Add assistant response
     response = f"Echo: {prompt}"
     st.session_state.messages.append({"role": "assistant", "content": response})
-    st.rerun()'''
+    st.rerun()"""
 
     else:
-        return '''# Custom state pattern
+        return """# Custom state pattern
 if "custom_state" not in st.session_state:
     st.session_state.custom_state = {}
 
-# Your custom state logic here'''
+# Your custom state logic here"""
 
 
 # MCP tool definitions
@@ -220,7 +218,7 @@ TOOLS = [
             "properties": {
                 "var_name": {
                     "type": "string",
-                    "description": "Variable name in session state (e.g., 'counter', 'user_data', 'is_logged_in')"
+                    "description": "Variable name in session state (e.g., 'counter', 'user_data', 'is_logged_in')",
                 },
                 "initial_value": {
                     "description": "Initial value - can be string, number, list, dict, boolean, or null"
@@ -229,11 +227,11 @@ TOOLS = [
                     "type": "string",
                     "description": "Type hint for the variable",
                     "enum": ["any", "string", "number", "list", "dict", "boolean"],
-                    "default": "any"
-                }
+                    "default": "any",
+                },
             },
-            "required": ["var_name"]
-        }
+            "required": ["var_name"],
+        },
     },
     {
         "name": "get_session_state",
@@ -241,16 +239,11 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "var_name": {
-                    "type": "string",
-                    "description": "Variable name in session state"
-                },
-                "default_value": {
-                    "description": "Default value if variable doesn't exist"
-                }
+                "var_name": {"type": "string", "description": "Variable name in session state"},
+                "default_value": {"description": "Default value if variable doesn't exist"},
             },
-            "required": ["var_name"]
-        }
+            "required": ["var_name"],
+        },
     },
     {
         "name": "set_session_state",
@@ -258,16 +251,13 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "var_name": {
-                    "type": "string",
-                    "description": "Variable name in session state"
-                },
+                "var_name": {"type": "string", "description": "Variable name in session state"},
                 "value": {
                     "description": "Value to set - can be string, number, list, dict, boolean, or null"
-                }
+                },
             },
-            "required": ["var_name"]
-        }
+            "required": ["var_name"],
+        },
     },
     {
         "name": "clear_session_state",
@@ -278,10 +268,10 @@ TOOLS = [
                 "specific_keys": {
                     "type": "array",
                     "description": "Specific keys to clear (if not provided, generates code to clear all)",
-                    "items": {"type": "string"}
+                    "items": {"type": "string"},
                 }
-            }
-        }
+            },
+        },
     },
     {
         "name": "manage_state_pattern",
@@ -293,9 +283,9 @@ TOOLS = [
                     "type": "string",
                     "description": "State pattern to generate",
                     "enum": ["counter", "toggle", "list", "form_data", "chat_history"],
-                    "default": "counter"
+                    "default": "counter",
                 }
-            }
-        }
-    }
+            },
+        },
+    },
 ]

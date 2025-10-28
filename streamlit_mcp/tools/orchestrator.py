@@ -3,7 +3,6 @@
 from typing import Dict, Any, List, Optional
 from .drawing_interpreter import interpret_page_drawing
 from .planner import plan_streamlit_page
-from .app_planner import create_app_plan, create_page_plan
 
 
 def orchestrate_app_from_drawing(
@@ -12,7 +11,7 @@ def orchestrate_app_from_drawing(
     generate_code: bool = True,
     validate_plans: bool = True,
     image_data: Optional[str] = None,
-    canvas_data: Optional[str] = None
+    canvas_data: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Complete orchestration workflow from drawing to validated implementation.
@@ -54,7 +53,7 @@ def orchestrate_app_from_drawing(
         image_data=image_data,
         canvas_data=canvas_data,
         auto_plan=True,  # This will create app/page plans automatically
-        workflow_mode="auto"  # Auto-detect single vs multi-page
+        workflow_mode="auto",  # Auto-detect single vs multi-page
     )
 
     workflow_type = interpretation_result.get("workflow_type", "single_page")
@@ -73,7 +72,9 @@ def orchestrate_app_from_drawing(
         app_plan_result = interpretation_result.get("app_plan_result")
         page_plans = interpretation_result.get("page_plans", [])
 
-        workflow_steps.append(f"✓ Full app plan created: {app_plan_result.get('file_path') if app_plan_result else 'N/A'}")
+        workflow_steps.append(
+            f"✓ Full app plan created: {app_plan_result.get('file_path') if app_plan_result else 'N/A'}"
+        )
         workflow_steps.append(f"✓ Created {len(page_plans)} individual page plans")
 
         # Step 5: Generate code for each page if requested
@@ -91,16 +92,18 @@ def orchestrate_app_from_drawing(
                         page_type=page_type,
                         features=[],  # Could be extracted from page plan
                         data_source="none",
-                        layout_preference="centered"
+                        layout_preference="centered",
                     )
 
-                    generated_code.append({
-                        "page_name": page_name,
-                        "page_type": page_type,
-                        "code": code_result.get("code", "# Code generation failed"),
-                        "components": code_result.get("components", []),
-                        "file_path": page_plan.get("file_path")
-                    })
+                    generated_code.append(
+                        {
+                            "page_name": page_name,
+                            "page_type": page_type,
+                            "code": code_result.get("code", "# Code generation failed"),
+                            "components": code_result.get("components", []),
+                            "file_path": page_plan.get("file_path"),
+                        }
+                    )
 
                     workflow_steps.append(f"  ✓ Generated code for {page_name}")
 
@@ -118,12 +121,16 @@ def orchestrate_app_from_drawing(
         if planner_result:
             workflow_steps.append("✓ Page plan and code generated")
 
-            generated_code.append({
-                "page_name": "Main Page",
-                "page_type": interpretation_result["interpretation"].get("detected_page_type", "custom"),
-                "code": planner_result.get("code", ""),
-                "components": planner_result.get("components", [])
-            })
+            generated_code.append(
+                {
+                    "page_name": "Main Page",
+                    "page_type": interpretation_result["interpretation"].get(
+                        "detected_page_type", "custom"
+                    ),
+                    "code": planner_result.get("code", ""),
+                    "components": planner_result.get("components", []),
+                }
+            )
 
     # Step 6: Validate plans if requested
     validation_results = None
@@ -135,7 +142,7 @@ def orchestrate_app_from_drawing(
             interpretation=interpretation_result.get("interpretation"),
             app_plan=app_plan_result,
             page_plans=page_plans,
-            generated_code=generated_code
+            generated_code=generated_code,
         )
 
         workflow_steps.append(f"✓ Validation complete: {validation_results['status']}")
@@ -145,7 +152,7 @@ def orchestrate_app_from_drawing(
         workflow_type=workflow_type,
         has_code=len(generated_code) > 0,
         app_plan_path=app_plan_result.get("file_path") if app_plan_result else None,
-        page_count=len(page_plans) if workflow_type == "multi_page" else 1
+        page_count=len(page_plans) if workflow_type == "multi_page" else 1,
     )
 
     # Build final result
@@ -155,14 +162,14 @@ def orchestrate_app_from_drawing(
             "steps_completed": workflow_steps,
             "warnings": warnings,
             "total_pages": len(page_plans) if workflow_type == "multi_page" else 1,
-            "code_generated": len(generated_code) > 0
+            "code_generated": len(generated_code) > 0,
         },
         "interpretation_result": interpretation_result,
         "app_plan": app_plan_result,
         "page_plans": page_plans,
         "generated_code": generated_code,
         "validation_results": validation_results,
-        "next_steps": next_steps
+        "next_steps": next_steps,
     }
 
     return result
@@ -173,7 +180,7 @@ def _validate_workflow_outputs(
     interpretation: Dict[str, Any],
     app_plan: Optional[Dict[str, Any]],
     page_plans: List[Dict[str, Any]],
-    generated_code: List[Dict[str, Any]]
+    generated_code: List[Dict[str, Any]],
 ) -> Dict[str, Any]:
     """Validate workflow outputs for completeness and consistency."""
     issues = []
@@ -194,9 +201,7 @@ def _validate_workflow_outputs(
 
         if generated_code:
             if len(generated_code) < len(page_plans):
-                issues.append(
-                    f"Code generated for {len(generated_code)}/{len(page_plans)} pages"
-                )
+                issues.append(f"Code generated for {len(generated_code)}/{len(page_plans)} pages")
 
         # Check for common missing elements
         page_names = [p.get("page_name", "") for p in page_plans]
@@ -220,16 +225,13 @@ def _validate_workflow_outputs(
         "suggestions": suggestions,
         "page_count_validation": {
             "expected": interpretation.get("page_count", 1) if workflow_type == "multi_page" else 1,
-            "actual": len(page_plans) if workflow_type == "multi_page" else 1
-        }
+            "actual": len(page_plans) if workflow_type == "multi_page" else 1,
+        },
     }
 
 
 def _generate_next_steps(
-    workflow_type: str,
-    has_code: bool,
-    app_plan_path: Optional[str],
-    page_count: int
+    workflow_type: str, has_code: bool, app_plan_path: Optional[str], page_count: int
 ) -> List[str]:
     """Generate recommended next steps based on workflow results."""
     steps = []
@@ -324,31 +326,31 @@ TOOL = {
                     "Text description of your application drawing. For multi-page apps, "
                     "explicitly list all pages. For single pages, describe the layout "
                     "and components in detail."
-                )
+                ),
             },
             "app_name": {
                 "type": "string",
-                "description": "Optional custom name for the application (auto-detected if not provided)"
+                "description": "Optional custom name for the application (auto-detected if not provided)",
             },
             "generate_code": {
                 "type": "boolean",
                 "description": "If True, generate implementation code for each page",
-                "default": True
+                "default": True,
             },
             "validate_plans": {
                 "type": "boolean",
                 "description": "If True, validate plans for completeness and consistency",
-                "default": True
+                "default": True,
             },
             "image_data": {
                 "type": "string",
-                "description": "Optional base64-encoded image data of the drawing"
+                "description": "Optional base64-encoded image data of the drawing",
             },
             "canvas_data": {
                 "type": "string",
-                "description": "Optional JSON canvas data from drawing tools"
-            }
+                "description": "Optional JSON canvas data from drawing tools",
+            },
         },
-        "required": ["drawing_description"]
-    }
+        "required": ["drawing_description"],
+    },
 }
