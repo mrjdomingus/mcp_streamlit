@@ -271,13 +271,15 @@ live_metrics()"""
             guidance["structure"] = {
                 "entrypoint": "app.py",
                 "method": "st.navigation with st.Page (using functions or file paths)",
-                "note": "No pages/ folder required - define page functions in app.py or use separate files in any location",
+                "note": "NEVER use the pages/ folder - always use st.navigation() for modern multipage apps",
+                "file_naming": "If using separate page files, they MUST start with a number (e.g., 1_home.py, 2_dashboard.py)",
                 "benefits": [
                     "Share common elements (auth, sidebar) across pages",
                     "Better code organization",
                     "Faster load times (lazy loading)",
                     "Session state persists across pages",
                     "Flexible file organization (no magic folders)",
+                    "Full control over navigation and page visibility",
                 ],
             }
             guidance[
@@ -285,7 +287,7 @@ live_metrics()"""
             ] = """# app.py (entrypoint)
 import streamlit as st
 
-# Define page functions directly (no pages folder needed)
+# BEST PRACTICE: Define page functions directly (no pages/ folder!)
 def home():
     st.title("🏠 Home")
     st.write("Welcome to the home page!")
@@ -318,13 +320,14 @@ pg = st.navigation(pages)
 pg.run()
 
 # Alternative: Use file paths if you prefer separate files
+# IMPORTANT: Page files MUST start with a number (e.g., 1_home.py, 2_dashboard.py)
 # pages = {
 #     "Main": [
-#         st.Page("home.py", title="Home", icon="🏠"),
-#         st.Page("dashboard.py", title="Dashboard", icon="📊"),
+#         st.Page("1_home.py", title="Home", icon="🏠"),
+#         st.Page("2_dashboard.py", title="Dashboard", icon="📊"),
 #     ]
 # }
-# Note: Files can be in root directory, no pages/ folder required"""
+# Note: Files can be in root directory - NEVER use pages/ folder!"""
 
         return guidance
 

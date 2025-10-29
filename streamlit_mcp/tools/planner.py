@@ -58,6 +58,7 @@ def plan_streamlit_page(
             layout_preference,
             concept_recommendations,
             include_testing,
+            multipage,
         ),
     }
 
@@ -268,6 +269,7 @@ def _generate_page_code(
     layout_preference: str,
     concept_recommendations: Dict[str, Any],
     include_testing: bool = False,
+    multipage: bool = False,
 ) -> str:
     """Generate complete page code with best practices."""
 
@@ -301,6 +303,9 @@ st.set_page_config(
 # • Initialize session_state before accessing
 # • Use fragments for expensive operations
 # • Batch inputs with forms when appropriate
+# • NEVER use pages/ folder - use st.navigation() instead
+# • Page files MUST start with number (1_home.py, 2_dashboard.py)
+# • Always use UV for package management (uv pip install, uv add)
 # ========================================
 """
 
@@ -322,6 +327,10 @@ st.set_page_config(
     full_code = (
         "\n".join(imports) + "\n" + page_config + best_practices_comment + "\n" + main_content
     )
+
+    # Add multipage structure example if multipage is enabled
+    if multipage:
+        full_code += _generate_multipage_example(page_type)
 
     # Add testing template if requested
     if include_testing:
@@ -718,6 +727,75 @@ def test_{page_type}_title():
 
 # Add more tests as needed
 """
+'''
+
+
+def _generate_multipage_example(page_type: str) -> str:
+    """Generate a complete multipage app structure example."""
+    return '''
+
+# ================================================================================
+# MULTIPAGE APP STRUCTURE (when using st.navigation)
+# ================================================================================
+# This page can be integrated into a multipage app using st.navigation().
+# Below is an example app.py entrypoint structure:
+
+"""
+# app.py (Main Entrypoint for Multipage App)
+import streamlit as st
+
+# BEST PRACTICE: Define page functions directly (no pages/ folder!)
+def home():
+    st.title("🏠 Home")
+    st.write("Welcome to the home page!")
+
+def dashboard():
+    # Import the dashboard code from this file or define inline
+    st.title("📊 Dashboard")
+    # Your dashboard code here...
+
+def settings():
+    st.title("⚙️ Settings")
+    st.write("Application settings...")
+
+# Create navigation structure
+pages = {
+    "Main": [
+        st.Page(home, title="Home", icon="🏠"),
+        st.Page(dashboard, title="Dashboard", icon="📊"),
+    ],
+    "Settings": [
+        st.Page(settings, title="Settings", icon="⚙️"),
+    ]
+}
+
+pg = st.navigation(pages)
+pg.run()
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ALTERNATIVE: Using Separate Files (MUST start with numbers!)
+# ─────────────────────────────────────────────────────────────────────────────
+# If you prefer separate page files, name them: 1_home.py, 2_dashboard.py, etc.
+#
+# pages = {
+#     "Main": [
+#         st.Page("1_home.py", title="Home", icon="🏠"),
+#         st.Page("2_dashboard.py", title="Dashboard", icon="📊"),
+#     ],
+#     "Settings": [
+#         st.Page("3_settings.py", title="Settings", icon="⚙️"),
+#     ]
+# }
+#
+# pg = st.navigation(pages)
+# pg.run()
+#
+# ⚠️ IMPORTANT: Files can be in root directory - NEVER use pages/ folder!
+"""
+
+# ================================================================================
+# End of multipage example
+# ================================================================================
 '''
 
 
