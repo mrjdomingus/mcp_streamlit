@@ -668,6 +668,7 @@ def _get_quick_reference_guide() -> str:
 @app.read_resource()
 async def read_resource(uri: str) -> str:
     """Read the content of a specific resource."""
+    uri = str(uri) # Convert uri from type AnyUrl to str
     try:
         # Handle specific URI patterns
         if uri in RESOURCE_HANDLERS:
