@@ -35,7 +35,7 @@ def get_caching_guide(topic: str = "overview") -> str:
         available = ", ".join(guides.keys())
         return f"Guide not found. Available topics: {available}"
 
-    return guide_path.read_text()
+    return guide_path.read_text(encoding="utf-8")
 
 
 def get_docs_overview() -> str:
@@ -49,7 +49,7 @@ def get_docs_overview() -> str:
     if not docs_path.exists():
         return "Documentation overview not found."
 
-    return docs_path.read_text()
+    return docs_path.read_text(encoding="utf-8")
 
 
 def get_api_quick_ref(api_name: str) -> str:
@@ -91,7 +91,7 @@ def get_api_quick_ref(api_name: str) -> str:
         return f"Documentation file not found: {file_path}"
 
     try:
-        content = full_path.read_text()
+        content = full_path.read_text(encoding="utf-8")
         lines = content.split("\n")
 
         # Extract key information
@@ -170,7 +170,7 @@ def search_develop_docs(query: str, mode: str = "quick") -> str:
     # Search through markdown files
     for md_file in official_dir.rglob("*.md"):
         try:
-            content = md_file.read_text()
+            content = md_file.read_text(encoding="utf-8")
             if search_term in content.lower():
                 # Get relative path from official docs
                 rel_path = md_file.relative_to(official_dir)
@@ -248,7 +248,7 @@ def get_architecture_guide(topic: str = "execution") -> str:
         available = ", ".join(guides.keys())
         return f"Guide not found. Available topics: {available}"
 
-    return guide_path.read_text()
+    return guide_path.read_text(encoding="utf-8")
 
 
 def get_code_snippets(category: str = "all") -> Dict[str, Any]:
@@ -277,7 +277,7 @@ def get_code_snippets(category: str = "all") -> Dict[str, Any]:
         all_snippets = {}
         for cat, file_path in snippet_files.items():
             if file_path.exists():
-                all_snippets[cat] = json.loads(file_path.read_text())
+                all_snippets[cat] = json.loads(file_path.read_text(encoding="utf-8"))
         return all_snippets
 
     file_path = snippet_files.get(category)
@@ -285,7 +285,7 @@ def get_code_snippets(category: str = "all") -> Dict[str, Any]:
         available = ", ".join(snippet_files.keys())
         return {"error": f"Category not found. Available: {available}"}
 
-    return json.loads(file_path.read_text())
+    return json.loads(file_path.read_text(encoding="utf-8"))
 
 
 def search_snippets(query: str) -> Dict[str, Any]:
@@ -397,7 +397,7 @@ def load_template(template_name: str) -> str:
 
     if template["type"] == "single_page":
         # Return the file content
-        return path.read_text()
+        return path.read_text(encoding="utf-8")
     else:
         # For multi-page, return structure and main file
         result = f"# {template_name} Template\n\n"
@@ -416,7 +416,7 @@ def load_template(template_name: str) -> str:
             return "Security error: Invalid main file path"
 
         if main_file.exists():
-            result += main_file.read_text()
+            result += main_file.read_text(encoding="utf-8")
         return result
 
 
@@ -485,7 +485,7 @@ def get_navigation_guide() -> str:
     """
     template_readme = TEMPLATES_DIR / "multipage_modern" / "README.md"
     if template_readme.exists():
-        return template_readme.read_text()
+        return template_readme.read_text(encoding="utf-8")
     return "Navigation guide not found"
 
 
